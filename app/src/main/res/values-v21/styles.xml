@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (C) 2015 Baidu, Inc. All Rights Reserved.
+  -->
+<resources>
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:colorPrimary">@color/theme_primary</item>
+        <item name="android:colorPrimaryDark">@color/theme_primary_dark</item>
+        <!-- enable window content transitions -->
+        <item name="android:windowContentTransitions">true</item>
+
+        <!-- specify enter and exit transitions -->
+        <item name="android:windowEnterTransition">@transition/explode</item>
+        <item name="android:windowExitTransition">@transition/explode</item>
+
+    </style>
+</resources>

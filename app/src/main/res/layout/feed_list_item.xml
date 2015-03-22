@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+        xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/card_view"
+        android:layout_gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/feed_list_item_margin_left"
+        android:layout_marginRight="@dimen/feed_list_item_margin_right"
+        android:layout_marginTop="@dimen/feed_list_item_margin_top"
+        android:layout_marginBottom="@dimen/feed_list_item_margin_bottom"
+        card_view:cardCornerRadius="4dp">
+    <LinearLayout
+            android:id="@+id/container"
+            android:orientation="vertical"
+            android:background="?android:attr/selectableItemBackground"
+            android:padding="@dimen/feed_list_item_padding"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        <TextView
+                android:id="@+id/title"
+                tools:text="中关村商家 “定金绑架” 顾客"
+                style="@style/Base.TextAppearance.AppCompat.Headline"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        <TextView
+                android:id="@+id/description"
+                style="@style/Base.TextAppearance.AppCompat.Caption"
+                tools:text="曾经被称为中国硅谷的中关村，在电商的冲击下生意日渐冷清，但消费者与中关村电脑商户的官司却并没有因此减少。在生意萧条库存积压的情况下，商家利用定金绑架的方式，将库存滞销电脑卖给消费者，从而引发买卖纠纷。遗憾的是，在海淀法院审理的此类案件中，消费者的胜诉率为零。"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/feedlist_item_description_margin"
+                android:ellipsize="end"
+                android:maxLines="4"
+                />
+        <LinearLayout
+                android:orientation="horizontal"
+                android:layout_marginTop="@dimen/feed_list_item_margin_top"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+            <TextView
+                    android:id="@+id/time"
+                    style="@style/Base.TextAppearance.AppCompat.Caption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="43分钟前"/>
+            <Space android:layout_width="@dimen/space_feed_list_time_comment_count"
+                   android:layout_height="match_parent"/>
+            <TextView
+                    android:layout_marginRight="@dimen/feed_list_item_margin_right"
+                    android:drawableLeft="@drawable/ic_comment_grey600_16dp"
+                    style="@style/Base.TextAppearance.AppCompat.Caption"
+                    android:id="@+id/comment_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="11"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+</android.support.v7.widget.CardView>

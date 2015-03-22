@@ -1,0 +1,73 @@
+apply plugin: 'com.android.application'
+
+android {
+    signingConfigs {
+        myConfig {
+            //需要在build.gradle同目录下的gradle.properties中配置以下信息
+            //RELEASE_STORE_FILE=/path/to/key/
+            //RELEASE_STORE_PASSWORD=***********
+            //RELEASE_KEY_ALIAS=*****
+            //RELEASE_KEY_PASSWORD=*******
+            storeFile file(RELEASE_STORE_FILE)
+            storePassword RELEASE_STORE_PASSWORD
+            keyAlias RELEASE_KEY_ALIAS
+            keyPassword RELEASE_KEY_PASSWORD
+        }
+    }
+    compileSdkVersion 21
+    buildToolsVersion "21.1.2"
+
+    defaultConfig {
+        applicationId "me.zheteng.cbreader"
+        minSdkVersion 14
+        targetSdkVersion 21
+        versionCode 3
+        versionName "1.1.0.1"
+    }
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.myConfig
+        }
+        release {
+            signingConfig signingConfigs.myConfig
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+
+            def today = new Date()
+
+            applicationVariants.all { variant ->
+                if (variant.buildType.getName().equals("release")) {
+                    println "~~~~~change the out put apk name"
+                    variant.outputs.each { output ->
+                        output.outputFile = new File(
+                                output.outputFile.parent,
+                                output.outputFile.name.replace(".apk", "-" + defaultConfig.versionName + "-" + today.format('yyyyMMdd') + ".apk"))
+                    }
+                }
+
+            }
+        }
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+
+    packagingOptions {
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'com.android.support:appcompat-v7:21.0.3'
+    compile 'com.android.support:cardview-v7:21.0.+'
+    compile 'com.android.support:recyclerview-v7:21.0.+'
+    compile 'com.nineoldandroids:library:2.4.0'
+    compile 'com.github.ksoichiro:android-observablescrollview:1.5.0'
+    compile 'com.mcxiaoke.volley:library:1.0.+@aar'
+    compile 'joda-time:joda-time:2.7'
+    compile 'org.jsoup:jsoup:1.8.1'
+
+}

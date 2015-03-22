@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (C) 2015 Baidu, Inc. All Rights Reserved.
+  -->
+<FrameLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/card_view"
+        android:layout_gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/feed_list_item_margin_top"
+        android:layout_marginBottom="@dimen/feed_list_item_margin_bottom">
+    <LinearLayout
+            android:id="@+id/container"
+            android:orientation="vertical"
+            android:background="?android:attr/selectableItemBackground"
+            android:padding="@dimen/feed_list_item_padding"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+            <TextView
+                    android:id="@+id/name"
+                    tools:text="匿名用户"
+                    style="@style/Base.TextAppearance.AppCompat.Body2"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"/>
+            <TextView
+                    android:id="@+id/time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="43分钟前"/>
+        </LinearLayout>
+        <TextView
+                android:id="@+id/content"
+                style="@style/Base.TextAppearance.AppCompat.Body1"
+                tools:text="曾经被称为中国硅谷的中关村，在电商的冲击下生意日渐冷清"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/feedlist_item_description_margin"
+                android:ellipsize="end"
+                android:maxLines="4"
+                />
+        <LinearLayout
+                android:orientation="horizontal"
+                android:layout_gravity="right"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:layout_marginTop="@dimen/comment_su_op_margin_up">
+            <TextView
+                    android:text="@string/support"
+                    style="@style/Base.TextAppearance.AppCompat.Caption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            <TextView
+                    android:id="@+id/support"
+                    tools:text="1"
+                    style="@style/Base.TextAppearance.AppCompat.Caption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            <Space android:layout_width="@dimen/space_support_oppose" android:layout_height="match_parent"/>
+            <TextView
+                    android:text="@string/oppose"
+                    style="@style/Base.TextAppearance.AppCompat.Caption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            <TextView
+                    android:id="@+id/oppose"
+                    style="@style/Base.TextAppearance.AppCompat.Caption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="0"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+</FrameLayout>
