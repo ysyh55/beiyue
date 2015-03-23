@@ -7,164 +7,88 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
-import com.github.ksoichiro.android.observablescrollview.ObservableWebView;
-import com.github.ksoichiro.android.observablescrollview.ScrollState;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.webkit.WebChromeClient;
-import android.webkit.WebSettings;
+import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.Toast;
 import me.zheteng.cbreader.BuildConfig;
 import me.zheteng.cbreader.MainApplication;
 import me.zheteng.cbreader.R;
-import me.zheteng.cbreader.model.NewsContent;
+import me.zheteng.cbreader.model.Article;
 import me.zheteng.cbreader.utils.APIUtils;
+import me.zheteng.cbreader.utils.UIUtils;
+import me.zheteng.cbreader.utils.Utils;
 import me.zheteng.cbreader.utils.volley.GsonRequest;
 
 /**
  * TODO 记得添加注释
  */
-public class ReadActivity extends BaseActivity implements ObservableScrollViewCallbacks {
+public class ReadActivity extends BaseActivity {
 
-    public static final String ACTION_MENU_CREATED = "me.zheteng.cbreader.ReadActivity.MENU_CREATED";
-    public static final String ACTION_DATA_LOADED = "me.zheteng.cbreader.ReadActivity.DATA_LOADED";
-
-    public static final String ARTICLE_SID_KEY = "sid";
+    public static final String ARTICLE_ARTICLES_KEY = "sid";
+    public static final String ARTICLE_POSITON_KEY = "position";
+    public static final String KEY_RESULT_POSITION = "result_position";
+    public static final String KEY_RESULT_ARTICELS = "result_articles";
     private static final String TAG = "ReadActivity";
 
-    private int mSid;
-    private ObservableWebView mWebView;
     private int mToolbarHeight;
 
-    private DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
-    private int mPrevScrollY;
-    private boolean mIsToolbarShow;
-    private MenuItem mCommentsMenuItem;
-    private boolean mIsMenuCreated = false;
-    private boolean mIsLoaded = false;
+    private ArrayList<Article> mArticles;
+    private int mPosition;
+    private ViewPager mViewPager;
+    private ReadFragmentPagerAdapter mReadFragmentAdapter;
+    private String mHtmlTemplate;
+    private boolean mIsLoadingMoreData;
+    private MenuItem mCommentMenuItem;
 
-    private MenuCreatedReciever menuCreatedReciever;
-    private DataLoadedReciever dataLoadedReciever;
-    private NewsContent mNewsContent;
+    private Intent resultIntent = new Intent();
+    /**
+     * 刚进来时的第一个sid
+     */
+    private int mCurrentSid;
+    private ReadFragment mCurrentFragment;
+    private int mCurrentPosition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_read);
-
-        menuCreatedReciever = new MenuCreatedReciever();
-        dataLoadedReciever = new DataLoadedReciever();
-        mSid = getIntent().getIntExtra(ARTICLE_SID_KEY, -1);
-
+        mArticles = getIntent().getParcelableArrayListExtra(ARTICLE_ARTICLES_KEY);
+        mPosition = getIntent().getIntExtra(ARTICLE_POSITON_KEY, 0);
+        mCurrentPosition = mPosition;
+        mCurrentSid = mArticles.get(mPosition).sid;
         initView();
 
-        requestData();
-
-    }
-
-    private void requestData() {
-        MainApplication.requestQueue.add(new GsonRequest<NewsContent>(APIUtils.getNewsContentUrl(mSid),
-                NewsContent.class, null, new Response.Listener<NewsContent>() {
-            @Override
-            public void onResponse(NewsContent newsContent) {
-                mNewsContent = newsContent;
-                sendBroadcast(new Intent(ACTION_DATA_LOADED));
-                renderContent();
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError volleyError) {
-                Toast.makeText(ReadActivity.this, "加载错误", Toast.LENGTH_SHORT).show();
-            }
-        }));
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_read, menu);
-        mCommentsMenuItem = menu.findItem(R.id.action_view_comments);
-        sendBroadcast(new Intent(ACTION_MENU_CREATED));
+        mCommentMenuItem = menu.findItem(R.id.action_view_comments);
         return true;
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        registerReceiver(menuCreatedReciever, new IntentFilter(ACTION_MENU_CREATED));
-        registerReceiver(dataLoadedReciever, new IntentFilter(ACTION_DATA_LOADED));
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-
-        unregisterReceiver(menuCreatedReciever);
-        unregisterReceiver(dataLoadedReciever);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        switch (id) {
-            case R.id.action_view_in_browser: {
-                Intent intent = new Intent(Intent.ACTION_VIEW,
-                        Uri.parse("http://www.cnbeta.com/articles/" + mNewsContent.sid + ".htm"));
-                startActivity(intent);
-                break;
-            }
-            case R.id.action_view_comments: {
-                Intent intent = new Intent(this, CommentActivity.class);
-                intent.putExtra(CommentActivity.ARTICLE_SID_KEY, mSid);
-                startActivity(intent);
-                break;
-            }
-            case android.R.id.home:
-                onBackPressed();
-                return true;
-
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
     private void initView() {
-        mWebView = (ObservableWebView) findViewById(R.id.webview);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            mWebView.getSettings().setMediaPlaybackRequiresUserGesture(true);
-        }
-
-        mWebView.getSettings().setAllowFileAccess(true);
-        mWebView.getSettings().setPluginState(WebSettings.PluginState.ON);
-        mWebView.getSettings().setJavaScriptEnabled(true);
-        mWebView.setWebChromeClient(new WebChromeClient() {
-
-        });
-
-        mWebView.setScrollViewCallbacks(this);
-
         mToolbar = (Toolbar) findViewById(R.id.actionbar_toolbar);
         mToolbar.getBackground().setAlpha(255);
         mToolbarHeight = mToolbar.getHeight();
@@ -177,33 +101,83 @@ public class ReadActivity extends BaseActivity implements ObservableScrollViewCa
                 WebView.setWebContentsDebuggingEnabled(true);
             }
         }
+
+        mViewPager = (ViewPager) findViewById(R.id.article_pager);
+        mReadFragmentAdapter =
+                new ReadFragmentPagerAdapter(
+                        getSupportFragmentManager());
+        mViewPager.setOffscreenPageLimit(2);
+        mViewPager.setPageMargin((int) UIUtils.dpToPixels(this, getResources().getDimension(R.dimen.viewpager_gap)));
+        mViewPager.setPageMarginDrawable(R.drawable.viewpager_gap_drawable);
+        mViewPager.setAdapter(mReadFragmentAdapter);
+        mViewPager.setCurrentItem(mPosition);
+        mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                showToolbar();
+                mCurrentPosition = position;
+                mCurrentSid = mArticles.get(position).sid;
+                mCurrentFragment = mReadFragmentAdapter.getRegisteredFragment(position);
+                if (position == mReadFragmentAdapter.getCount() - 1 && !mIsLoadingMoreData) {
+                    loadMoreData();
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+            }
+        });
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        mWebView.removeAllViews();
-        mWebView.destroy();
-    }
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
 
-    public void renderContent() {
-        if (mNewsContent != null) {
-            String title = mNewsContent.title;
-            String source = mNewsContent.source;
-            String body = mNewsContent.bodytext;
-            String intro = mNewsContent.hometext;
-            String pubTime = mNewsContent.time;
-
-            String html = loadAssetTextAsString(this, "index.html");
-            html = html.replaceAll("\\$\\{title\\}", title)
-                    .replaceAll("\\$\\{time\\}", pubTime)
-                    .replaceAll("\\$\\{source\\}", source)
-                    .replaceAll("\\$\\{intro\\}", intro)
-                    .replaceAll("\\$\\{content\\}", body);
-
-            mWebView.loadData(html, "text/html; charset=UTF-8", null);
+        //noinspection SimplifiableIfStatement
+        switch (id) {
+            case R.id.action_view_in_browser: {
+                Intent intent = new Intent(Intent.ACTION_VIEW,
+                        Uri.parse("http://www.cnbeta.com/articles/" + mCurrentSid + ".htm"));
+                startActivity(intent);
+                return true;
+            }
+            case R.id.action_view_comments: {
+                if (mReadFragmentAdapter.getRegisteredFragment(mCurrentPosition).getNewsContent() == null) {
+                    return true;
+                }
+                Intent intent = new Intent(this, CommentActivity.class);
+                intent.putExtra(CommentActivity.ARTICLE_SID_KEY, mCurrentSid);
+                intent.putExtra(CommentActivity.ARTICLE_COUNTD_KEY,
+                        mReadFragmentAdapter.getRegisteredFragment(mCurrentPosition)
+                                .getNewsContent()
+                                .comments);
+                startActivity(intent);
+                return true;
+            }
+            case android.R.id.home:
+                onBackPressed();
+                return true;
 
         }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * 获取index.html的内容,用于渲染
+     *
+     * @return index.html
+     */
+    public String getHtmlTemplate() {
+        if (mHtmlTemplate == null) {
+            mHtmlTemplate = loadAssetTextAsString(this, "index.html");
+        }
+        return mHtmlTemplate;
     }
 
     private String loadAssetTextAsString(Context context, String name) {
@@ -239,60 +213,86 @@ public class ReadActivity extends BaseActivity implements ObservableScrollViewCa
     }
 
     @Override
-    public void onScrollChanged(int scrollY, boolean b, boolean b2) {
-        boolean scrollUp = mPrevScrollY < scrollY;
+    public void finish() {
+        resultIntent.putParcelableArrayListExtra(KEY_RESULT_ARTICELS, mArticles);
+        resultIntent.putExtra(KEY_RESULT_POSITION, mPosition);
 
-        if (scrollUp) {
-            if (!mIsToolbarShow) {
-                showToolbar();
-                mIsToolbarShow = true;
+        setResult(RESULT_OK, resultIntent);
+        super.finish();
+    }
+
+    public Toolbar getToolbar() {
+        return mToolbar;
+    }
+
+    private void loadMoreData() {
+        mIsLoadingMoreData = true;
+        String url = APIUtils.getArticleListUrl(0, mCurrentSid);
+
+        MainApplication.requestQueue.add(new GsonRequest<Article[]>(url, Article[].class, null,
+                new Response.Listener<Article[]>() {
+                    @Override
+                    public void onResponse(Article[] s) {
+                        List<Article> articles = Utils.getListFromArray(s);
+                        appendData(articles);
+                        mIsLoadingMoreData = false;
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                mIsLoadingMoreData = false;
+                Toast.makeText(ReadActivity.this, "加载错误", Toast.LENGTH_SHORT).show();
             }
-        } else {
-            if (mIsToolbarShow && scrollY < mToolbarHeight + 100) {
-                hideToolbar();
-                mIsToolbarShow = false;
-            }
+        }));
+    }
+
+    public void appendData(List<Article> articles) {
+        mArticles.addAll(articles);
+        mReadFragmentAdapter.notifyDataSetChanged();
+    }
+
+    public MenuItem getCommentMenuItem() {
+        return mCommentMenuItem;
+    }
+
+    public class ReadFragmentPagerAdapter extends FragmentStatePagerAdapter {
+        SparseArray<ReadFragment> registeredFragments = new SparseArray<ReadFragment>();
+
+        public ReadFragmentPagerAdapter(FragmentManager fm) {
+            super(fm);
         }
-
-        mPrevScrollY = scrollY;
-    }
-
-    @Override
-    public void onDownMotionEvent() {
-
-    }
-
-    @Override
-    public void onUpOrCancelMotionEvent(ScrollState scrollState) {
-
-    }
-
-    private class MenuCreatedReciever extends BroadcastReceiver {
 
         @Override
-        public void onReceive(Context context, Intent intent) {
-            mIsMenuCreated = true;
-            if (mIsLoaded) {
-                replaceCount();
-            }
+        public ReadFragment getItem(int i) {
+            return ReadFragment.newInstance(mArticles.get(i));
         }
-    }
-
-    private class DataLoadedReciever extends BroadcastReceiver {
 
         @Override
-        public void onReceive(Context context, Intent intent) {
-            mIsLoaded = true;
-            if (mIsMenuCreated) {
-                replaceCount();
-            }
+        public ReadFragment instantiateItem(ViewGroup container, int position) {
+            ReadFragment fragment = (ReadFragment) super.instantiateItem(container, position);
+            registeredFragments.put(position, fragment);
+            return fragment;
         }
-    }
 
-    public void replaceCount() {
-        if (mCommentsMenuItem != null) {
-            mCommentsMenuItem.setTitle(getString(R.string.action_view_comments) + " (" + mNewsContent.comments + ")");
+        @Override
+        public int getCount() {
+            return mArticles.size();
         }
-    }
 
+        @Override
+        public void destroyItem(ViewGroup container, int position, Object object) {
+            registeredFragments.remove(position);
+            super.destroyItem(container, position, object);
+        }
+
+        public ReadFragment getRegisteredFragment(int position) {
+            return registeredFragments.get(position);
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return "查看文章" + mArticles.get(position);
+        }
+
+    }
 }

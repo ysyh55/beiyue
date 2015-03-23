@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (C) 2015 junyuecao@gmail.com All Rights Reserved.
+  -->
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+            android:title="@string/pref_comment"
+            android:key="pref_comment">
+        <SwitchPreference
+                android:key="pref_comment_order"
+                android:title="@string/pref_comment_order"
+                android:defaultValue="true" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+            android:title="@string/pref_other">
+        <Preference android:title="@string/pref_about"
+                 >
+            <intent
+                android:action="me.zheteng.cbreader.ui.AboutActivity"/>
+        </Preference>
+    </PreferenceCategory>
+</PreferenceScreen>

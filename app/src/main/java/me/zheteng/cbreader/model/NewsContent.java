@@ -15,7 +15,7 @@ public class NewsContent {
     public String keywords;
     public String hometext;
     public String listorder;
-    public String comments;
+    public int comments;
     public String counter;
     public String mview;
     public String collectnum;

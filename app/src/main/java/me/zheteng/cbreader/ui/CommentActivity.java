@@ -4,7 +4,6 @@
 package me.zheteng.cbreader.ui;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import com.android.volley.Response;
@@ -30,13 +29,16 @@ import me.zheteng.cbreader.MainApplication;
 import me.zheteng.cbreader.R;
 import me.zheteng.cbreader.model.NewsComment;
 import me.zheteng.cbreader.utils.APIUtils;
+import me.zheteng.cbreader.utils.PrefUtils;
+import me.zheteng.cbreader.utils.Utils;
 import me.zheteng.cbreader.utils.volley.GsonRequest;
 
 /**
  * 查看评论
  */
 public class CommentActivity extends BaseActivity implements ObservableScrollViewCallbacks {
-    public static final String ARTICLE_SID_KEY = "feed_uri";
+    public static final String ARTICLE_SID_KEY = "sid";
+    public static final String ARTICLE_COUNTD_KEY = "count";
 
     private int mSid;
 
@@ -53,6 +55,12 @@ public class CommentActivity extends BaseActivity implements ObservableScrollVie
     private int visibleThreshold = 5;
     int firstVisibleItem, visibleItemCount, totalItemCount;
     // ----- end  used for load more
+    /**
+     * 由于接口是最早发表的在最前,所以我们要知道有多少个,好反过来请求最后一页
+     */
+    private int mCount;
+    private boolean mIsLoadingData;
+    private boolean mIsNewerFirst;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,44 +70,74 @@ public class CommentActivity extends BaseActivity implements ObservableScrollVie
 
         Intent intent = getIntent();
         mSid = intent.getIntExtra(ARTICLE_SID_KEY, -1);
-
+        mCount = intent.getIntExtra(ARTICLE_COUNTD_KEY, -1);
+        mIsNewerFirst = PrefUtils.getIsCommentLatestFirst(this);
+        mPage = mIsNewerFirst ? mCount / 10 + 1 : 1;
         initViews();
         requestData();
     }
 
     private void requestData() {
+        if (mPage <= 0) {
+            return;
+        }
+        mIsLoadingData = true;
         MainApplication.requestQueue.add(new GsonRequest<NewsComment[]>(APIUtils.getCommentListWithPageUrl(mSid, mPage),
                 NewsComment[].class, null, new Response.Listener<NewsComment[]>() {
             @Override
             public void onResponse(NewsComment[] newsComments) {
-                mPage++;
-                List<NewsComment> list = Arrays.asList(newsComments);
+                changePage();
+                List<NewsComment> list = getList(newsComments);
                 mAdapter.swapData(list);
+                mIsLoadingData = false;
+                if (list.size() < 10 && mPage > 0 && mIsNewerFirst) {
+                    loadMoreData();
+                }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
                 Toast.makeText(CommentActivity.this, "加载错误", Toast.LENGTH_SHORT).show();
+                mIsLoadingData = false;
             }
         }));
     }
 
+    private void changePage() {
+        if (mIsNewerFirst) {
+            mPage--;
+        } else {
+            mPage++;
+        }
+    }
+
     private void loadMoreData() {
+        if (mPage <= 0) {
+            return;
+        }
+        mIsLoadingData = true;
         MainApplication.requestQueue.add(new GsonRequest<NewsComment[]>(APIUtils.getCommentListWithPageUrl(mSid, mPage),
                 NewsComment[].class, null, new Response.Listener<NewsComment[]>() {
             @Override
             public void onResponse(NewsComment[] newsComments) {
-                mPage++;
-                List<NewsComment> list = Arrays.asList(newsComments);
+                changePage();
+                List<NewsComment> list = getList(newsComments);
                 mAdapter.appendData(list);
+                mIsLoadingData = false;
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
                 Toast.makeText(CommentActivity.this, "加载错误", Toast.LENGTH_SHORT).show();
+                mIsLoadingData = false;
             }
         }));
 
+    }
+
+    private List<NewsComment> getList(NewsComment[] newsComments) {
+        return mIsNewerFirst ? Utils.getListFromArrayReverse(newsComments) : Utils
+                .getListFromArray(newsComments);
     }
 
     private void initViews() {
@@ -139,7 +177,9 @@ public class CommentActivity extends BaseActivity implements ObservableScrollVie
 
                     Log.i("...", "end called");
 
-                    loadMoreData();
+                    if (!mIsLoadingData) {
+                        loadMoreData();
+                    }
 
                     loading = true;
                 }

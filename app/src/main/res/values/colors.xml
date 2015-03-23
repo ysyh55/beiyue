@@ -16,4 +16,6 @@
     <color name="refresh_progress_1">@color/theme_accent_2</color>
     <color name="refresh_progress_2">@color/theme_accent_1</color>
     <color name="refresh_progress_3">@color/theme_primary</color>
+    <color name="color_viewpager_gap_bg">#ffe6e6e6</color>
+    <color name="about_hero">#444</color>
 </resources>

@@ -51,4 +51,9 @@ public class UIUtils {
         return sp * scaledDensity;
     }
 
+    public static float dpToPixels(Context context, float dp) {
+        float scaledDensity = context.getResources().getDisplayMetrics().scaledDensity;
+        return dp * scaledDensity;
+    }
+
 }

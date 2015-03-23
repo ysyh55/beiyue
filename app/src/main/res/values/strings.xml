@@ -2,11 +2,18 @@
     <string name="app_name">CNBETA Now</string>
 
     <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_settings">设置</string>
     <string name="refresh">更新</string>
     <string name="action_view_in_browser">在浏览器中查看</string>
     <string name="action_view_comments">评论</string>
     <string name="support">支持</string>
     <string name="oppose">反对</string>
     <string name="comment">评论</string>
+    <string name="pref_comment_order">优先显示最新评论</string>
+    <string name="pref_comment">评论设置</string>
+    <string name="settings">设置</string>
+    <string name="pref_other">其他</string>
+    <string name="pref_about">关于与反馈</string>
+    <string name="about">关于与反馈</string>
+    <string name="about_description">享受阅读 享受cnBeta</string>
 </resources>

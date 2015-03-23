@@ -8,6 +8,12 @@
            parent="@style/Base.TextAppearance.AppCompat.Headline">
         <item name="android:color">@color/text_readed</item>
     </style>
+    <style name="about_text" parent="@style/Base.TextAppearance.AppCompat.Body1">
+        <item name="android:paddingTop">16dp</item>
+        <item name="android:paddingBottom">16dp</item>
+        <item name="android:paddingLeft">24dp</item>
+        <item name="android:drawablePadding">8dp</item>
+    </style>
 
 
 </resources>

@@ -15,4 +15,9 @@
     <dimen name="space_support_oppose">16dp</dimen>
     <dimen name="comment_su_op_margin_up">16dp</dimen>
     <dimen name="space_feed_list_time_comment_count">16dp</dimen>
+    <dimen name="materialprogressbar_size">48dp</dimen>
+    <dimen name="list_loading_progress_size">48dp</dimen>
+    <dimen name="viewpager_gap">8dp</dimen>
+    <dimen name="about_hero_margin">48dp</dimen>
+    <dimen name="about_logo_margin">48dp</dimen>
 </resources>

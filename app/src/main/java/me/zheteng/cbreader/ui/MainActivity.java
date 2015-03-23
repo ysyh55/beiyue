@@ -3,14 +3,8 @@
  */
 package me.zheteng.cbreader.ui;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-
-import org.xmlpull.v1.XmlPullParserException;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -18,6 +12,7 @@ import com.github.ksoichiro.android.observablescrollview.ObservableRecyclerView;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.github.ksoichiro.android.observablescrollview.ScrollUtils;
+import com.google.gson.Gson;
 import com.nineoldandroids.animation.ValueAnimator;
 import com.nineoldandroids.view.ViewHelper;
 import com.nineoldandroids.view.ViewPropertyAnimator;
@@ -29,6 +24,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -43,16 +39,15 @@ import android.widget.Toast;
 import me.zheteng.cbreader.MainApplication;
 import me.zheteng.cbreader.R;
 import me.zheteng.cbreader.model.Article;
-import me.zheteng.cbreader.model.Feed;
-import me.zheteng.cbreader.sync.CnBetaSyncAdapter;
+import me.zheteng.cbreader.ui.widget.MaterialProgressBar;
 import me.zheteng.cbreader.utils.APIUtils;
-import me.zheteng.cbreader.utils.CatkeRSSFeedParser;
-import me.zheteng.cbreader.utils.RSSFeedParser;
+import me.zheteng.cbreader.utils.PrefUtils;
+import me.zheteng.cbreader.utils.Utils;
 import me.zheteng.cbreader.utils.volley.GsonRequest;
-import me.zheteng.cbreader.utils.volley.StringRequest;
 
 public class MainActivity extends BaseActivity {
 
+    private static final int CURRENT_STATE_REQUEST = 1;
     private ObservableRecyclerView mRecyclerView;
     private ArticleListAdapter mAdapter;
     private LinearLayoutManager mLayoutManager;
@@ -79,6 +74,8 @@ public class MainActivity extends BaseActivity {
     private boolean loading = true;
     private int visibleThreshold = 5;
     int firstVisibleItem, visibleItemCount, totalItemCount;
+    private boolean mLoadingData;
+
     // ----- end  used for load more
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,36 +83,27 @@ public class MainActivity extends BaseActivity {
         setContentView(R.layout.activity_main);
 
         initViews();
-
-        refreshData();
+        if (!loadCachedData()) {
+            refreshData();
+        }
     }
 
-    private void testSync() {
-        StringRequest request = new StringRequest(CnBetaSyncAdapter.FEED_URL, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String s) {
-                Reader reader = new StringReader(s);
-                RSSFeedParser parser = new CatkeRSSFeedParser();
-                Feed feed = null;
+    private boolean loadCachedData() {
+        mLoadingData = true;
+        String json = PrefUtils.getCacheOfKey(this, PrefUtils.KEY_ARTICLES);
 
-                try {
-                    feed = parser.readFeed(reader);
-                    Toast.makeText(MainActivity.this, "加载成功", Toast.LENGTH_SHORT).show();
+        if (TextUtils.isEmpty(json)) {
+            return false;
+        }
+        Gson gson = new Gson();
 
-                } catch (XmlPullParserException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError volleyError) {
-                Toast.makeText(MainActivity.this, "加载错误", Toast.LENGTH_SHORT).show();
-            }
-        });
+        Article[] articles = gson.fromJson(json, Article[].class);
+        List<Article> list = Utils.getListFromArray(articles);
+        mAdapter.swapData(list);
 
-        MainApplication.requestQueue.add(request);
+        mLoadingData = false;
+        return true;
+
     }
 
     private int getActionBarSize() {
@@ -279,7 +267,9 @@ public class MainActivity extends BaseActivity {
 
                     Log.i("...", "end called");
 
-                    loadMoreArticles();
+                    if (!mLoadingData) {
+                        loadMoreArticles();
+                    }
 
                     loading = true;
                 }
@@ -371,45 +361,68 @@ public class MainActivity extends BaseActivity {
         //noinspection SimplifiableIfStatement
         switch (id) {
             case R.id.action_settings:
-                Toast.makeText(this, "还没做呢", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(this, SettingsActivity.class);
+                startActivity(intent);
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    private void refreshData() {
-        String url = APIUtils.getArticleListsUrl();
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == CURRENT_STATE_REQUEST) {
+            if (resultCode == RESULT_OK) {
+                List<Article> list = data.getParcelableArrayListExtra(ReadActivity.KEY_RESULT_ARTICELS);
+                int position = data.getIntExtra(ReadActivity.KEY_RESULT_POSITION, 0);
+                mAdapter.swapData(list);
+            }
+        }
+    }
 
-        MainApplication.requestQueue.add(new GsonRequest<Article[]>(url, Article[].class, null,
+    private void refreshData() {
+        mLoadingData = true;
+        String url = APIUtils.getArticleListsUrl();
+        final GsonRequest request = new GsonRequest<Article[]>(url, Article[].class, null,
                 new Response.Listener<Article[]>() {
                     @Override
                     public void onResponse(Article[] s) {
-                        List<Article> articles = Arrays.asList(s);
+                        List<Article> articles = Utils.getListFromArray(s);
                         mAdapter.swapData(articles);
-
+                        Gson gson = new Gson();
+                        PrefUtils.saveCacheOfKey(MainActivity.this, PrefUtils.KEY_ARTICLES, gson.toJson(s));
                         mSwipeRefreshLayout.setRefreshing(false);
+                        mLoadingData = false;
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
+                mLoadingData = false;
                 Toast.makeText(MainActivity.this, "加载错误", Toast.LENGTH_SHORT).show();
             }
-        }));
+        });
+
+        MainApplication.requestQueue.add(request);
     }
 
     private void loadMoreArticles() {
+        mLoadingData = true;
         String url = APIUtils.getArticleListUrl(0, mAdapter.mData.get(mAdapter.mData.size() - 1).sid);
+
+        mAdapter.addItem(null); // 添加null多出进度条;
 
         MainApplication.requestQueue.add(new GsonRequest<Article[]>(url, Article[].class, null,
                 new Response.Listener<Article[]>() {
                     @Override
                     public void onResponse(Article[] s) {
-                        List<Article> articles = Arrays.asList(s);
+                        List<Article> articles = Utils.getListFromArray(s);
+                        mAdapter.removeLast(); // 去掉最后的一个, 进度条
                         mAdapter.appendData(articles);
+                        mLoadingData = false;
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
+                mLoadingData = false;
                 Toast.makeText(MainActivity.this, "加载错误", Toast.LENGTH_SHORT).show();
             }
         }));
@@ -424,6 +437,7 @@ public class MainActivity extends BaseActivity {
             implements View.OnClickListener {
         private static final int VIEW_TYPE_HEADER = 0;
         private static final int VIEW_TYPE_ITEM = 1;
+        private static final int VIEW_TYPE_PROG = 2;
 
         private List<Article> mData;
 
@@ -451,6 +465,9 @@ public class MainActivity extends BaseActivity {
                     ArticleItemViewHolder viewHolder = new ArticleItemViewHolder(view);
                     view.setOnClickListener(this);
                     return viewHolder;
+                case VIEW_TYPE_PROG:
+                    return new ProgressViewHolder(LayoutInflater.from(mContext).inflate(R.layout.progress_item,
+                            parent, false));
                 default:
                     throw new UnsupportedOperationException("没有这个ViewType");
             }
@@ -481,7 +498,15 @@ public class MainActivity extends BaseActivity {
 
         @Override
         public int getItemViewType(int position) {
-            return (position == 0) ? VIEW_TYPE_HEADER : VIEW_TYPE_ITEM;
+            if (mHeaderView == null) {
+                return VIEW_TYPE_ITEM;
+            } else {
+                if (position == 0) {
+                    return VIEW_TYPE_HEADER;
+                } else {
+                    return getItem(position) != null ? VIEW_TYPE_ITEM : VIEW_TYPE_PROG;
+                }
+            }
         }
 
         @Override
@@ -498,6 +523,19 @@ public class MainActivity extends BaseActivity {
             } else {
                 return itemCount + 1;
             }
+        }
+
+        private int[] getAllSid() {
+            if (mData == null) {
+                return new int[0];
+            }
+
+            int[] sids = new int[mData.size()];
+            int i = 0;
+            for (Article article : mData) {
+                sids[i++] = article.sid;
+            }
+            return sids;
         }
 
         public List<Article> appendData(List<Article> articles) {
@@ -522,17 +560,32 @@ public class MainActivity extends BaseActivity {
             return oldData;
         }
 
+        public void addItem(Article article) {
+            if (mData == null) {
+                return;
+            }
+            mData.add(article);
+            notifyDataSetChanged();
+        }
+
+        public void removeLast() {
+            if (mData == null) {
+                return;
+            }
+            mData.remove(mData.size() - 1);
+            notifyDataSetChanged();
+        }
+
         @Override
         public void onClick(View v) {
             int position = mRecyclerView.getChildPosition(v);
             if (mData != null) {
-                Article article = getItem(position);
                 Intent intent = new Intent(MainActivity.this, ReadActivity.class);
-                intent.putExtra(ReadActivity.ARTICLE_SID_KEY, article.sid);
+                intent.putParcelableArrayListExtra(ReadActivity.ARTICLE_ARTICLES_KEY,
+                        (ArrayList<? extends android.os.Parcelable>) mData);
+                intent.putExtra(ReadActivity.ARTICLE_POSITON_KEY, mData.indexOf(mAdapter.getItem(position)));
 
-                startActivity(intent);
-
-                //                FeedDao.setReaded(MainActivity.this, message);
+                startActivityForResult(intent, CURRENT_STATE_REQUEST);
             }
 
         }
@@ -561,6 +614,15 @@ public class MainActivity extends BaseActivity {
 
             public HeaderViewHolder(View itemView) {
                 super(itemView);
+            }
+        }
+
+        public class ProgressViewHolder extends RecyclerView.ViewHolder {
+            public MaterialProgressBar mProgressBar;
+
+            public ProgressViewHolder(View v) {
+                super(v);
+                mProgressBar = (MaterialProgressBar) v.findViewById(R.id.list_progress);
             }
         }
     }

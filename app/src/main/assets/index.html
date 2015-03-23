@@ -4,7 +4,13 @@
     <style type="text/css">
         body {
         margin: 0;
+        margin-top: 50px;
+        margin-bottom: 50px;
         padding: 12px;
+        }
+        a{
+        word-wrap: break-word;
+        word-break: break-all;
         }
         h1 {
         font-size: 24px;
@@ -14,11 +20,12 @@
         }
         p {
         color: #242424;
-        font-size: 14px;
-        line-height: 18px;
+        font-size: 16px;
+        line-height: 22px;
         }
         img {
-        width: 100%;
+        width: 100%!important;
+        height: auto!important;
         }
         .content {
         margin-top: 48px;
@@ -27,24 +34,47 @@
         color: #616161;
         font-size: 13px;
         }
+        iframe,embed, video,object {
+        width: 100%!important;
+        height: 215px;
+        }
+        #intro{
+        margin-top:1em;
+        margin-bottom:1em;
+        font-size: 14px;
+        background: #F5F5F5;
+        padding: 10px; }
+        #intro p {
+        font-size: 15px;
+        margin: 0;
+        }
+        #source{
+        margin-bottom: 1em;
+        color: rgb(42, 41, 41);
+        text-decoration: none;
+        }
+        #source a{
+        color: #444444;
+        text-decoration: none;
+        }
     </style>
 </head>
 <body>
-<h1>安全研究人员Corey Kallenberg</h1>
 
-<div id="time">2015-03-21 10:20:10</div>
+<h1>
+    ${title}
+</h1>
 
-<div class="content"><p><strong>安全研究人员Corey Kallenberg和Xeno Kovah在最近在安全会议CanSecWest上透露</strong>，LightEater恶意软件攻击BIOS，已经让全球数以百万计的电脑至于风险当中。Corey
-    Kallenberg和Xeno Kovah透露，即使是菜鸟也可以使用名为LightEater的软件，利用漏洞入侵电脑主板BIOS，植入感染指令，在瞬间让电脑瘫痪无法启动。</p>
-
-    <p>但它也可以被用来窃取口令和拦截加密数据。技嘉，宏碁，微星，惠普和华硕的主板都未能幸免，另外这些主板厂商大量重复使用多个UEFI
-        BIOS代码，也加剧了家庭用户，企业和政府电脑的风险。恶意软件可用于通过创建SMM（系统管理模式）植入代码，可以用简单的模式匹配个人电脑的BIOS，来感染数量庞大的电脑。来自技嘉的BIOS被认为是不安全的BIOS。</p>
-
-    <p>Corey Kallenberg和Xeno Kovah表示，只是利用1个内核驱动程序编写一个无效指令让CPU率先读取，即可让电脑无法启动。这种BIOS漏洞可能已经被美国国家安全局所利用。</p>
-
-    <p class="f_center"><a href="http://static.cnbetacdn.com/article/2015/0321/d40a180e6efda56.jpg" target="_blank"><img
-            src="http://static.cnbetacdn.com/thumb/article/2015/0321/d40a180e6efda56.jpg_600x600.jpg" title="bios.jpg"></a>
-    </p>
+<div id="source">
+    ${source}
 </div>
+<div id="time">
+    ${time}
+
+</div>
+<div id="intro">
+    ${intro}
+</div>
+${content}
 </body>
 </html>

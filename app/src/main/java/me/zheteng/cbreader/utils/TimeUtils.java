@@ -32,10 +32,12 @@ public class TimeUtils {
         DateTime now = new DateTime();
         Period period = new Period(thenTime, now);
 
+        String[] all = formatter.print(period).split("\\|");
+        if (all.length == 0) {
+            return "未知时间";
+        }
 
-        String elapsed = formatter.print(period).split("\\|")[0];
-
-        return elapsed;
+        return all.length == 1 ? all[0] : all[0] + all[1];
 
     }
 }

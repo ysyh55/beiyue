@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (C) 2015 Baidu, Inc. All Rights Reserved.
+  -->
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent">
+    <com.github.ksoichiro.android.observablescrollview.ObservableWebView
+            android:id="@+id/webview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            />
+    <me.zheteng.cbreader.ui.widget.MaterialProgressBar
+            android:id="@+id/loading_progress"
+            android:layout_width="@dimen/materialprogressbar_size"
+            android:layout_height="@dimen/materialprogressbar_size"
+            android:layout_gravity="center"/>
+</FrameLayout>
+
+
+
