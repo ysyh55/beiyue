@@ -5,6 +5,8 @@ package me.zheteng.cbreader.utils;
 
 import org.joda.time.DateTime;
 import org.joda.time.Period;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
 
@@ -12,6 +14,8 @@ import org.joda.time.format.PeriodFormatterBuilder;
  * TODO 记得添加注释
  */
 public class TimeUtils {
+    public static final DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
+
     private static PeriodFormatter formatter = new PeriodFormatterBuilder()
             .appendYears().appendSuffix("年前|")
             .appendMonths().appendSuffix("个月前|")

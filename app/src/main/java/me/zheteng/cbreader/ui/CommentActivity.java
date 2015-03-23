@@ -3,64 +3,56 @@
  */
 package me.zheteng.cbreader.ui;
 
-import static me.zheteng.cbreader.data.CnBetaContract.CommentEntry;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.github.ksoichiro.android.observablescrollview.ObservableRecyclerView;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
 
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
+import me.zheteng.cbreader.MainApplication;
 import me.zheteng.cbreader.R;
-import me.zheteng.cbreader.model.Comment;
-import me.zheteng.cbreader.model.FeedMessage;
-import me.zheteng.cbreader.utils.TimeUtils;
+import me.zheteng.cbreader.model.NewsComment;
+import me.zheteng.cbreader.utils.APIUtils;
+import me.zheteng.cbreader.utils.volley.GsonRequest;
 
 /**
  * 查看评论
  */
-public class CommentActivity extends BaseActivity implements LoaderManager.LoaderCallbacks<Cursor>,
-        ObservableScrollViewCallbacks {
-    private static final int COMMENT_LOADER = 0;
-    public static final String FEED_URI_KEY = "feed_uri";
-    public static final String FEED_TITLE_KEY = "title";
+public class CommentActivity extends BaseActivity implements ObservableScrollViewCallbacks {
+    public static final String ARTICLE_SID_KEY = "feed_uri";
 
-    public static final String[] FEED_PROJECTION = new String[] {
-            CommentEntry.COLUMN_NAME,
-            CommentEntry.COLUMN_CONTENT,
-            CommentEntry.COLUMN_PUB_DATE,
-            CommentEntry.COLUMN_SUPPORT,
-            CommentEntry.COLUMN_OPPOSE,
-            CommentEntry.COLUMN_FEED_ID,
-    };
-    static final int COL_NAME = 0;
-    static final int COL_CONTENT = 1;
-    static final int COL_PUB_DATE = 2;
-    static final int COL_SUPPORT = 3;
-    static final int COL_OPPOSE = 4;
-    static final int COL_FEED_ID = 5;
-
-    private FeedMessage mMessage;
-    private Uri mUri;
-    private String mTitle;
+    private int mSid;
 
     private ObservableRecyclerView mRecyclerView;
     private int mToolbarHeight;
     private CommentCursorAdapter mAdapter;
+    private LinearLayoutManager mLayoutManager;
+
+    int mPage = 1;
+
+    // ----- used for load more
+    private int previousTotal = 0;
+    private boolean loading = true;
+    private int visibleThreshold = 5;
+    int firstVisibleItem, visibleItemCount, totalItemCount;
+    // ----- end  used for load more
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,12 +61,44 @@ public class CommentActivity extends BaseActivity implements LoaderManager.Loade
         setContentView(R.layout.activity_comments);
 
         Intent intent = getIntent();
-        mUri = CommentEntry.buildCommentUri(intent.getStringExtra(FEED_URI_KEY));
-        mTitle = intent.getStringExtra(FEED_TITLE_KEY);
+        mSid = intent.getIntExtra(ARTICLE_SID_KEY, -1);
 
         initViews();
+        requestData();
+    }
 
-        getSupportLoaderManager().initLoader(COMMENT_LOADER, null, this);
+    private void requestData() {
+        MainApplication.requestQueue.add(new GsonRequest<NewsComment[]>(APIUtils.getCommentListWithPageUrl(mSid, mPage),
+                NewsComment[].class, null, new Response.Listener<NewsComment[]>() {
+            @Override
+            public void onResponse(NewsComment[] newsComments) {
+                mPage++;
+                List<NewsComment> list = Arrays.asList(newsComments);
+                mAdapter.swapData(list);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                Toast.makeText(CommentActivity.this, "加载错误", Toast.LENGTH_SHORT).show();
+            }
+        }));
+    }
+
+    private void loadMoreData() {
+        MainApplication.requestQueue.add(new GsonRequest<NewsComment[]>(APIUtils.getCommentListWithPageUrl(mSid, mPage),
+                NewsComment[].class, null, new Response.Listener<NewsComment[]>() {
+            @Override
+            public void onResponse(NewsComment[] newsComments) {
+                mPage++;
+                List<NewsComment> list = Arrays.asList(newsComments);
+                mAdapter.appendData(list);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                Toast.makeText(CommentActivity.this, "加载错误", Toast.LENGTH_SHORT).show();
+            }
+        }));
 
     }
 
@@ -91,30 +115,41 @@ public class CommentActivity extends BaseActivity implements LoaderManager.Loade
 
     protected void setupRecyclerView() {
         mRecyclerView.setScrollViewCallbacks(this);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mLayoutManager = new LinearLayoutManager(this);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        mRecyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                visibleItemCount = mRecyclerView.getChildCount();
+                totalItemCount = mLayoutManager.getItemCount();
+                firstVisibleItem = mLayoutManager.findFirstVisibleItemPosition();
+
+                if (loading) {
+                    if (totalItemCount > previousTotal) {
+                        loading = false;
+                        previousTotal = totalItemCount;
+                    }
+                }
+                if (!loading && (totalItemCount - visibleItemCount)
+                        <= (firstVisibleItem + visibleThreshold)) {
+                    // End has been reached
+
+                    Log.i("...", "end called");
+
+                    loadMoreData();
+
+                    loading = true;
+                }
+            }
+        });
         mRecyclerView.setHasFixedSize(false);
         mRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL_LIST));
 
-        mAdapter = new CommentCursorAdapter(this);
+        mAdapter = new CommentCursorAdapter(this, null);
         mRecyclerView.setAdapter(mAdapter);
-    }
-
-
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        if (null != mUri) {
-            // Now create and return a CursorLoader that will take care of
-            // creating a Cursor for the data being displayed.
-            return new CursorLoader(
-                    this,
-                    mUri,
-                    FEED_PROJECTION,
-                    null,
-                    null,
-                    CommentEntry.COLUMN_PUB_DATE + " DESC"
-            );
-        }
-        return null;
     }
 
     @Override
@@ -125,16 +160,6 @@ public class CommentActivity extends BaseActivity implements LoaderManager.Loade
 
         }
         return true;
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        mAdapter.swapCursor(data);
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-        mAdapter.swapCursor(null);
     }
 
     @Override
@@ -155,12 +180,13 @@ public class CommentActivity extends BaseActivity implements LoaderManager.Loade
     public class CommentCursorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             implements View.OnClickListener {
 
-        private Cursor dataCursor;
+        private List<NewsComment> mData;
 
         private Context mContext;
 
-        public CommentCursorAdapter(Context context) {
+        public CommentCursorAdapter(Context context, List<NewsComment> data) {
             mContext = context;
+            mData = data == null ? new ArrayList<NewsComment>() : data;
         }
 
         @Override
@@ -176,33 +202,16 @@ public class CommentActivity extends BaseActivity implements LoaderManager.Loade
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
             CommentItemViewHolder holder1 = (CommentItemViewHolder) holder;
 
-            Comment comment = getItem(position);
-            holder1.mNameView.setText(comment.getName());
-            holder1.mContentView.setText(comment.getContent());
-            holder1.mTimeView.setText(TimeUtils.getElapsedTime(comment.getPubDate()));
-            holder1.mSupportView.setText("" + comment.getSupport());
-            holder1.mOpposeView.setText("" + comment.getOppose());
+            NewsComment comment = getItem(position);
+            holder1.mNameView.setText(comment.getUsername());
+            holder1.mContentView.setText(comment.content);
+            holder1.mTimeView.setText(comment.getReadableTime());
+            holder1.mSupportView.setText(comment.support);
+            holder1.mOpposeView.setText(comment.against);
         }
 
-        private Comment getItem(int position) {
-            dataCursor.moveToPosition(position);
-            String name = dataCursor.getString(COL_NAME);
-            String content = dataCursor.getString(COL_CONTENT);
-            long time = dataCursor.getLong(COL_PUB_DATE);
-            int support = dataCursor.getInt(COL_SUPPORT);
-            int oppose = dataCursor.getInt(COL_OPPOSE);
-
-            String guid = dataCursor.getString(COL_FEED_ID);
-
-            Comment comment = new Comment();
-            comment.setFeedGuid(guid);
-            comment.setName(name);
-            comment.setContent(content);
-            comment.setPubDate(time);
-            comment.setSupport(support);
-            comment.setOppose(oppose);
-
-            return comment;
+        private NewsComment getItem(int position) {
+            return mData.get(position);
 
         }
 
@@ -214,28 +223,21 @@ public class CommentActivity extends BaseActivity implements LoaderManager.Loade
         @Override
         public int getItemCount() {
             int itemCount = 0;
-            if (dataCursor == null) {
+            if (mData == null) {
                 itemCount = 0;
             } else {
-                itemCount = dataCursor.getCount();
+                itemCount = mData.size();
             }
             return itemCount;
         }
 
-        public void changeCursor(Cursor cursor) {
-            Cursor old = swapCursor(cursor);
-            if (old != null) {
-                old.close();
-            }
-        }
-
-        public Cursor swapCursor(Cursor cursor) {
-            if (dataCursor == cursor) {
+        public List<NewsComment> swapData(List<NewsComment> data) {
+            if (mData == data) {
                 return null;
             }
-            Cursor oldCursor = dataCursor;
-            this.dataCursor = cursor;
-            if (cursor != null) {
+            List<NewsComment> oldCursor = mData;
+            this.mData = data;
+            if (data != null) {
                 this.notifyDataSetChanged();
             }
             return oldCursor;
@@ -244,10 +246,20 @@ public class CommentActivity extends BaseActivity implements LoaderManager.Loade
         @Override
         public void onClick(View v) {
             int position = mRecyclerView.getChildPosition(v);
-            if (dataCursor != null) {
+            if (mData != null) {
 
             }
 
+        }
+
+        public List<NewsComment> appendData(List<NewsComment> list) {
+            List<NewsComment> newList = new ArrayList<>(mData.size() + list.size());
+            newList.addAll(mData);
+            newList.addAll(list);
+
+            mData = newList;
+            this.notifyDataSetChanged();
+            return mData;
         }
 
         public class CommentItemViewHolder extends RecyclerView.ViewHolder {

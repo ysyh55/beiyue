@@ -162,7 +162,7 @@ public class APIUtils {
         return "http://api.cnbeta.com/capi?" + str5;
     }
 
-    public static String getArticlesListUrl(int topicId, int endSid) {
+    public static String getArticleListUrl(int topicId, int endSid) {
 
         //http://api.cnbeta.com/capi?app_key=10000&format=json&method=Article.Lists&timestamp=1427034899587&v=1.0&sign=13e8f708020d0e8f3f8576fa4bb37175
         String str1 = "app_key=10000" + "&end_sid=" + endSid;

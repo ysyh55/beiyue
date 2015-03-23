@@ -3,11 +3,12 @@
  */
 package me.zheteng.cbreader.ui;
 
-import static me.zheteng.cbreader.data.CnBetaContract.FeedMessageEntry;
-
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -21,19 +22,14 @@ import com.nineoldandroids.animation.ValueAnimator;
 import com.nineoldandroids.view.ViewHelper;
 import com.nineoldandroids.view.ViewPropertyAnimator;
 
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -46,38 +42,20 @@ import android.widget.TextView;
 import android.widget.Toast;
 import me.zheteng.cbreader.MainApplication;
 import me.zheteng.cbreader.R;
-import me.zheteng.cbreader.data.CnBetaContract;
-import me.zheteng.cbreader.data.dao.FeedDao;
+import me.zheteng.cbreader.model.Article;
 import me.zheteng.cbreader.model.Feed;
-import me.zheteng.cbreader.model.FeedMessage;
 import me.zheteng.cbreader.sync.CnBetaSyncAdapter;
 import me.zheteng.cbreader.utils.APIUtils;
 import me.zheteng.cbreader.utils.CatkeRSSFeedParser;
 import me.zheteng.cbreader.utils.RSSFeedParser;
-import me.zheteng.cbreader.utils.TimeUtils;
+import me.zheteng.cbreader.utils.volley.GsonRequest;
 import me.zheteng.cbreader.utils.volley.StringRequest;
 
-public class MainActivity extends BaseActivity implements LoaderManager.LoaderCallbacks<Cursor> {
-    public static final String[] FEED_PROJECTION = new String[] {
-            FeedMessageEntry.COLUMN_TITLE,
-            FeedMessageEntry.COLUMN_DESCRIPTION,
-            FeedMessageEntry.COLUMN_PUB_DATE,
-            FeedMessageEntry.COLUMN_LINK,
-            FeedMessageEntry.COLUMN_COMMENT_COUNT,
-            FeedMessageEntry.COLUMN_GUID,
-            FeedMessageEntry.COLUMN_READED,
-    };
-    static final int COL_TITLE = 0;
-    static final int COL_DESCRIPTION = 1;
-    static final int COL_PUB_DATE = 2;
-    static final int COL_LINK = 3;
-    static final int COL_COMMENT_COUNT = 4;
-    static final int COL_GUID = 5;
-    static final int COL_READED = 6;
+public class MainActivity extends BaseActivity {
 
     private ObservableRecyclerView mRecyclerView;
-    private FeedCursorAdapter mAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;
+    private ArticleListAdapter mAdapter;
+    private LinearLayoutManager mLayoutManager;
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
     protected View mHeader;
@@ -95,16 +73,21 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
     private boolean mGapHidden;
     private boolean mReady;
 
+
+    // ----- used for load more
+    private int previousTotal = 0;
+    private boolean loading = true;
+    private int visibleThreshold = 5;
+    int firstVisibleItem, visibleItemCount, totalItemCount;
+    // ----- end  used for load more
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        getSupportLoaderManager().initLoader(0, null, this);
 
         initViews();
 
-        CnBetaSyncAdapter.initializeSyncAdapter(this);
-        testSync();
+        refreshData();
     }
 
     private void testSync() {
@@ -273,6 +256,35 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
     protected void setupRecyclerView() {
         mRecyclerView.setScrollViewCallbacks(listScrollListener);
         mLayoutManager = new LinearLayoutManager(this);
+
+        mRecyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                visibleItemCount = mRecyclerView.getChildCount();
+                totalItemCount = mLayoutManager.getItemCount();
+                firstVisibleItem = mLayoutManager.findFirstVisibleItemPosition();
+
+                if (loading) {
+                    if (totalItemCount > previousTotal) {
+                        loading = false;
+                        previousTotal = totalItemCount;
+                    }
+                }
+                if (!loading && (totalItemCount - visibleItemCount)
+                        <= (firstVisibleItem + visibleThreshold)) {
+                    // End has been reached
+
+                    Log.i("...", "end called");
+
+                    loadMoreArticles();
+
+                    loading = true;
+                }
+            }
+        });
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setHasFixedSize(false);
 
@@ -282,9 +294,11 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
         headerView.setMinimumHeight(mFlexibleSpaceImageHeight);
         // This is required to disable header's list selector effect
         headerView.setClickable(true);
-        mAdapter = new FeedCursorAdapter(this, headerView);
+        mAdapter = new ArticleListAdapter(this, headerView);
         mRecyclerView.setAdapter(mAdapter);
     }
+
+
 
     private void trySetupSwipeRefresh() {
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
@@ -357,23 +371,25 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
         //noinspection SimplifiableIfStatement
         switch (id) {
             case R.id.action_settings:
-                testRequest();
                 Toast.makeText(this, "还没做呢", Toast.LENGTH_SHORT).show();
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    private void testRequest() {
+    private void refreshData() {
         String url = APIUtils.getArticleListsUrl();
 
-        MainApplication.requestQueue.add(new StringRequest(url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String s) {
-                String a = s;
-                Toast.makeText(MainActivity.this, "加载错误", Toast.LENGTH_SHORT).show();
-            }
-        }, new Response.ErrorListener() {
+        MainApplication.requestQueue.add(new GsonRequest<Article[]>(url, Article[].class, null,
+                new Response.Listener<Article[]>() {
+                    @Override
+                    public void onResponse(Article[] s) {
+                        List<Article> articles = Arrays.asList(s);
+                        mAdapter.swapData(articles);
+
+                        mSwipeRefreshLayout.setRefreshing(false);
+                    }
+                }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
                 Toast.makeText(MainActivity.this, "加载错误", Toast.LENGTH_SHORT).show();
@@ -381,70 +397,47 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
         }));
     }
 
-    private void refreshData() {
-        // Pass the settings flags by inserting them in a bundle
-        Bundle settingsBundle = new Bundle();
-        settingsBundle.putBoolean(
-                ContentResolver.SYNC_EXTRAS_MANUAL, true);
-        settingsBundle.putBoolean(
-                ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
-        /*
-         * Request the sync for the default account, authority, and
-         * manual sync settings
-         */
-        ContentResolver
-                .requestSync(CnBetaSyncAdapter.getSyncAccount(this), CnBetaContract.CONTENT_AUTHORITY, settingsBundle);
+    private void loadMoreArticles() {
+        String url = APIUtils.getArticleListUrl(0, mAdapter.mData.get(mAdapter.mData.size() - 1).sid);
 
+        MainApplication.requestQueue.add(new GsonRequest<Article[]>(url, Article[].class, null,
+                new Response.Listener<Article[]>() {
+                    @Override
+                    public void onResponse(Article[] s) {
+                        List<Article> articles = Arrays.asList(s);
+                        mAdapter.appendData(articles);
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                Toast.makeText(MainActivity.this, "加载错误", Toast.LENGTH_SHORT).show();
+            }
+        }));
     }
-
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        Uri baseUri;
-        baseUri = FeedMessageEntry.CONTENT_URI;
-
-        return new CursorLoader(this, baseUri,
-                FEED_PROJECTION, null, null,
-                FeedMessageEntry.COLUMN_PUB_DATE + " DESC " + " LIMIT 100");
-    }
-
-    @Override
-    public void onLoadFinished(Loader loader, Cursor data) {
-        if (data.getCount() == 0) {
-            refreshData();
-            return;
-        }
-
-        mAdapter.swapCursor(data);
-
-        if (mSwipeRefreshLayout != null) {
-            mSwipeRefreshLayout.setRefreshing(false);
-        }
-    }
-
     @Override
     protected void onStart() {
         super.onStart();
         mToolbar.getBackground().setAlpha(mToolbarAlpha);
     }
 
-    @Override
-    public void onLoaderReset(Loader loader) {
-        mAdapter.swapCursor(null);
-    }
-
-    public class FeedCursorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
+    public class ArticleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             implements View.OnClickListener {
         private static final int VIEW_TYPE_HEADER = 0;
         private static final int VIEW_TYPE_ITEM = 1;
 
-        private Cursor dataCursor;
+        private List<Article> mData;
 
         private View mHeaderView;
         private Context mContext;
 
-        public FeedCursorAdapter(Context context, View headerView) {
+        public ArticleListAdapter(Context context, List<Article> data, View headerView) {
             mContext = context;
+            mData = data == null ? new ArrayList<Article>() : data;
             mHeaderView = headerView;
+        }
+
+        public ArticleListAdapter(Context context, View headerView) {
+            this(context, null, headerView);
         }
 
         @Override
@@ -455,7 +448,7 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
                 case VIEW_TYPE_ITEM:
                     View view = LayoutInflater.from(mContext).inflate(R.layout.feed_list_item, parent, false);
 
-                    FeedItemViewHolder viewHolder = new FeedItemViewHolder(view);
+                    ArticleItemViewHolder viewHolder = new ArticleItemViewHolder(view);
                     view.setOnClickListener(this);
                     return viewHolder;
                 default:
@@ -466,45 +459,23 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
 
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-            if (holder instanceof FeedItemViewHolder) {
-                FeedItemViewHolder holder1 = (FeedItemViewHolder) holder;
+            if (holder instanceof ArticleItemViewHolder) {
+                ArticleItemViewHolder holder1 = (ArticleItemViewHolder) holder;
 
-                FeedMessage feedMessage = getItem(position);
-                holder1.mTitleView.setText(feedMessage.getTitle());
-                holder1.mDescriptionView.setText(feedMessage.getPlainText());
-                holder1.mTimeView.setText(TimeUtils.getElapsedTime(feedMessage.getPubDate()));
-                holder1.mCommentCountView.setText("" + feedMessage.getCommentCount());
-
-                if (feedMessage.isReaded()) {
-                    holder1.mContainer.setAlpha(0.65f);
-                } else {
-                    holder1.mContainer.setAlpha(1f);
-                }
+                Article article = getItem(position);
+                holder1.mTitleView.setText(article.title);
+                holder1.mDescriptionView.setText(article.summary);
+                holder1.mTimeView.setText(article.getReadableTime());
+                holder1.mCommentCountView.setText("" + article.comments);
             }
         }
 
-        private FeedMessage getItem(int position) {
+        private Article getItem(int position) {
             if (mHeaderView != null) {
                 position = position - 1;
             }
-            dataCursor.moveToPosition(position);
-            String title = dataCursor.getString(COL_TITLE);
-            String description = dataCursor.getString(COL_DESCRIPTION);
-            long time = dataCursor.getLong(COL_PUB_DATE);
-            int commentCount = dataCursor.getInt(COL_COMMENT_COUNT);
-            int readed = dataCursor.getInt(COL_READED);
 
-            String guid = dataCursor.getString(COL_GUID);
-
-            FeedMessage message = new FeedMessage();
-            message.setTitle(title);
-            message.setDescription(description);
-            message.setPubDate(time);
-            message.setCommentCount(commentCount);
-            message.setGuid(guid);
-            message.setReaded(readed);
-
-            return message;
+            return mData.get(position);
 
         }
 
@@ -516,10 +487,10 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
         @Override
         public int getItemCount() {
             int itemCount = 0;
-            if (dataCursor == null) {
+            if (mData == null) {
                 itemCount = 0;
             } else {
-                itemCount = dataCursor.getCount();
+                itemCount = mData.size();
             }
 
             if (mHeaderView == null) {
@@ -529,43 +500,45 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
             }
         }
 
-        public void changeCursor(Cursor cursor) {
-            Cursor old = swapCursor(cursor);
-            if (old != null) {
-                old.close();
-            }
+        public List<Article> appendData(List<Article> articles) {
+            List<Article> newList = new ArrayList<>(mData.size() + articles.size());
+            newList.addAll(mData);
+            newList.addAll(articles);
+
+            mData = newList;
+            this.notifyDataSetChanged();
+            return mData;
         }
 
-        public Cursor swapCursor(Cursor cursor) {
-            if (dataCursor == cursor) {
+        public List<Article> swapData(List<Article> articles) {
+            if (mData == articles) {
                 return null;
             }
-            Cursor oldCursor = dataCursor;
-            this.dataCursor = cursor;
-            if (cursor != null) {
+            List<Article> oldData = mData;
+            this.mData = articles;
+            if (articles != null) {
                 this.notifyDataSetChanged();
             }
-            return oldCursor;
+            return oldData;
         }
 
         @Override
         public void onClick(View v) {
             int position = mRecyclerView.getChildPosition(v);
-            if (dataCursor != null) {
-                FeedMessage message = getItem(position);
+            if (mData != null) {
+                Article article = getItem(position);
                 Intent intent = new Intent(MainActivity.this, ReadActivity.class);
-                intent.putExtra(ReadActivity.FEED_URI_KEY, message.getGuid());
-                intent.putExtra(ReadActivity.FEED_COMMENT_COUNT_KEY, message.getCommentCount());
+                intent.putExtra(ReadActivity.ARTICLE_SID_KEY, article.sid);
 
                 startActivity(intent);
 
-                FeedDao.setReaded(MainActivity.this, message);
+                //                FeedDao.setReaded(MainActivity.this, message);
             }
 
         }
 
-        public class FeedItemViewHolder extends RecyclerView.ViewHolder {
-            public FeedItemViewHolder(View itemView) {
+        public class ArticleItemViewHolder extends RecyclerView.ViewHolder {
+            public ArticleItemViewHolder(View itemView) {
                 super(itemView);
 
                 mTitleView = ((TextView) itemView.findViewById(R.id.title));

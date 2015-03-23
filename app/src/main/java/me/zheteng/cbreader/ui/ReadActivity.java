@@ -3,11 +3,11 @@
  */
 package me.zheteng.cbreader.ui;
 
-import static me.zheteng.cbreader.data.CnBetaContract.FeedMessageEntry;
-
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
 import com.github.ksoichiro.android.observablescrollview.ObservableWebView;
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
@@ -16,58 +16,37 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.widget.Toast;
 import me.zheteng.cbreader.BuildConfig;
+import me.zheteng.cbreader.MainApplication;
 import me.zheteng.cbreader.R;
-import me.zheteng.cbreader.model.FeedMessage;
+import me.zheteng.cbreader.model.NewsContent;
+import me.zheteng.cbreader.utils.APIUtils;
+import me.zheteng.cbreader.utils.volley.GsonRequest;
 
 /**
  * TODO 记得添加注释
  */
-public class ReadActivity extends BaseActivity
-        implements LoaderManager.LoaderCallbacks<Cursor>, ObservableScrollViewCallbacks {
+public class ReadActivity extends BaseActivity implements ObservableScrollViewCallbacks {
 
     public static final String ACTION_MENU_CREATED = "me.zheteng.cbreader.ReadActivity.MENU_CREATED";
     public static final String ACTION_DATA_LOADED = "me.zheteng.cbreader.ReadActivity.DATA_LOADED";
 
-    private static final int DETAIL_LOADER = 0;
-    public static final String FEED_URI_KEY = "feed_uri";
-    public static final String FEED_COMMENT_COUNT_KEY = "comment_count";
+    public static final String ARTICLE_SID_KEY = "sid";
 
-    public static final String[] FEED_PROJECTION = new String[] {
-            FeedMessageEntry.COLUMN_TITLE,
-            FeedMessageEntry.COLUMN_DESCRIPTION,
-            FeedMessageEntry.COLUMN_PUB_DATE,
-            FeedMessageEntry.COLUMN_LINK,
-            FeedMessageEntry.COLUMN_COMMENT_COUNT,
-            FeedMessageEntry.COLUMN_GUID,
-    };
-    static final int COL_TITLE = 0;
-    static final int COL_DESCRIPTION = 1;
-    static final int COL_PUB_DATE = 2;
-    static final int COL_LINK = 3;
-    static final int COL_COMMENT_COUNT = 4;
-    static final int COL_GUID = 5;
-
-    private Uri mUri;
+    private int mSid;
     private ObservableWebView mWebView;
-    private boolean loaded;
     private int mToolbarHeight;
-    private int mCommentCount;
 
-    private FeedMessage mMessage;
     private static final String BEFORE_TITLE = "<html>\n"
             + "<head>\n"
             + "    <meta content=\"width=device-width,initial-scale=1.0\" name=\"viewport\">\n"
@@ -86,8 +65,8 @@ public class ReadActivity extends BaseActivity
             + "        }\n"
             + "        p {\n"
             + "        color: #242424;\n"
-            + "        font-size: 15px;\n"
-            + "        line-height: 18px;\n"
+            + "        font-size: 16px;\n"
+            + "        line-height: 22px;\n"
             + "        }\n"
             + "        img {\n"
             + "        width: 100%;\n"
@@ -102,7 +81,17 @@ public class ReadActivity extends BaseActivity
             + "        iframe,embed, video,object {\n"
             + "            width: 100%;\n"
             + "            height: 215px;\n"
-            + "        }"
+            + "        }\n"
+            + "        #intro{\n"
+            + "            margin-top:1em;\n"
+            + "            margin-bottom:1em;\n"
+            + "            font-size: 14px;\n"
+            + "            background: #F5F5F5;\n"
+            + "            padding: 10px;"
+            + "        }\n" + "#intro p {\n"
+            + "font-size: 15px;\n"
+            + "margin: 0;\n"
+            + "}\n"
             + "    </style>\n"
             + "</head>\n"
             + "<body>\n"
@@ -112,7 +101,9 @@ public class ReadActivity extends BaseActivity
             + "\n"
             + "<div id=\"time\">";
 
-    public static final String AFTER_TIME_BEFORE_CONTENT = "</div>";
+    public static final String AFTER_TIME_BEFORE_INTRO = "</div><div id=\"intro\">";
+
+    public static final String AFTER_INTRO_BEFORE_CONTENT = "</div>";
 
     public static final String AFTER_CONTENT = "</body>\n"
             + "</html>";
@@ -126,6 +117,7 @@ public class ReadActivity extends BaseActivity
 
     private MenuCreatedReciever menuCreatedReciever;
     private DataLoadedReciever dataLoadedReciever;
+    private NewsContent mNewsContent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -135,13 +127,29 @@ public class ReadActivity extends BaseActivity
 
         menuCreatedReciever = new MenuCreatedReciever();
         dataLoadedReciever = new DataLoadedReciever();
+        mSid = getIntent().getIntExtra(ARTICLE_SID_KEY, -1);
 
         initView();
 
-        mUri = FeedMessageEntry.buildFeedUri(getIntent().getStringExtra(FEED_URI_KEY));
-        mCommentCount = getIntent().getIntExtra(FEED_COMMENT_COUNT_KEY, 0);
+        requestData();
 
-        getSupportLoaderManager().initLoader(DETAIL_LOADER, null, this);
+    }
+
+    private void requestData() {
+        MainApplication.requestQueue.add(new GsonRequest<NewsContent>(APIUtils.getNewsContentUrl(mSid),
+                NewsContent.class, null, new Response.Listener<NewsContent>() {
+            @Override
+            public void onResponse(NewsContent newsContent) {
+                mNewsContent = newsContent;
+                sendBroadcast(new Intent(ACTION_DATA_LOADED));
+                renderContent();
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                Toast.makeText(ReadActivity.this, "加载错误", Toast.LENGTH_SHORT).show();
+            }
+        }));
     }
 
     @Override
@@ -176,14 +184,14 @@ public class ReadActivity extends BaseActivity
         //noinspection SimplifiableIfStatement
         switch (id) {
             case R.id.action_view_in_browser: {
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(mMessage.getLink()));
+                Intent intent = new Intent(Intent.ACTION_VIEW,
+                        Uri.parse("http://www.cnbeta.com/articles/" + mNewsContent.sid + ".htm"));
                 startActivity(intent);
                 break;
             }
             case R.id.action_view_comments: {
                 Intent intent = new Intent(this, CommentActivity.class);
-                intent.putExtra(CommentActivity.FEED_URI_KEY, mMessage.getGuid());
-                intent.putExtra(CommentActivity.FEED_TITLE_KEY, mMessage.getTitle());
+                intent.putExtra(CommentActivity.ARTICLE_SID_KEY, mSid);
                 startActivity(intent);
                 break;
             }
@@ -205,7 +213,9 @@ public class ReadActivity extends BaseActivity
         mWebView.getSettings().setAllowFileAccess(true);
         mWebView.getSettings().setPluginState(WebSettings.PluginState.ON);
         mWebView.getSettings().setJavaScriptEnabled(true);
-        mWebView.setWebChromeClient(new WebChromeClient());
+        mWebView.setWebChromeClient(new WebChromeClient() {
+
+        });
 
         mWebView.setScrollViewCallbacks(this);
 
@@ -230,65 +240,20 @@ public class ReadActivity extends BaseActivity
         mWebView.destroy();
     }
 
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        if (null != mUri) {
-            // Now create and return a CursorLoader that will take care of
-            // creating a Cursor for the data being displayed.
-            return new CursorLoader(
-                    this,
-                    mUri,
-                    FEED_PROJECTION,
-                    null,
-                    null,
-                    null
-            );
-        }
-        return null;
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        if (loaded) {
-            return;
-        }
-        if (data.moveToFirst()) {
-            String title = data.getString(COL_TITLE);
-            String description = data.getString(COL_DESCRIPTION);
-
-            //            description = " <div class=\"content\">\n"
-            //                    + "\n"
-            //                    + "<iframe allowfullscreen=\"allowfullscreen\" frameborder=\"0\" height=\"448\" " +
-            //                    "src=\"http://player.youku.com/embed/XOTE2NDczMDg4\"
-            // width=\"700\"></iframe></content>";
-            long pubTime = data.getLong(COL_PUB_DATE);
-            String time = fmt.print(pubTime);
-            String html = BEFORE_TITLE + title + AFTER_TITLE_BEFORE_TIME + time + AFTER_TIME_BEFORE_CONTENT +
-                    description + AFTER_CONTENT;
-
-            if (mMessage == null) {
-                mMessage = new FeedMessage();
-            }
-
-            mMessage.setTitle(title);
-            mMessage.setDescription(description);
-            mMessage.setPubDate(pubTime);
-            mMessage.setReaded(true);
-            mMessage.setGuid(data.getString(COL_GUID));
-            mMessage.setLink(data.getString(COL_LINK));
-            mMessage.setCommentCount(mCommentCount);
+    public void renderContent() {
+        if (mNewsContent != null) {
+            String title = mNewsContent.title;
+            String body = mNewsContent.bodytext;
+            String intro = mNewsContent.hometext;
+            String pubTime = mNewsContent.time;
+            String html = BEFORE_TITLE + title + AFTER_TITLE_BEFORE_TIME + pubTime +
+                    AFTER_TIME_BEFORE_INTRO + intro +
+                    AFTER_INTRO_BEFORE_CONTENT + body + AFTER_CONTENT;
             mWebView.loadData(html, "text/html; charset=UTF-8", null);
-            loaded = true;
-
-            sendBroadcast(new Intent(ACTION_DATA_LOADED));
 
         }
     }
 
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-
-    }
 
     @Override
     public void onScrollChanged(int scrollY, boolean b, boolean b2) {
@@ -343,7 +308,7 @@ public class ReadActivity extends BaseActivity
 
     public void replaceCount() {
         if (mCommentsMenuItem != null) {
-            mCommentsMenuItem.setTitle(getString(R.string.action_view_comments) + " (" + mCommentCount + ")");
+            mCommentsMenuItem.setTitle(getString(R.string.action_view_comments) + " (" + mNewsContent.comments + ")");
         }
     }
 

@@ -28,7 +28,7 @@
                     style="@style/Base.TextAppearance.AppCompat.Body2"
                     android:layout_width="0dp"
                     android:layout_weight="1"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content" android:textStyle="bold"/>
             <TextView
                     android:id="@+id/time"
                     android:layout_width="wrap_content"

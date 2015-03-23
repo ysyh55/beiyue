@@ -21,8 +21,8 @@ android {
         applicationId "me.zheteng.cbreader"
         minSdkVersion 14
         targetSdkVersion 21
-        versionCode 3
-        versionName "1.1.0.1"
+        versionCode 5
+        versionName "1.2.0.1"
     }
     buildTypes {
         debug {
@@ -31,7 +31,7 @@ android {
         release {
             signingConfig signingConfigs.myConfig
             minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro', 'proguard-gson.pro'
 
             def today = new Date()
 
@@ -64,6 +64,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:21.0.3'
     compile 'com.android.support:cardview-v7:21.0.+'
     compile 'com.android.support:recyclerview-v7:21.0.+'
+    compile 'com.google.code.gson:gson:2.3.1'
     compile 'com.nineoldandroids:library:2.4.0'
     compile 'com.github.ksoichiro:android-observablescrollview:1.5.0'
     compile 'com.mcxiaoke.volley:library:1.0.+@aar'
