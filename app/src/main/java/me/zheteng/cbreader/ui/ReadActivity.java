@@ -3,6 +3,11 @@
  */
 package me.zheteng.cbreader.ui;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
@@ -20,6 +25,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.WebChromeClient;
@@ -42,71 +48,11 @@ public class ReadActivity extends BaseActivity implements ObservableScrollViewCa
     public static final String ACTION_DATA_LOADED = "me.zheteng.cbreader.ReadActivity.DATA_LOADED";
 
     public static final String ARTICLE_SID_KEY = "sid";
+    private static final String TAG = "ReadActivity";
 
     private int mSid;
     private ObservableWebView mWebView;
     private int mToolbarHeight;
-
-    private static final String BEFORE_TITLE = "<html>\n"
-            + "<head>\n"
-            + "    <meta content=\"width=device-width,initial-scale=1.0\" name=\"viewport\">\n"
-            + "    <style type=\"text/css\">\n"
-            + "        body {\n"
-            + "        margin: 0;\n"
-            + "        margin-top: 50px;\n"
-            + "        margin-bottom: 50px;\n"
-            + "        padding: 12px;\n"
-            + "        }\n"
-            + "        h1 {\n"
-            + "        font-size: 24px;\n"
-            + "        font-weight: 500;\n"
-            + "        margin-top: 50px;\n"
-            + "        mari\n"
-            + "        }\n"
-            + "        p {\n"
-            + "        color: #242424;\n"
-            + "        font-size: 16px;\n"
-            + "        line-height: 22px;\n"
-            + "        }\n"
-            + "        img {\n"
-            + "        width: 100%;\n"
-            + "        }\n"
-            + "        .content {\n"
-            + "        margin-top: 48px;\n"
-            + "        }\n"
-            + "        #time {\n"
-            + "        color: #616161;\n"
-            + "        font-size: 13px;\n"
-            + "        }\n"
-            + "        iframe,embed, video,object {\n"
-            + "            width: 100%;\n"
-            + "            height: 215px;\n"
-            + "        }\n"
-            + "        #intro{\n"
-            + "            margin-top:1em;\n"
-            + "            margin-bottom:1em;\n"
-            + "            font-size: 14px;\n"
-            + "            background: #F5F5F5;\n"
-            + "            padding: 10px;"
-            + "        }\n" + "#intro p {\n"
-            + "font-size: 15px;\n"
-            + "margin: 0;\n"
-            + "}\n"
-            + "    </style>\n"
-            + "</head>\n"
-            + "<body>\n"
-            + "<h1>";
-
-    private static final String AFTER_TITLE_BEFORE_TIME = "</h1>\n"
-            + "\n"
-            + "<div id=\"time\">";
-
-    public static final String AFTER_TIME_BEFORE_INTRO = "</div><div id=\"intro\">";
-
-    public static final String AFTER_INTRO_BEFORE_CONTENT = "</div>";
-
-    public static final String AFTER_CONTENT = "</body>\n"
-            + "</html>";
 
     private DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
     private int mPrevScrollY;
@@ -243,17 +189,54 @@ public class ReadActivity extends BaseActivity implements ObservableScrollViewCa
     public void renderContent() {
         if (mNewsContent != null) {
             String title = mNewsContent.title;
+            String source = mNewsContent.source;
             String body = mNewsContent.bodytext;
             String intro = mNewsContent.hometext;
             String pubTime = mNewsContent.time;
-            String html = BEFORE_TITLE + title + AFTER_TITLE_BEFORE_TIME + pubTime +
-                    AFTER_TIME_BEFORE_INTRO + intro +
-                    AFTER_INTRO_BEFORE_CONTENT + body + AFTER_CONTENT;
+
+            String html = loadAssetTextAsString(this, "index.html");
+            html = html.replaceAll("\\$\\{title\\}", title)
+                    .replaceAll("\\$\\{time\\}", pubTime)
+                    .replaceAll("\\$\\{source\\}", source)
+                    .replaceAll("\\$\\{intro\\}", intro)
+                    .replaceAll("\\$\\{content\\}", body);
+
             mWebView.loadData(html, "text/html; charset=UTF-8", null);
 
         }
     }
 
+    private String loadAssetTextAsString(Context context, String name) {
+        BufferedReader in = null;
+        try {
+            StringBuilder buf = new StringBuilder();
+            InputStream is = context.getAssets().open(name);
+            in = new BufferedReader(new InputStreamReader(is));
+
+            String str;
+            boolean isFirst = true;
+            while ( (str = in.readLine()) != null ) {
+                if (isFirst)
+                    isFirst = false;
+                else
+                    buf.append('\n');
+                buf.append(str);
+            }
+            return buf.toString();
+        } catch (IOException e) {
+            Log.e(TAG, "Error opening asset " + name);
+        } finally {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    Log.e(TAG, "Error closing asset " + name);
+                }
+            }
+        }
+
+        return null;
+    }
 
     @Override
     public void onScrollChanged(int scrollY, boolean b, boolean b2) {
