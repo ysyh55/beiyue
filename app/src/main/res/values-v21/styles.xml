@@ -14,4 +14,7 @@
         <item name="android:windowExitTransition">@transition/explode</item>
 
     </style>
+    <style name="AppTheme.NavDrawer" parent="AppTheme">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+    </style>
 </resources>

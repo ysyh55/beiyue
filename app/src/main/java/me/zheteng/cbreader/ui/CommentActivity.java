@@ -46,6 +46,7 @@ public class CommentActivity extends BaseActivity implements ObservableScrollVie
     private int mToolbarHeight;
     private CommentCursorAdapter mAdapter;
     private LinearLayoutManager mLayoutManager;
+    private TextView mNoDataHint;
 
     int mPage = 1;
 
@@ -90,6 +91,16 @@ public class CommentActivity extends BaseActivity implements ObservableScrollVie
                 List<NewsComment> list = getList(newsComments);
                 mAdapter.swapData(list);
                 mIsLoadingData = false;
+                if (list.size() == 0 ){
+                    if(mCount > 0){
+                        mNoDataHint.setText(R.string.empty_comment);
+                    } else {
+                        mNoDataHint.setText(R.string.no_comment);
+                    }
+                    mNoDataHint.setVisibility(View.VISIBLE);
+                    mNoDataHint.setOnClickListener(null);
+                    return;
+                }
                 if (list.size() < 10 && mPage > 0 && mIsNewerFirst) {
                     loadMoreData();
                 }
@@ -97,6 +108,7 @@ public class CommentActivity extends BaseActivity implements ObservableScrollVie
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
+                mNoDataHint.setVisibility(View.VISIBLE);
                 Toast.makeText(CommentActivity.this, "加载错误", Toast.LENGTH_SHORT).show();
                 mIsLoadingData = false;
             }
@@ -129,6 +141,7 @@ public class CommentActivity extends BaseActivity implements ObservableScrollVie
             @Override
             public void onErrorResponse(VolleyError volleyError) {
                 Toast.makeText(CommentActivity.this, "加载错误", Toast.LENGTH_SHORT).show();
+                mNoDataHint.setVisibility(View.VISIBLE);
                 mIsLoadingData = false;
             }
         }));
@@ -149,6 +162,15 @@ public class CommentActivity extends BaseActivity implements ObservableScrollVie
 
         mRecyclerView = (ObservableRecyclerView) findViewById(R.id.comment_list);
         setupRecyclerView();
+
+        mNoDataHint = (TextView) findViewById(R.id.no_data_hint);
+        mNoDataHint.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mNoDataHint.setVisibility(View.GONE);
+                requestData();
+            }
+        });
     }
 
     protected void setupRecyclerView() {

@@ -14,6 +14,12 @@
         <item name="android:paddingLeft">24dp</item>
         <item name="android:drawablePadding">8dp</item>
     </style>
+    <style name="AppTheme.NavDrawer" parent="AppTheme">
+    </style>
+    <style name="drawer_title_text_style">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">#ffffffff</item>
+    </style>
 
 
 </resources>

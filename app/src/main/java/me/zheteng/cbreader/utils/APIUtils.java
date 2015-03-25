@@ -7,6 +7,11 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class APIUtils {
+
+    public static final String TOP_TYPE_COUNTER = "counter"; //阅读量
+    public static final String TOP_TYPE_COMMENTS = "comments"; //评论数
+    public static final String TOP_TYPE_DIG = "dig"; //推荐
+
     private static final char[] SIGN_BYTES = {48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 65, 66, 67, 68, 69, 70};
 
     public static String getTimestampInApi() {
@@ -81,19 +86,18 @@ public class APIUtils {
         return "http://api.cnbeta.com/capi?" + str8;
     }
 
-    public static String getTodayRankUrl() {
-        String str1 = "app_key=10000" + "&format=json";
-        String str2 = str1 + "&method=Article.TodayRank";
-        String str3 = str2 + "&timestamp=" + getTimestampInApi();
-        String str4 = str3 + "&v=1.0";
-        String str5 = str4 + "&sign=" +
-                getSign(new StringBuilder().append(str4).append("&").append("mpuffgvbvbttn3Rc").toString());
-        return "http://api.cnbeta.com/capi?" + str5;
-        //            str3 = str3 + "&type=comments";
-        //            continue;
-        //            str3 = str3 + "&type=counter";
-        //            continue;
-        //            str3 = str3 + "&type=dig";
+    public static String getTodayRankUrl(String type) {
+        String str = "app_key=10000" + "&format=json";
+        str = str + "&method=Article.TodayRank";
+        str = str + "&timestamp=" + getTimestampInApi();
+        str = str + "&type=" + type;
+        str = str + "&v=1.0";
+        str = str + "&sign=" + getSign(
+                new StringBuilder().append(str).append("&").append("mpuffgvbvbttn3Rc").toString());
+        return "http://api.cnbeta.com/capi?" + str;
+        //  "&type=comments";
+        //  "&type=counter";
+        //  "&type=dig";
 
     }
 
@@ -189,18 +193,4 @@ public class APIUtils {
         return "http://api.cnbeta.com/capi?" + str8;
     }
 
-    //    public enum Classes {
-    //        static {
-    //            Classes[] arrayOfc = new Classes[9];
-    //            arrayOfc[0] = a;
-    //            arrayOfc[1] = b;
-    //            arrayOfc[2] = Classes.class;
-    //            arrayOfc[3] = d;
-    //            arrayOfc[4] = e;
-    //            arrayOfc[5] = f;
-    //            arrayOfc[6] = g;
-    //            arrayOfc[7] = h;
-    //            arrayOfc[8] = i;
-    //        }
-    //    }
 }

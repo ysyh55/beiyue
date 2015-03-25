@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (C) 2015 junyuecao@gmail.com All Rights Reserved.
+  -->
+<me.zheteng.cbreader.ui.widget.ScrimInsetsScrollView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="@dimen/navdrawer_width"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:id="@+id/navdrawer"
+        android:background="@color/navdrawer_background"
+        android:fitsSystemWindows="true"
+        app:insetForeground="#4000">
+    <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fitsSystemWindows="true">
+        <RelativeLayout
+                android:id="@+id/drawer_header"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/drawer_header_height"
+                android:background="@drawable/drawer_header_1"
+                android:paddingLeft="@dimen/keyline_1">
+
+            <me.zheteng.cbreader.ui.widget.BezelImageView
+                    android:id="@+id/profile_image"
+                    android:layout_width="@dimen/navdrawer_profile_image_size"
+                    android:layout_height="@dimen/navdrawer_profile_image_size"
+                    android:layout_marginTop="40dp"
+                    android:src="@drawable/profile_image"
+                    android:scaleType="fitXY"
+                    app:maskDrawable="@drawable/circle_mask"/>
+
+            <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_below="@id/profile_image"
+                    android:text="@string/drawer_title"
+                    android:layout_marginTop="32dp"
+                    android:gravity="center_vertical"
+                    style="@style/drawer_title_text_style"
+                    tools:text="CNBETA Now"/>
+        </RelativeLayout>
+        <LinearLayout
+                android:id="@+id/navdrawer_items_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:orientation="vertical"/>
+
+    </LinearLayout>
+
+
+</me.zheteng.cbreader.ui.widget.ScrimInsetsScrollView>

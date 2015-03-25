@@ -11,11 +11,11 @@
         android:layout_marginRight="@dimen/feed_list_item_margin_right"
         android:layout_marginTop="@dimen/feed_list_item_margin_top"
         android:layout_marginBottom="@dimen/feed_list_item_margin_bottom"
-        card_view:cardCornerRadius="4dp">
+        card_view:cardCornerRadius="4dp"
+        android:background="?attr/selectableItemBackground">
     <LinearLayout
             android:id="@+id/container"
             android:orientation="vertical"
-            android:background="?android:attr/selectableItemBackground"
             android:padding="@dimen/feed_list_item_padding"
             android:layout_width="match_parent"
             android:layout_height="match_parent">

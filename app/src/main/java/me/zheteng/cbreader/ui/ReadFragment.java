@@ -25,7 +25,7 @@ import android.view.ViewGroup;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.widget.Toast;
+import android.widget.TextView;
 import me.zheteng.cbreader.BuildConfig;
 import me.zheteng.cbreader.MainApplication;
 import me.zheteng.cbreader.R;
@@ -62,6 +62,8 @@ public class ReadFragment extends Fragment implements ObservableScrollViewCallba
     private ReadActivity mActivity;
     private int mStartY;
     private boolean mHasLoaded;
+    private TextView mNoDatHint;
+    private Intent mShareIntent;
 
     public static ReadFragment newInstance(Article article) {
         ReadFragment fragment = new ReadFragment();
@@ -100,6 +102,7 @@ public class ReadFragment extends Fragment implements ObservableScrollViewCallba
                 requestData();
             } else {
                 replaceCount();
+                setShareIntent();
             }
 
         }
@@ -117,20 +120,31 @@ public class ReadFragment extends Fragment implements ObservableScrollViewCallba
                 NewsContent.class, null, new Response.Listener<NewsContent>() {
             @Override
             public void onResponse(NewsContent newsContent) {
+
                 mNewsContent = newsContent;
+                setShareIntent();
+                mActivity.getShareMenuItem().setVisible(true);
                 mActivity.sendBroadcast(new Intent(ACTION_DATA_LOADED + mSid));
                 mProgressBar.setVisibility(View.GONE);
                 renderContent();
                 mHasLoaded = true;
             }
         }, new Response.ErrorListener() {
+
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-                Toast.makeText(mActivity, "加载错误", Toast.LENGTH_SHORT).show();
+                if (mNoDatHint != null) {
+                    mNoDatHint.setVisibility(View.VISIBLE);
+                }
+                mProgressBar.setVisibility(View.GONE);
             }
         }));
     }
 
+    private void setShareIntent(){
+        mActivity.setShareIntent(mNewsContent);
+
+    }
     @Override
     public void onStart() {
         super.onStart();
@@ -167,6 +181,15 @@ public class ReadFragment extends Fragment implements ObservableScrollViewCallba
 
         mProgressBar = ((MaterialProgressBar) view.findViewById(R.id.loading_progress));
 
+        mNoDatHint = (TextView) view.findViewById(R.id.no_data_hint);
+        mNoDatHint.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mNoDatHint.setVisibility(View.GONE);
+                mProgressBar.setVisibility(View.VISIBLE);
+                requestData();
+            }
+        });
     }
 
     @Override
@@ -215,16 +238,16 @@ public class ReadFragment extends Fragment implements ObservableScrollViewCallba
     @Override
     public void onScrollChanged(int scrollY, boolean b, boolean b2) {
         ViewConfiguration vc = ViewConfiguration.get(mActivity);
-        boolean scrollDown = mPrevScrollY < scrollY; // 页面向下滚动, 手指向上滑动, 页面的y值增大
+        boolean scrollUp = mPrevScrollY < scrollY; // 页面向上滚动
         int slop = Math.abs(scrollY - mStartY);
 
         if (slop > vc.getScaledTouchSlop()) {
-            if (scrollDown) {
+            if (scrollUp) {
                 if (mActivity.isToolbarShow()) {
                     mActivity.hideToolbar();
                 }
             } else {
-                if (!mActivity.isToolbarShow() && scrollY < mToolbarHeight + 100) {
+                if (!mActivity.isToolbarShow()) {
                     mActivity.showToolbar();
                 }
             }

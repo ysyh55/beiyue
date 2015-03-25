@@ -14,7 +14,14 @@ import android.app.Application;
 public class MainApplication extends Application {
 
     public static RequestQueue requestQueue;
-
+    public static final int[] DRAWER_HEADER_BACKGROUND = {
+            R.drawable.drawer_header_1,
+            R.drawable.drawer_header_2,
+            R.drawable.drawer_header_3,
+            R.drawable.drawer_header_4,
+            R.drawable.drawer_header_5,
+            R.drawable.drawer_header_6,
+    };
 
     @Override
     public void onCreate() {

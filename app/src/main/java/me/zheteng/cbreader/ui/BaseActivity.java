@@ -35,4 +35,9 @@ public class BaseActivity extends ActionBarActivity {
     public boolean isToolbarShow() {
         return mIsToolbarShow;
     }
+
+
+    public Toolbar getToolbar() {
+        return mToolbar;
+    }
 }

@@ -4,8 +4,17 @@
   -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/action_view_comments"
+          android:menuCategory="system"
+          android:orderInCategory="102"
           android:title="@string/action_view_comments"
           app:showAsAction="withText|ifRoom"/>
+    <item
+            android:visible="false"
+            android:id="@+id/action_share"
+            app:showAsAction="never"
+            android:icon="@drawable/ic_share_white_24dp"
+            android:title="@string/share"
+            app:actionProviderClass="android.support.v7.widget.ShareActionProvider"/>
     <item android:id="@+id/action_view_in_browser"
           android:title="@string/action_view_in_browser"
           android:orderInCategory="100"

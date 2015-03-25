@@ -4,106 +4,87 @@
 package me.zheteng.cbreader.ui;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Random;
 
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.github.ksoichiro.android.observablescrollview.ObservableRecyclerView;
-import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
-import com.github.ksoichiro.android.observablescrollview.ScrollState;
-import com.github.ksoichiro.android.observablescrollview.ScrollUtils;
-import com.google.gson.Gson;
-import com.nineoldandroids.animation.ValueAnimator;
-import com.nineoldandroids.view.ViewHelper;
-import com.nineoldandroids.view.ViewPropertyAnimator;
-
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.os.Handler;
+import android.support.v4.app.Fragment;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
-import android.util.Log;
-import android.view.LayoutInflater;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AccelerateDecelerateInterpolator;
-import android.widget.AbsListView;
-import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import me.zheteng.cbreader.MainApplication;
 import me.zheteng.cbreader.R;
-import me.zheteng.cbreader.model.Article;
-import me.zheteng.cbreader.ui.widget.MaterialProgressBar;
-import me.zheteng.cbreader.utils.APIUtils;
+import me.zheteng.cbreader.ui.widget.ScrimInsetsScrollView;
 import me.zheteng.cbreader.utils.PrefUtils;
-import me.zheteng.cbreader.utils.Utils;
-import me.zheteng.cbreader.utils.volley.GsonRequest;
+import me.zheteng.cbreader.utils.UIUtils;
 
 public class MainActivity extends BaseActivity {
+    public static final String TAG_NEWS_ARTICES = "news_artices";
+    public static final String TAG_RECOMMEND_COMMENT = "recommend_comment";
+    public static final String TAG_TOP = "top";
+    public static final String TAG_TOPIC = "topic";
+
+    protected static final int NAVDRAWER_ITEM_NEWS_ARTICES = 0;
+    protected static final int NAVDRAWER_ITEM_RECOMMEND_COMMENT = 1;
+    protected static final int NAVDRAWER_ITEM_TOP = 2;
+    protected static final int NAVDRAWER_ITEM_TOPIC = 3;
+    protected static final int NAVDRAWER_ITEM_SETTINGS = 4;
+    protected static final int NAVDRAWER_ITEM_ABOUT = 5;
+    protected static final int NAVDRAWER_ITEM_INVALID = -1;
+    protected static final int NAVDRAWER_ITEM_SEPARATOR = -2;
+    protected static final int NAVDRAWER_ITEM_SEPARATOR_SPECIAL = -3;
+
+    // titles for navdrawer items (indices must correspond to the above)
+    private static final int[] NAVDRAWER_TITLE_RES_ID = new int[] {
+            R.string.navdrawer_item_news_artices,
+            R.string.navdrawer_item_recommend_comment,
+            R.string.navdrawer_item_top,
+            R.string.navdrawer_item_topic,
+            R.string.navdrawer_item_settings,
+            R.string.navdrawer_item_about,
+    };
+    private static final int[] NAVDRAWER_ICON_RES_ID = new int[] {
+            R.drawable.ic_comment_grey600_16dp,  // My Schedule
+            R.drawable.ic_comment_grey600_16dp,  // Explore
+            R.drawable.ic_equalizer_grey600_18dp, // Map
+            R.drawable.ic_comment_grey600_16dp, // Social
+            R.drawable.ic_settings_grey600_18dp, // Video Library
+            R.drawable.ic_person_grey600_18dp, // Video Library
+    };
 
     private static final int CURRENT_STATE_REQUEST = 1;
-    private ObservableRecyclerView mRecyclerView;
-    private ArticleListAdapter mAdapter;
-    private LinearLayoutManager mLayoutManager;
-    private SwipeRefreshLayout mSwipeRefreshLayout;
 
-    protected View mHeader;
-    protected int mFlexibleSpaceImageHeight;
-    protected View mHeaderBar;
-    protected View mListBackgroundView;
     protected int mActionBarSize;
     protected int mIntersectionHeight;
 
-    private View mImageHolder;
-    private View mHeaderBackground;
-    private int mPrevScrollY;
-    private int mToolbarAlpha;
-    private boolean mGapIsChanging;
-    private boolean mGapHidden;
-    private boolean mReady;
+    private DrawerLayout mDrawerLayout;
+    private ArrayList<Integer> mNavDrawerItems = new ArrayList<Integer>();
 
-
-    // ----- used for load more
-    private int previousTotal = 0;
-    private boolean loading = true;
-    private int visibleThreshold = 5;
-    int firstVisibleItem, visibleItemCount, totalItemCount;
     private boolean mLoadingData;
+    private ViewGroup mDrawerItemsListContainer;
+    private View[] mNavDrawerItemViews;
+    private boolean mSelected;
+    private boolean mDoubleBackToExitPressedOnce;
 
-    // ----- end  used for load more
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         initViews();
-        if (!loadCachedData()) {
-            refreshData();
-        }
-    }
 
-    private boolean loadCachedData() {
-        mLoadingData = true;
-        String json = PrefUtils.getCacheOfKey(this, PrefUtils.KEY_ARTICLES);
-
-        if (TextUtils.isEmpty(json)) {
-            return false;
-        }
-        Gson gson = new Gson();
-
-        Article[] articles = gson.fromJson(json, Article[].class);
-        List<Article> list = Utils.getListFromArray(articles);
-        mAdapter.swapData(list);
-
-        mLoadingData = false;
-        return true;
-
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                NewsListFragment.newInstance(mActionBarSize),
+                TAG_NEWS_ARTICES).commit();
     }
 
     private int getActionBarSize() {
@@ -114,234 +95,185 @@ public class MainActivity extends BaseActivity {
         mToolbar = (Toolbar) findViewById(R.id.actionbar_toolbar);
         setSupportActionBar(mToolbar);
 
-        mRecyclerView = (ObservableRecyclerView) findViewById(R.id.feed_list);
+        //        mActionBarSize = getActionBarSize();
 
-        mFlexibleSpaceImageHeight = getResources().getDimensionPixelSize(R.dimen.flexible_space_image_height);
-        mActionBarSize = getActionBarSize();
-
-        setupRecyclerView();
-
-        // Even when the top gap has began to change, header bar still can move
-        // within mIntersectionHeight.
-        mIntersectionHeight = getResources().getDimensionPixelSize(R.dimen.intersection_height);
-
-        mImageHolder = findViewById(R.id.image_holder);
-        mHeader = findViewById(R.id.header);
-        mHeaderBar = findViewById(R.id.header_bar);
-        mHeaderBackground = findViewById(R.id.header_background);
-        mListBackgroundView = findViewById(R.id.list_background);
-
-        ((TextView) findViewById(R.id.title)).setText(getTitle());
         setTitle(null);
 
-        ScrollUtils.addOnGlobalLayoutListener(mRecyclerView, new Runnable() {
-            @Override
-            public void run() {
-                // mListBackgroundView makes ListView's background except header view.
-                if (mListBackgroundView != null) {
-                    final View contentView = getWindow().getDecorView().findViewById(android.R.id.content);
-                    // mListBackgroundView's should fill its parent vertically
-                    // but the height of the content view is 0 on 'onCreate'.
-                    mListBackgroundView.getLayoutParams().height = contentView.getHeight();
-                }
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        setupNavDrawer();
+    }
 
-                mReady = true;
-                updateViews(mRecyclerView.getCurrentScrollY(), false);
+    private void setupNavDrawer() {
+        mDrawerLayout.setStatusBarBackgroundColor(
+                getResources().getColor(R.color.theme_primary_dark));
+
+        ScrimInsetsScrollView navDrawer = (ScrimInsetsScrollView)
+                mDrawerLayout.findViewById(R.id.navdrawer);
+
+        View drawerHeader = navDrawer.findViewById(R.id.drawer_header);
+        Random random = new Random();
+        int i = random.nextInt(MainApplication.DRAWER_HEADER_BACKGROUND.length);
+        drawerHeader.setBackgroundResource(MainApplication.DRAWER_HEADER_BACKGROUND[i]);
+
+        ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(
+                this, mDrawerLayout, mToolbar,
+                R.string.navigation_drawer_open, R.string.navigation_drawer_close
+        ) {
+            @Override
+            public void onDrawerClosed(View drawerView) {
+
+            }
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+            }
+
+            @Override
+            public void onDrawerStateChanged(int newState) {
+            }
+
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset) {
+            }
+        };
+
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
+
+        mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, Gravity.START);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        mDrawerToggle.syncState();
+        populateNavDrawer();
+
+        setSelectedNavDrawerItem(NAVDRAWER_ITEM_NEWS_ARTICES);
+        // When the user runs the app for the first time, we want to land them with the
+        // navigation drawer open. But just the first time.
+        if (!PrefUtils.isWelcomeDone(this)) {
+            // first run of the app starts with the nav drawer open
+            PrefUtils.markWelcomeDone(this);
+            mDrawerLayout.openDrawer(Gravity.START);
+        }
+    }
+
+    private void populateNavDrawer() {
+        mNavDrawerItems.clear();
+        mNavDrawerItems.add(NAVDRAWER_ITEM_NEWS_ARTICES);
+//        mNavDrawerItems.add(NAVDRAWER_ITEM_RECOMMEND_COMMENT);
+        mNavDrawerItems.add(NAVDRAWER_ITEM_TOP);
+//        mNavDrawerItems.add(NAVDRAWER_ITEM_TOPIC);
+        mNavDrawerItems.add(NAVDRAWER_ITEM_SEPARATOR);
+        mNavDrawerItems.add(NAVDRAWER_ITEM_SETTINGS);
+        mNavDrawerItems.add(NAVDRAWER_ITEM_ABOUT);
+
+        createNavDrawerItems();
+    }
+
+    private void createNavDrawerItems() {
+        mDrawerItemsListContainer = (ViewGroup) findViewById(R.id.navdrawer_items_list);
+        if (mDrawerItemsListContainer == null) {
+            return;
+        }
+
+        mNavDrawerItemViews = new View[mNavDrawerItems.size()];
+        mDrawerItemsListContainer.removeAllViews();
+        int i = 0;
+        for (int itemId : mNavDrawerItems) {
+            mNavDrawerItemViews[i] = makeNavDrawerItem(itemId, mDrawerItemsListContainer);
+            mDrawerItemsListContainer.addView(mNavDrawerItemViews[i]);
+            ++i;
+        }
+    }
+
+    private View makeNavDrawerItem(final int itemId, ViewGroup container) {
+        boolean selected = mSelected;
+        int layoutToInflate = 0;
+        if (itemId == NAVDRAWER_ITEM_SEPARATOR) {
+            layoutToInflate = R.layout.navdrawer_separator;
+        } else if (itemId == NAVDRAWER_ITEM_SEPARATOR_SPECIAL) {
+            layoutToInflate = R.layout.navdrawer_separator;
+        } else {
+            layoutToInflate = R.layout.navdrawer_item;
+        }
+        View view = getLayoutInflater().inflate(layoutToInflate, container, false);
+
+        if (isSeparator(itemId)) {
+            // we are done
+            UIUtils.setAccessibilityIgnore(view);
+            return view;
+        }
+
+        ImageView iconView = (ImageView) view.findViewById(R.id.icon);
+        TextView titleView = (TextView) view.findViewById(R.id.title);
+        int iconId = itemId >= 0 && itemId < NAVDRAWER_ICON_RES_ID.length ?
+                NAVDRAWER_ICON_RES_ID[itemId] : 0;
+        int titleId = itemId >= 0 && itemId < NAVDRAWER_TITLE_RES_ID.length ?
+                NAVDRAWER_TITLE_RES_ID[itemId] : 0;
+
+        // set icon and text
+        iconView.setVisibility(iconId > 0 ? View.VISIBLE : View.GONE);
+        if (iconId > 0) {
+            iconView.setImageResource(iconId);
+        }
+        titleView.setText(getString(titleId));
+
+        formatNavDrawerItem(view, itemId, selected);
+
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onNavDrawerItemClicked(itemId);
             }
         });
 
-        trySetupSwipeRefresh();
+        return view;
     }
 
-    private void updateViews(int scrollY, boolean animated) {
-        // If it's ListView, onScrollChanged is called before ListView is laid out (onGlobalLayout).
-        // This causes weird animation when onRestoreInstanceState occurred,
-        // so we check if it's laid out already.
-        if (!mReady) {
-            return;
-        }
-        // Translate image
-        ViewHelper.setTranslationY(mImageHolder, -scrollY / 2);
-
-        // Translate header
-        ViewHelper.setTranslationY(mHeader, getHeaderTranslationY(scrollY));
-
-        // Show/hide gap
-        final int headerHeight = mHeaderBar.getHeight();
-        boolean scrollUp = mPrevScrollY < scrollY;
-        if (scrollUp) {
-            if (mFlexibleSpaceImageHeight - headerHeight - mActionBarSize <= scrollY) {
-                changeHeaderBackgroundHeightAnimated(false, animated);
-            }
-        } else {
-            if (scrollY <= mFlexibleSpaceImageHeight - headerHeight - mActionBarSize) {
-                changeHeaderBackgroundHeightAnimated(true, animated);
-            }
-        }
-        mPrevScrollY = scrollY;
-        // Translate list background
-        ViewHelper.setTranslationY(mListBackgroundView, ViewHelper.getTranslationY(mHeader));
-
-
-        if (scrollY > mFlexibleSpaceImageHeight - mActionBarSize) {
-            mToolbarAlpha = 255;
-        } else {
-            mToolbarAlpha = (int) ((float) scrollY / ((float) mFlexibleSpaceImageHeight - mActionBarSize) * 255);
-        }
-        mToolbar.getBackground().setAlpha(mToolbarAlpha);
-    }
-
-    private void changeHeaderBackgroundHeightAnimated(boolean shouldShowGap, boolean animated) {
-        if (mGapIsChanging) {
-            return;
-        }
-        final int heightOnGapShown = mHeaderBar.getHeight();
-        final int heightOnGapHidden = mHeaderBar.getHeight() + mActionBarSize;
-        final float from = mHeaderBackground.getLayoutParams().height;
-        final float to;
-        if (shouldShowGap) {
-            if (!mGapHidden) {
-                // Already shown
-                return;
-            }
-            to = heightOnGapShown;
-        } else {
-            if (mGapHidden) {
-                // Already hidden
-                return;
-            }
-            to = heightOnGapHidden;
-        }
-        if (animated) {
-            ViewPropertyAnimator.animate(mHeaderBackground).cancel();
-            ValueAnimator a = ValueAnimator.ofFloat(from, to);
-            a.setDuration(100);
-            a.setInterpolator(new AccelerateDecelerateInterpolator());
-            a.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                @Override
-                public void onAnimationUpdate(ValueAnimator animation) {
-                    float height = (float) animation.getAnimatedValue();
-                    changeHeaderBackgroundHeight(height, to, heightOnGapHidden);
-                }
-            });
-            a.start();
-        } else {
-            changeHeaderBackgroundHeight(to, to, heightOnGapHidden);
+    private void onNavDrawerItemClicked(int itemId) {
+        goToNavDrawerItem(itemId);
+        if (itemId != NAVDRAWER_ITEM_ABOUT && itemId != NAVDRAWER_ITEM_SETTINGS) {
+            mDrawerLayout.closeDrawer(Gravity.START);
+            setSelectedNavDrawerItem(itemId);
         }
     }
 
-    private void changeHeaderBackgroundHeight(float height, float to, float heightOnGapHidden) {
-        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) mHeaderBackground.getLayoutParams();
-        lp.height = (int) height;
-        lp.topMargin = (int) (mHeaderBar.getHeight() - height);
-        mHeaderBackground.requestLayout();
-        mGapIsChanging = (height != to);
-        if (!mGapIsChanging) {
-            mGapHidden = (height == heightOnGapHidden);
-        }
-    }
-
-    protected void setupRecyclerView() {
-        mRecyclerView.setScrollViewCallbacks(listScrollListener);
-        mLayoutManager = new LinearLayoutManager(this);
-
-        mRecyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
-
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-
-                visibleItemCount = mRecyclerView.getChildCount();
-                totalItemCount = mLayoutManager.getItemCount();
-                firstVisibleItem = mLayoutManager.findFirstVisibleItemPosition();
-
-                if (loading) {
-                    if (totalItemCount > previousTotal) {
-                        loading = false;
-                        previousTotal = totalItemCount;
-                    }
-                }
-                if (!loading && (totalItemCount - visibleItemCount)
-                        <= (firstVisibleItem + visibleThreshold)) {
-                    // End has been reached
-
-                    Log.i("...", "end called");
-
-                    if (!mLoadingData) {
-                        loadMoreArticles();
-                    }
-
-                    loading = true;
-                }
-            }
-        });
-        mRecyclerView.setLayoutManager(mLayoutManager);
-        mRecyclerView.setHasFixedSize(false);
-
-        View headerView = new View(this);
-        headerView.setLayoutParams(
-                new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, mFlexibleSpaceImageHeight));
-        headerView.setMinimumHeight(mFlexibleSpaceImageHeight);
-        // This is required to disable header's list selector effect
-        headerView.setClickable(true);
-        mAdapter = new ArticleListAdapter(this, headerView);
-        mRecyclerView.setAdapter(mAdapter);
-    }
-
-
-
-    private void trySetupSwipeRefresh() {
-        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
-        if (mSwipeRefreshLayout != null) {
-            mSwipeRefreshLayout.setColorSchemeResources(
-                    R.color.refresh_progress_1,
-                    R.color.refresh_progress_2,
-                    R.color.refresh_progress_3);
-            mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-                @Override
-                public void onRefresh() {
-                    refreshData();
-                }
-            });
-            updateSwipeRefreshProgressBarTop();
-        }
-    }
-
-    private void updateSwipeRefreshProgressBarTop() {
-        if (mSwipeRefreshLayout == null) {
+    private void formatNavDrawerItem(View view, int itemId, boolean selected) {
+        if (isSeparator(itemId)) {
+            // not applicable
             return;
         }
 
-        int progressBarStartMargin = getResources().getDimensionPixelSize(
-                R.dimen.swipe_refresh_progress_bar_start_margin);
-        int progressBarEndMargin = getResources().getDimensionPixelSize(
-                R.dimen.swipe_refresh_progress_bar_end_margin);
-        int top = mToolbar.getHeight();
-        mSwipeRefreshLayout.setProgressViewOffset(false,
-                top + progressBarStartMargin, top + progressBarEndMargin);
+        ImageView iconView = (ImageView) view.findViewById(R.id.icon);
+        TextView titleView = (TextView) view.findViewById(R.id.title);
 
-        mSwipeRefreshLayout.setProgressViewEndTarget(false, top + progressBarEndMargin + top);
+        if (selected) {
+            view.setBackgroundResource(R.drawable.selected_navdrawer_item_background);
+        } else {
+            //TODO
+            view.setBackgroundResource(android.R.drawable.screen_background_light_transparent);
+        }
+
+        // configure its appearance according to whether or not it's selected
+        titleView.setTextColor(selected ?
+                getResources().getColor(R.color.navdrawer_text_color_selected) :
+                getResources().getColor(R.color.navdrawer_text_color));
+        iconView.setColorFilter(selected ?
+                getResources().getColor(R.color.navdrawer_icon_tint_selected) :
+                getResources().getColor(R.color.navdrawer_icon_tint));
     }
 
-    private ObservableScrollViewCallbacks listScrollListener = new ObservableScrollViewCallbacks() {
-        @Override
-        public void onScrollChanged(int scrollY, boolean b, boolean b2) {
-            updateViews(scrollY, true);
+    private void setSelectedNavDrawerItem(int itemId) {
+        if (mNavDrawerItemViews != null) {
+            for (int i = 0; i < mNavDrawerItemViews.length; i++) {
+                if (i < mNavDrawerItems.size()) {
+                    int thisItemId = mNavDrawerItems.get(i);
+                    formatNavDrawerItem(mNavDrawerItemViews[i], thisItemId, itemId == thisItemId);
+                }
+            }
         }
+    }
 
-        @Override
-        public void onDownMotionEvent() {
-
-        }
-
-        @Override
-        public void onUpOrCancelMotionEvent(ScrollState scrollState) {
-
-        }
-    };
-
-    protected float getHeaderTranslationY(int scrollY) {
-        return ScrollUtils.getFloat(-scrollY + mFlexibleSpaceImageHeight - mHeaderBar.getHeight(), 0, Float.MAX_VALUE);
+    private boolean isSeparator(int itemId) {
+        return itemId == NAVDRAWER_ITEM_SEPARATOR || itemId == NAVDRAWER_ITEM_SEPARATOR_SPECIAL;
     }
 
     @Override
@@ -349,6 +281,25 @@ public class MainActivity extends BaseActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mDoubleBackToExitPressedOnce) {
+            super.onBackPressed();
+            return;
+        }
+
+        this.mDoubleBackToExitPressedOnce = true;
+        Toast.makeText(this, R.string.press_again, Toast.LENGTH_SHORT).show();
+
+        new Handler().postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                mDoubleBackToExitPressedOnce =false;
+            }
+        }, 2000);
     }
 
     @Override
@@ -369,262 +320,55 @@ public class MainActivity extends BaseActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == CURRENT_STATE_REQUEST) {
-            if (resultCode == RESULT_OK) {
-                List<Article> list = data.getParcelableArrayListExtra(ReadActivity.KEY_RESULT_ARTICELS);
-                int position = data.getIntExtra(ReadActivity.KEY_RESULT_POSITION, 0);
-                mAdapter.swapData(list);
-            }
-        }
-    }
-
-    private void refreshData() {
-        mLoadingData = true;
-        String url = APIUtils.getArticleListsUrl();
-        final GsonRequest request = new GsonRequest<Article[]>(url, Article[].class, null,
-                new Response.Listener<Article[]>() {
-                    @Override
-                    public void onResponse(Article[] s) {
-                        List<Article> articles = Utils.getListFromArray(s);
-                        mAdapter.swapData(articles);
-                        Gson gson = new Gson();
-                        PrefUtils.saveCacheOfKey(MainActivity.this, PrefUtils.KEY_ARTICLES, gson.toJson(s));
-                        mSwipeRefreshLayout.setRefreshing(false);
-                        mLoadingData = false;
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError volleyError) {
-                mLoadingData = false;
-                Toast.makeText(MainActivity.this, "加载错误", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        MainApplication.requestQueue.add(request);
-    }
-
-    private void loadMoreArticles() {
-        mLoadingData = true;
-        String url = APIUtils.getArticleListUrl(0, mAdapter.mData.get(mAdapter.mData.size() - 1).sid);
-
-        mAdapter.addItem(null); // 添加null多出进度条;
-
-        MainApplication.requestQueue.add(new GsonRequest<Article[]>(url, Article[].class, null,
-                new Response.Listener<Article[]>() {
-                    @Override
-                    public void onResponse(Article[] s) {
-                        List<Article> articles = Utils.getListFromArray(s);
-                        mAdapter.removeLast(); // 去掉最后的一个, 进度条
-                        mAdapter.appendData(articles);
-                        mLoadingData = false;
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError volleyError) {
-                mLoadingData = false;
-                Toast.makeText(MainActivity.this, "加载错误", Toast.LENGTH_SHORT).show();
-            }
-        }));
-    }
-    @Override
     protected void onStart() {
         super.onStart();
-        mToolbar.getBackground().setAlpha(mToolbarAlpha);
+        //        mToolbar.getBackground().setAlpha(mToolbarAlpha);
     }
 
-    public class ArticleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
-            implements View.OnClickListener {
-        private static final int VIEW_TYPE_HEADER = 0;
-        private static final int VIEW_TYPE_ITEM = 1;
-        private static final int VIEW_TYPE_PROG = 2;
-
-        private List<Article> mData;
-
-        private View mHeaderView;
-        private Context mContext;
-
-        public ArticleListAdapter(Context context, List<Article> data, View headerView) {
-            mContext = context;
-            mData = data == null ? new ArrayList<Article>() : data;
-            mHeaderView = headerView;
-        }
-
-        public ArticleListAdapter(Context context, View headerView) {
-            this(context, null, headerView);
-        }
-
-        @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            switch (viewType) {
-                case VIEW_TYPE_HEADER:
-                    return new HeaderViewHolder(mHeaderView);
-                case VIEW_TYPE_ITEM:
-                    View view = LayoutInflater.from(mContext).inflate(R.layout.feed_list_item, parent, false);
-
-                    ArticleItemViewHolder viewHolder = new ArticleItemViewHolder(view);
-                    view.setOnClickListener(this);
-                    return viewHolder;
-                case VIEW_TYPE_PROG:
-                    return new ProgressViewHolder(LayoutInflater.from(mContext).inflate(R.layout.progress_item,
-                            parent, false));
-                default:
-                    throw new UnsupportedOperationException("没有这个ViewType");
-            }
-
-        }
-
-        @Override
-        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-            if (holder instanceof ArticleItemViewHolder) {
-                ArticleItemViewHolder holder1 = (ArticleItemViewHolder) holder;
-
-                Article article = getItem(position);
-                holder1.mTitleView.setText(article.title);
-                holder1.mDescriptionView.setText(article.summary);
-                holder1.mTimeView.setText(article.getReadableTime());
-                holder1.mCommentCountView.setText("" + article.comments);
-            }
-        }
-
-        private Article getItem(int position) {
-            if (mHeaderView != null) {
-                position = position - 1;
-            }
-
-            return mData.get(position);
-
-        }
-
-        @Override
-        public int getItemViewType(int position) {
-            if (mHeaderView == null) {
-                return VIEW_TYPE_ITEM;
-            } else {
-                if (position == 0) {
-                    return VIEW_TYPE_HEADER;
-                } else {
-                    return getItem(position) != null ? VIEW_TYPE_ITEM : VIEW_TYPE_PROG;
+    private void goToNavDrawerItem(int item) {
+        Intent intent;
+        Fragment fragment;
+        switch (item) {
+            case NAVDRAWER_ITEM_NEWS_ARTICES:
+                fragment = getSupportFragmentManager().findFragmentByTag(TAG_NEWS_ARTICES);
+                if (fragment == null) {
+                    fragment = NewsListFragment.newInstance(mActionBarSize);
                 }
-            }
-        }
-
-        @Override
-        public int getItemCount() {
-            int itemCount = 0;
-            if (mData == null) {
-                itemCount = 0;
-            } else {
-                itemCount = mData.size();
-            }
-
-            if (mHeaderView == null) {
-                return itemCount;
-            } else {
-                return itemCount + 1;
-            }
-        }
-
-        private int[] getAllSid() {
-            if (mData == null) {
-                return new int[0];
-            }
-
-            int[] sids = new int[mData.size()];
-            int i = 0;
-            for (Article article : mData) {
-                sids[i++] = article.sid;
-            }
-            return sids;
-        }
-
-        public List<Article> appendData(List<Article> articles) {
-            List<Article> newList = new ArrayList<>(mData.size() + articles.size());
-            newList.addAll(mData);
-            newList.addAll(articles);
-
-            mData = newList;
-            this.notifyDataSetChanged();
-            return mData;
-        }
-
-        public List<Article> swapData(List<Article> articles) {
-            if (mData == articles) {
-                return null;
-            }
-            List<Article> oldData = mData;
-            this.mData = articles;
-            if (articles != null) {
-                this.notifyDataSetChanged();
-            }
-            return oldData;
-        }
-
-        public void addItem(Article article) {
-            if (mData == null) {
-                return;
-            }
-            mData.add(article);
-            notifyDataSetChanged();
-        }
-
-        public void removeLast() {
-            if (mData == null) {
-                return;
-            }
-            mData.remove(mData.size() - 1);
-            notifyDataSetChanged();
-        }
-
-        @Override
-        public void onClick(View v) {
-            int position = mRecyclerView.getChildPosition(v);
-            if (mData != null) {
-                Intent intent = new Intent(MainActivity.this, ReadActivity.class);
-                intent.putParcelableArrayListExtra(ReadActivity.ARTICLE_ARTICLES_KEY,
-                        (ArrayList<? extends android.os.Parcelable>) mData);
-                intent.putExtra(ReadActivity.ARTICLE_POSITON_KEY, mData.indexOf(mAdapter.getItem(position)));
-
-                startActivityForResult(intent, CURRENT_STATE_REQUEST);
-            }
-
-        }
-
-        public class ArticleItemViewHolder extends RecyclerView.ViewHolder {
-            public ArticleItemViewHolder(View itemView) {
-                super(itemView);
-
-                mTitleView = ((TextView) itemView.findViewById(R.id.title));
-                mDescriptionView = ((TextView) itemView.findViewById(R.id.description));
-                mTimeView = ((TextView) itemView.findViewById(R.id.time));
-                mCommentCountView = ((TextView) itemView.findViewById(R.id.comment_count));
-                mContainer = (ViewGroup) itemView.findViewById(R.id.container);
-            }
-
-            // each data item is just a string in this case
-            public TextView mTitleView;
-            public TextView mDescriptionView;
-            public TextView mTimeView;
-            public TextView mCommentCountView;
-
-            public ViewGroup mContainer;
-        }
-
-        public class HeaderViewHolder extends RecyclerView.ViewHolder {
-
-            public HeaderViewHolder(View itemView) {
-                super(itemView);
-            }
-        }
-
-        public class ProgressViewHolder extends RecyclerView.ViewHolder {
-            public MaterialProgressBar mProgressBar;
-
-            public ProgressViewHolder(View v) {
-                super(v);
-                mProgressBar = (MaterialProgressBar) v.findViewById(R.id.list_progress);
-            }
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                        fragment, TAG_NEWS_ARTICES).commit();
+                break;
+            case NAVDRAWER_ITEM_RECOMMEND_COMMENT:
+                fragment = getSupportFragmentManager().findFragmentByTag(TAG_RECOMMEND_COMMENT);
+                if (fragment == null) {
+                    fragment = new TopPagerFragment();
+                }
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                        fragment, TAG_RECOMMEND_COMMENT).commit();
+                break;
+            case NAVDRAWER_ITEM_TOP:
+                fragment = getSupportFragmentManager().findFragmentByTag(TAG_TOP);
+                if (fragment == null) {
+                    fragment = new TopPagerFragment();
+                }
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                        fragment, TAG_TOP).commit();
+                break;
+            case NAVDRAWER_ITEM_TOPIC:
+                fragment = getSupportFragmentManager().findFragmentByTag(TAG_TOPIC);
+                if (fragment == null) {
+                    fragment = new TopPagerFragment();
+                }
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                        fragment, TAG_TOPIC).commit();
+                break;
+            case NAVDRAWER_ITEM_SETTINGS:
+                intent = new Intent(this, SettingsActivity.class);
+                startActivity(intent);
+                break;
+            case NAVDRAWER_ITEM_ABOUT:
+                intent = new Intent(this, AboutActivity.class);
+                startActivity(intent);
+                break;
         }
     }
-
 }

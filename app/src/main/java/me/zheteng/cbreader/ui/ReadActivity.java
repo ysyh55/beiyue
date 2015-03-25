@@ -20,7 +20,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.SparseArray;
@@ -33,6 +35,7 @@ import me.zheteng.cbreader.BuildConfig;
 import me.zheteng.cbreader.MainApplication;
 import me.zheteng.cbreader.R;
 import me.zheteng.cbreader.model.Article;
+import me.zheteng.cbreader.model.NewsContent;
 import me.zheteng.cbreader.utils.APIUtils;
 import me.zheteng.cbreader.utils.UIUtils;
 import me.zheteng.cbreader.utils.Utils;
@@ -66,6 +69,8 @@ public class ReadActivity extends BaseActivity {
     private int mCurrentSid;
     private ReadFragment mCurrentFragment;
     private int mCurrentPosition;
+    private MenuItem mShareMenuItem;
+    private ShareActionProvider mShareActionProvider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,8 +90,30 @@ public class ReadActivity extends BaseActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_read, menu);
         mCommentMenuItem = menu.findItem(R.id.action_view_comments);
+        mShareMenuItem = menu.findItem(R.id.action_share);
+
+        // Get its ShareActionProvider
+        if (mShareActionProvider == null) {
+            mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(mShareMenuItem);
+        }
+        // Fetch and store ShareActionProvider
         return true;
     }
+
+    public MenuItem getShareMenuItem() {
+        return mShareMenuItem;
+    }
+
+    public void setShareIntent(NewsContent newsContent) {
+        Intent mShareIntent = new Intent();
+        mShareIntent.setAction(Intent.ACTION_SEND);
+        mShareIntent.setType("text/plain");
+        mShareIntent.putExtra(Intent.EXTRA_TEXT, newsContent.title + " http://www.cnbeta.com/articles/" +
+                newsContent.sid + ".htm");
+
+        mShareActionProvider.setShareIntent(mShareIntent);
+    }
+
 
     private void initView() {
         mToolbar = (Toolbar) findViewById(R.id.actionbar_toolbar);
@@ -221,9 +248,6 @@ public class ReadActivity extends BaseActivity {
         super.finish();
     }
 
-    public Toolbar getToolbar() {
-        return mToolbar;
-    }
 
     private void loadMoreData() {
         mIsLoadingMoreData = true;

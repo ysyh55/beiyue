@@ -15,6 +15,10 @@ public class PrefUtils {
     public static final String NAME_CACHE = "app_cache";
 
     public static final String KEY_ARTICLES = "key_articles";
+    public static final String KEY_TOP_COUNTER = "key_top_counter";
+    public static final String KEY_TOP_COMMENT = "key_top_comment";
+    public static final String KEY_TOP_DIG = "key_top_dig";
+    public static final String KEY_TOP_10 = "key_top_10";
 
     public static final String KEY_COMMENT_ORDER = "pref_comment_order";
 
@@ -47,5 +51,17 @@ public class PrefUtils {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
 
         return sp.getBoolean(KEY_COMMENT_ORDER, true);
+    }
+
+    public static boolean isWelcomeDone(Context context) {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+        return sp.getBoolean("is_welcome_done", false);
+
+    }
+
+    public static void markWelcomeDone(Context context) {
+        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
+        editor.putBoolean("is_welcome_done", true);
+        editor.commit();
     }
 }
