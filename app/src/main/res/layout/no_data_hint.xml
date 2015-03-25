@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (C) 2015 junyuecao@gmail.com All Rights Reserved.
+  -->
+<TextView
+        android:visibility="gone"
+        android:layout_gravity="center"
+        android:id="@+id/no_data_hint"
+        android:padding="16dp"
+        style="@style/Base.TextAppearance.AppCompat.Body1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/no_data" xmlns:android="http://schemas.android.com/apk/res/android"/>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (C) 2015 Baidu, Inc. All Rights Reserved.
+  -->
+<android.support.v7.widget.CardView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/card_view"
+        android:layout_gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/feed_list_item_margin_top"
+        android:layout_marginBottom="@dimen/feed_list_item_margin_bottom"
+        android:background="?attr/selectableItemBackground">
+    <LinearLayout
+            android:id="@+id/container"
+            android:orientation="vertical"
+            android:padding="@dimen/feed_list_item_padding"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        <TextView
+                android:id="@+id/content"
+                style="@style/Base.TextAppearance.AppCompat.Subhead"
+                tools:text="曾经被称为中国硅谷的中关村，在电商的冲击下生意日渐冷清"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/feedlist_item_description_margin"
+                android:ellipsize="end"
+                android:maxLines="4"
+                />
+        <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+            <TextView
+                    android:id="@+id/name"
+                    tools:text="匿名用户"
+                    style="@style/Base.TextAppearance.AppCompat.Body2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:textStyle="bold"/>
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/publish_sub"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    tools:text="发表于"/>
+            <TextView
+                    android:id="@+id/subject"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    style="@style/Base.TextAppearance.AppCompat.Body2"
+                    tools:text="渣男测试 50% 男渣男测试 50% 男渣男测试 50% 男友考核不过关 " android:layout_weight="1"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+</android.support.v7.widget.CardView>

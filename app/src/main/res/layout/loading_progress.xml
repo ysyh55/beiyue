@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (C) 2015 junyuecao@gmail.com All Rights Reserved.
+  -->
+<me.zheteng.cbreader.ui.widget.MaterialProgressBar
+        android:id="@+id/loading_progress"
+        android:layout_width="@dimen/materialprogressbar_size"
+        android:layout_height="@dimen/materialprogressbar_size"
+        android:layout_gravity="center" xmlns:android="http://schemas.android.com/apk/res/android"/>

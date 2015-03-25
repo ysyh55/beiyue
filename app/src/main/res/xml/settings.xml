@@ -13,6 +13,16 @@
     </PreferenceCategory>
 
     <PreferenceCategory
+            android:title="@string/pref_network">
+        <SwitchPreference
+                android:key="pref_autoload_image_in_webview"
+                android:title="@string/pref_autoload_image_in_webview"
+                android:summary="移动网络下自动加载正文图片"
+                android:defaultValue="true"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
             android:title="@string/pref_other">
         <Preference android:title="@string/pref_about"
                  >
@@ -20,4 +30,6 @@
                 android:action="me.zheteng.cbreader.ui.AboutActivity"/>
         </Preference>
     </PreferenceCategory>
+
+
 </PreferenceScreen>

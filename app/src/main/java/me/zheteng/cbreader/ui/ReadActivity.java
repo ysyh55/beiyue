@@ -51,6 +51,7 @@ public class ReadActivity extends BaseActivity {
     public static final String KEY_RESULT_POSITION = "result_position";
     public static final String KEY_RESULT_ARTICELS = "result_articles";
     private static final String TAG = "ReadActivity";
+    public static final String TOP_COMMENT_SID_KEY = "top_comment_sid";
 
     private int mToolbarHeight;
 
@@ -71,6 +72,7 @@ public class ReadActivity extends BaseActivity {
     private int mCurrentPosition;
     private MenuItem mShareMenuItem;
     private ShareActionProvider mShareActionProvider;
+    private boolean mIsFromTopComment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,7 +82,18 @@ public class ReadActivity extends BaseActivity {
         mArticles = getIntent().getParcelableArrayListExtra(ARTICLE_ARTICLES_KEY);
         mPosition = getIntent().getIntExtra(ARTICLE_POSITON_KEY, 0);
         mCurrentPosition = mPosition;
-        mCurrentSid = mArticles.get(mPosition).sid;
+        int sid = getIntent().getIntExtra(TOP_COMMENT_SID_KEY, -1);
+        mIsFromTopComment = sid != -1;
+        if (mArticles == null) {
+            //从热门评论过来
+            mCurrentSid = sid;
+            mArticles = new ArrayList<Article>();
+            Article article = new Article();
+            article.sid = sid;
+            mArticles.add(article);
+        } else {
+            mCurrentSid = mArticles.get(mPosition).sid;
+        }
         initView();
 
     }
@@ -130,6 +143,7 @@ public class ReadActivity extends BaseActivity {
         }
 
         mViewPager = (ViewPager) findViewById(R.id.article_pager);
+
         mReadFragmentAdapter =
                 new ReadFragmentPagerAdapter(
                         getSupportFragmentManager());
@@ -159,6 +173,9 @@ public class ReadActivity extends BaseActivity {
             public void onPageScrollStateChanged(int state) {
             }
         });
+        if (mIsFromTopComment) {
+            mViewPager.setEnabled(false);
+        }
     }
 
     @Override

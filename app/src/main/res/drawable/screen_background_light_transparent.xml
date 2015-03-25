@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (C) 2015 junyuecao@gmail.com All Rights Reserved.
+  -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <drawable android:name="screen_background_light_transparent">#80ffffff</drawable>
+</layer-list>

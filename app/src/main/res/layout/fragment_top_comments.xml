@@ -2,22 +2,28 @@
 <!--
   ~ Copyright (C) 2015 junyuecao@gmail.com All Rights Reserved.
   -->
-<FrameLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_height="match_parent"
-        android:layout_width="match_parent">
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
     <android.support.v4.widget.SwipeRefreshLayout
             android:id="@+id/swipe_refresh_layout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-        <me.zheteng.cbreader.ui.widget.QuickReturnRecyclerView
-                android:id="@+id/feed_list"
+            android:layout_height="match_parent"
+            android:layout_marginTop="?attr/actionBarSize"
+            >
+        <com.github.ksoichiro.android.observablescrollview.ObservableRecyclerView
+                android:id="@+id/top_comments_list"
                 android:scrollbars="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 />
     </android.support.v4.widget.SwipeRefreshLayout>
+
     <include layout="@layout/no_data_hint" />
+
     <include layout="@layout/loading_progress" />
+
+
 
 </FrameLayout>

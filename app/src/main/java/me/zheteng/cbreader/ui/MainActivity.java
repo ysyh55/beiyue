@@ -53,12 +53,12 @@ public class MainActivity extends BaseActivity {
             R.string.navdrawer_item_about,
     };
     private static final int[] NAVDRAWER_ICON_RES_ID = new int[] {
-            R.drawable.ic_comment_grey600_16dp,  // My Schedule
-            R.drawable.ic_comment_grey600_16dp,  // Explore
-            R.drawable.ic_equalizer_grey600_18dp, // Map
-            R.drawable.ic_comment_grey600_16dp, // Social
-            R.drawable.ic_settings_grey600_18dp, // Video Library
-            R.drawable.ic_person_grey600_18dp, // Video Library
+            R.drawable.ic_comment_grey600_24dp,  // My Schedule
+            R.drawable.ic_whatshot_grey600_24dp,  // Explore
+            R.drawable.ic_equalizer_grey600_24dp, // Map
+            R.drawable.ic_comment_grey600_24dp, // Social
+            R.drawable.ic_settings_grey600_24dp, // Video Library
+            R.drawable.ic_person_grey600_24dp, // Video Library
     };
 
     private static final int CURRENT_STATE_REQUEST = 1;
@@ -158,7 +158,7 @@ public class MainActivity extends BaseActivity {
     private void populateNavDrawer() {
         mNavDrawerItems.clear();
         mNavDrawerItems.add(NAVDRAWER_ITEM_NEWS_ARTICES);
-//        mNavDrawerItems.add(NAVDRAWER_ITEM_RECOMMEND_COMMENT);
+        mNavDrawerItems.add(NAVDRAWER_ITEM_RECOMMEND_COMMENT);
         mNavDrawerItems.add(NAVDRAWER_ITEM_TOP);
 //        mNavDrawerItems.add(NAVDRAWER_ITEM_TOPIC);
         mNavDrawerItems.add(NAVDRAWER_ITEM_SEPARATOR);
@@ -249,7 +249,7 @@ public class MainActivity extends BaseActivity {
             view.setBackgroundResource(R.drawable.selected_navdrawer_item_background);
         } else {
             //TODO
-            view.setBackgroundResource(android.R.drawable.screen_background_light_transparent);
+            view.setBackgroundResource(R.drawable.screen_background_light_transparent);
         }
 
         // configure its appearance according to whether or not it's selected
@@ -340,7 +340,7 @@ public class MainActivity extends BaseActivity {
             case NAVDRAWER_ITEM_RECOMMEND_COMMENT:
                 fragment = getSupportFragmentManager().findFragmentByTag(TAG_RECOMMEND_COMMENT);
                 if (fragment == null) {
-                    fragment = new TopPagerFragment();
+                    fragment = new TopCommentsFragment();
                 }
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                         fragment, TAG_RECOMMEND_COMMENT).commit();

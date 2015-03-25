@@ -75,9 +75,7 @@ public class TopFragment extends BaseListFragment implements ObservableScrollVie
         setupRecyclerView();
         mActivity.getToolbar().getBackground().setAlpha(255);
 
-        if (!loadCachedData()) {
-            refreshData(getAPIUrl());
-        }
+
     }
 
     protected boolean loadCachedData() {

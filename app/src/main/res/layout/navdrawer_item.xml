@@ -2,7 +2,7 @@
               android:orientation="horizontal"
               android:background="?android:selectableItemBackground"
               android:gravity="start|center_vertical"
-              android:paddingLeft="@dimen/keyline_1"
+
               android:paddingRight="@dimen/keyline_1"
               android:layout_width="match_parent"
               android:layout_height="48dp">
@@ -11,6 +11,7 @@
             android:id="@+id/icon"
             android:layout_height="24dp"
             android:layout_width="24dp"
+            android:layout_marginLeft="@dimen/keyline_1"
             android:layout_marginRight="32dp"/>
 
     <TextView

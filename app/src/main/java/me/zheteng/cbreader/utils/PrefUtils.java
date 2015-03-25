@@ -21,6 +21,7 @@ public class PrefUtils {
     public static final String KEY_TOP_10 = "key_top_10";
 
     public static final String KEY_COMMENT_ORDER = "pref_comment_order";
+    public static final String KEY_TOP_COMMENTS = "key_top_comments"; // 热门评论页数据
 
     /**
      * 保存首页缓存
