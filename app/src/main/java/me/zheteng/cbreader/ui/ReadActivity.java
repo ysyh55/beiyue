@@ -15,9 +15,11 @@ import com.android.volley.VolleyError;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.MenuItemCompat;
@@ -36,6 +38,7 @@ import me.zheteng.cbreader.MainApplication;
 import me.zheteng.cbreader.R;
 import me.zheteng.cbreader.model.Article;
 import me.zheteng.cbreader.model.NewsContent;
+import me.zheteng.cbreader.ui.widget.HackyViewPager;
 import me.zheteng.cbreader.utils.APIUtils;
 import me.zheteng.cbreader.utils.UIUtils;
 import me.zheteng.cbreader.utils.Utils;
@@ -44,7 +47,7 @@ import me.zheteng.cbreader.utils.volley.GsonRequest;
 /**
  * TODO 记得添加注释
  */
-public class ReadActivity extends BaseActivity {
+public class ReadActivity extends SwipeBackActionBarActivity {
 
     public static final String ARTICLE_ARTICLES_KEY = "sid";
     public static final String ARTICLE_POSITON_KEY = "position";
@@ -52,12 +55,14 @@ public class ReadActivity extends BaseActivity {
     public static final String KEY_RESULT_ARTICELS = "result_articles";
     private static final String TAG = "ReadActivity";
     public static final String TOP_COMMENT_SID_KEY = "top_comment_sid";
+    public static final String FROM_TOP_COMMENT_KEY = "from_top_comment_key";
+    public static final String FROM_TOP_KEY = "from_top_key";
 
     private int mToolbarHeight;
 
     private ArrayList<Article> mArticles;
     private int mPosition;
-    private ViewPager mViewPager;
+    private HackyViewPager mViewPager;
     private ReadFragmentPagerAdapter mReadFragmentAdapter;
     private String mHtmlTemplate;
     private boolean mIsLoadingMoreData;
@@ -73,17 +78,21 @@ public class ReadActivity extends BaseActivity {
     private MenuItem mShareMenuItem;
     private ShareActionProvider mShareActionProvider;
     private boolean mIsFromTopComment;
+    private MenuItem mImageToggleMenuItem;
+    private SharedPreferences mPref;
+
+    private OnBackPressedListener mOnBackPressedListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_read);
+
         mArticles = getIntent().getParcelableArrayListExtra(ARTICLE_ARTICLES_KEY);
         mPosition = getIntent().getIntExtra(ARTICLE_POSITON_KEY, 0);
         mCurrentPosition = mPosition;
         int sid = getIntent().getIntExtra(TOP_COMMENT_SID_KEY, -1);
-        mIsFromTopComment = sid != -1;
+        mIsFromTopComment = getIntent().getBooleanExtra(FROM_TOP_COMMENT_KEY, false);
         if (mArticles == null) {
             //从热门评论过来
             mCurrentSid = sid;
@@ -95,7 +104,18 @@ public class ReadActivity extends BaseActivity {
             mCurrentSid = mArticles.get(mPosition).sid;
         }
         initView();
+        mPref = PreferenceManager.getDefaultSharedPreferences(this);
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mOnBackPressedListener != null) {
+            if (mOnBackPressedListener.doBack()){
+                return;
+            }
+        }
+        super.onBackPressed();
     }
 
     @Override
@@ -104,6 +124,7 @@ public class ReadActivity extends BaseActivity {
         getMenuInflater().inflate(R.menu.menu_read, menu);
         mCommentMenuItem = menu.findItem(R.id.action_view_comments);
         mShareMenuItem = menu.findItem(R.id.action_share);
+        mImageToggleMenuItem = menu.findItem(R.id.action_toggle_image);
 
         // Get its ShareActionProvider
         if (mShareActionProvider == null) {
@@ -111,6 +132,13 @@ public class ReadActivity extends BaseActivity {
         }
         // Fetch and store ShareActionProvider
         return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        mImageToggleMenuItem.setChecked(!mPref.getBoolean(getString(R.string.pref_autoload_image_in_webview_key),
+                true));
+        return super.onPrepareOptionsMenu(menu);
     }
 
     public MenuItem getShareMenuItem() {
@@ -142,7 +170,7 @@ public class ReadActivity extends BaseActivity {
             }
         }
 
-        mViewPager = (ViewPager) findViewById(R.id.article_pager);
+        mViewPager = (HackyViewPager) findViewById(R.id.article_pager);
 
         mReadFragmentAdapter =
                 new ReadFragmentPagerAdapter(
@@ -155,7 +183,7 @@ public class ReadActivity extends BaseActivity {
         mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
+//                Log.d(TAG, "拉动Pager" + positionOffsetPixels);
             }
 
             @Override
@@ -164,13 +192,16 @@ public class ReadActivity extends BaseActivity {
                 mCurrentPosition = position;
                 mCurrentSid = mArticles.get(position).sid;
                 mCurrentFragment = mReadFragmentAdapter.getRegisteredFragment(position);
-                if (position == mReadFragmentAdapter.getCount() - 1 && !mIsLoadingMoreData) {
+                if (position == mReadFragmentAdapter.getCount() - 1
+                        && !mIsLoadingMoreData
+                        && !getIntent().getBooleanExtra(FROM_TOP_KEY, false)) {
                     loadMoreData();
                 }
             }
 
             @Override
             public void onPageScrollStateChanged(int state) {
+                Log.d(TAG, "拉动Pager State" + state);
             }
         });
         if (mIsFromTopComment) {
@@ -203,6 +234,10 @@ public class ReadActivity extends BaseActivity {
                 startActivity(intent);
                 return true;
             }
+            case R.id.action_toggle_image:
+                mPref.edit().putBoolean(getString(R.string.pref_autoload_image_in_webview_key),
+                        mImageToggleMenuItem.isChecked()).apply();
+                break;
             case android.R.id.home:
                 onBackPressed();
                 return true;
@@ -210,6 +245,10 @@ public class ReadActivity extends BaseActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public HackyViewPager getFragmentViewPager() {
+        return mViewPager;
     }
 
     /**
@@ -296,6 +335,14 @@ public class ReadActivity extends BaseActivity {
         return mCommentMenuItem;
     }
 
+    public OnBackPressedListener getmOnBackPressedListener() {
+        return mOnBackPressedListener;
+    }
+
+    public void setOnBackPressedListener(OnBackPressedListener mOnBackPressedListener) {
+        this.mOnBackPressedListener = mOnBackPressedListener;
+    }
+
     public class ReadFragmentPagerAdapter extends FragmentStatePagerAdapter {
         SparseArray<ReadFragment> registeredFragments = new SparseArray<ReadFragment>();
 
@@ -336,4 +383,10 @@ public class ReadActivity extends BaseActivity {
         }
 
     }
+
+    public interface OnBackPressedListener {
+        public boolean doBack();
+    }
+
+
 }

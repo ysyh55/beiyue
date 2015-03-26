@@ -3,7 +3,7 @@
   ~ Copyright (C) 2015 Baidu, Inc. All Rights Reserved.
   -->
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools"
              android:layout_width="match_parent"
              android:layout_height="match_parent">
     <com.github.ksoichiro.android.observablescrollview.ObservableWebView
@@ -13,6 +13,54 @@
             />
     <include layout="@layout/no_data_hint" />
     <include layout="@layout/loading_progress" />
+
+    <RelativeLayout
+            android:visibility="gone"
+            android:id="@+id/photoview_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            >
+        <me.zheteng.cbreader.ui.widget.HackyViewPager
+                android:visibility="visible"
+                android:background="@android:color/black"
+                android:id="@+id/photo_viewpager"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingTop="?attr/actionBarSize"
+                />
+        <LinearLayout
+                android:id="@+id/download_counter_contaner"
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentBottom="true"
+                android:layout_gravity="bottom|right"
+                android:gravity="center_horizontal"
+                android:layout_marginRight="16dp"
+                android:layout_marginBottom="64dp"
+                >
+            <ImageButton
+                    android:visibility="visible"
+                    android:id="@+id/download_photo_button"
+                    android:alpha="200"
+                    android:layout_width="@dimen/download_photo_size"
+                    android:layout_height="@dimen/download_photo_size"
+                    android:src="@drawable/ic_cloud_download_white_48dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"/>
+            <TextView
+                    android:visibility="visible"
+                    android:id="@+id/photo_counter"
+                    tools:text="3 / 10"
+                    android:textColor="@android:color/white"
+                    android:layout_width="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:layout_height="wrap_content"
+                    />
+        </LinearLayout>
+
+    </RelativeLayout>
+
 </FrameLayout>
 
 

@@ -6,8 +6,8 @@
     <string name="refresh">更新</string>
     <string name="action_view_in_browser">在浏览器中查看</string>
     <string name="action_view_comments">评论</string>
-    <string name="support">支持</string>
-    <string name="oppose">反对</string>
+    <string name="support" formatted="false">支持%s</string>
+    <string name="oppose" formatted="false">反对%s</string>
     <string name="comment">评论</string>
     <string name="pref_comment_order">优先显示最新评论</string>
     <string name="pref_comment">评论设置</string>
@@ -44,6 +44,17 @@
     <string name="press_again">再按一次退出CNBETA Now</string>
     <string name="top_comments_fragment_title">热门评论</string>
     <string name="publish_sub">发表于</string>
-    <string name="pref_network">网络</string>
+    <string name="pref_image">图片控制</string>
     <string name="pref_autoload_image_in_webview">正文图片</string>
+    <string name="topic">类别</string>
+    <string name="pref_autoload_image_in_list">列表图片</string>
+    <string name="pref_autoload_image_in_list_key">pref_autoload_image_in_list</string>
+    <string name="pref_autoload_image_in_webview_key">pref_autoload_image_in_webview</string>
+    <string name="toggle_image">无图模式</string>
+    <string name="pref_autoload_image_in_webview_summary">是否自动加载正文图片</string>
+    <string name="pref_autoload_image_in_list_summary">是否展示列表页缩略图</string>
+    <string name="about_version">最求美好</string>
+    <string name="action_save_pic">保存图片</string>
+    <string name="pref_open_image_folder_key">pref_open_image_folder</string>
+    <string name="pref_open_image_folder">打开保存的图片</string>
 </resources>

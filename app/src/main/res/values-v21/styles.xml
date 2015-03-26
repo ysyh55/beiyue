@@ -6,15 +6,26 @@
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:colorPrimary">@color/theme_primary</item>
         <item name="android:colorPrimaryDark">@color/theme_primary_dark</item>
-        <!-- enable window content transitions -->
+        <!-- 允许使用transitions -->
         <item name="android:windowContentTransitions">true</item>
 
-        <!-- specify enter and exit transitions -->
-        <item name="android:windowEnterTransition">@transition/explode</item>
+        <!-- 指定进入和退出transitions -->
+        <item name="android:windowEnterTransition">@transition/slide</item>
         <item name="android:windowExitTransition">@transition/explode</item>
+
+        <!-- 指定shared element transitions -->
+        <!--<item name="android:windowSharedElementEnterTransition">-->
+            <!--@transition/explode-->
+        <!--</item>-->
+        <!--<item name="android:windowSharedElementExitTransition">-->
+            <!--@transition/explode-->
+        <!--</item>-->
 
     </style>
     <style name="AppTheme.NavDrawer" parent="AppTheme">
         <item name="android:statusBarColor">@android:color/transparent</item>
+    </style>
+    <style name="AppThemeWindowIsTranslucent" parent="AppTheme">
+        <item name="android:windowIsTranslucent">true</item>
     </style>
 </resources>

@@ -14,6 +14,8 @@ import com.github.ksoichiro.android.observablescrollview.ScrollState;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.TypedArray;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -23,11 +25,13 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import me.zheteng.cbreader.MainApplication;
 import me.zheteng.cbreader.R;
 import me.zheteng.cbreader.model.NewsComment;
+import me.zheteng.cbreader.ui.widget.MaterialProgressBar;
 import me.zheteng.cbreader.utils.APIUtils;
 import me.zheteng.cbreader.utils.PrefUtils;
 import me.zheteng.cbreader.utils.Utils;
@@ -44,7 +48,7 @@ public class CommentActivity extends BaseActivity implements ObservableScrollVie
 
     private ObservableRecyclerView mRecyclerView;
     private int mToolbarHeight;
-    private CommentCursorAdapter mAdapter;
+    private CommentListAdapter mAdapter;
     private LinearLayoutManager mLayoutManager;
     private TextView mNoDataHint;
 
@@ -62,6 +66,7 @@ public class CommentActivity extends BaseActivity implements ObservableScrollVie
     private int mCount;
     private boolean mIsLoadingData;
     private boolean mIsNewerFirst;
+    private MaterialProgressBar mProgressbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +92,7 @@ public class CommentActivity extends BaseActivity implements ObservableScrollVie
                 NewsComment[].class, null, new Response.Listener<NewsComment[]>() {
             @Override
             public void onResponse(NewsComment[] newsComments) {
+                mProgressbar.setVisibility(View.GONE);
                 changePage();
                 List<NewsComment> list = getList(newsComments);
                 mAdapter.swapData(list);
@@ -108,6 +114,7 @@ public class CommentActivity extends BaseActivity implements ObservableScrollVie
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
+                mProgressbar.setVisibility(View.GONE);
                 mNoDataHint.setVisibility(View.VISIBLE);
                 Toast.makeText(CommentActivity.this, "加载错误", Toast.LENGTH_SHORT).show();
                 mIsLoadingData = false;
@@ -159,6 +166,7 @@ public class CommentActivity extends BaseActivity implements ObservableScrollVie
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle(getString(R.string.comment));
+        mToolbar.getBackground().setAlpha(255);
 
         mRecyclerView = (ObservableRecyclerView) findViewById(R.id.comment_list);
         setupRecyclerView();
@@ -171,6 +179,8 @@ public class CommentActivity extends BaseActivity implements ObservableScrollVie
                 requestData();
             }
         });
+
+        mProgressbar = (MaterialProgressBar) findViewById(R.id.loading_progress);
     }
 
     protected void setupRecyclerView() {
@@ -208,9 +218,9 @@ public class CommentActivity extends BaseActivity implements ObservableScrollVie
             }
         });
         mRecyclerView.setHasFixedSize(false);
-        mRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL_LIST));
+//        mRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL_LIST));
 
-        mAdapter = new CommentCursorAdapter(this, null);
+        mAdapter = new CommentListAdapter(this, null);
         mRecyclerView.setAdapter(mAdapter);
     }
 
@@ -239,14 +249,14 @@ public class CommentActivity extends BaseActivity implements ObservableScrollVie
 
     }
 
-    public class CommentCursorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
-            implements View.OnClickListener {
+    public class CommentListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
+    implements View.OnClickListener {
 
         private List<NewsComment> mData;
 
         private Context mContext;
 
-        public CommentCursorAdapter(Context context, List<NewsComment> data) {
+        public CommentListAdapter(Context context, List<NewsComment> data) {
             mContext = context;
             mData = data == null ? new ArrayList<NewsComment>() : data;
         }
@@ -256,7 +266,6 @@ public class CommentActivity extends BaseActivity implements ObservableScrollVie
             View view = LayoutInflater.from(mContext).inflate(R.layout.comment_list_item, parent, false);
 
             CommentItemViewHolder viewHolder = new CommentItemViewHolder(view);
-            view.setOnClickListener(this);
             return viewHolder;
         }
 
@@ -268,8 +277,10 @@ public class CommentActivity extends BaseActivity implements ObservableScrollVie
             holder1.mNameView.setText(comment.getUsername());
             holder1.mContentView.setText(comment.content);
             holder1.mTimeView.setText(comment.getReadableTime());
-            holder1.mSupportView.setText(comment.support);
-            holder1.mOpposeView.setText(comment.against);
+            holder1.mSupportView.setText(String.format(getString(R.string.support), comment.support));
+            holder1.mOpposeView.setText(String.format(getString(R.string.oppose), comment.against));
+            holder1.mSupportView.setTag(position);
+            holder1.mOpposeView.setTag(position);
         }
 
         private NewsComment getItem(int position) {
@@ -307,9 +318,47 @@ public class CommentActivity extends BaseActivity implements ObservableScrollVie
 
         @Override
         public void onClick(View v) {
-            int position = mRecyclerView.getChildPosition(v);
-            if (mData != null) {
 
+            int id = v.getId();
+            if (mData != null) {
+                final NewsComment comment;
+                switch (id) {
+                    case R.id.support:
+                        comment = getItem((Integer) v.getTag());
+                        if (comment.supportAvailable) {
+                            doSupport(mSid, comment.tid, new OnDoSupportSuccessListener() {
+                                @Override
+                                public void onDoSupportSuccess() {
+                                    synchronized(this) {
+                                        if (comment.supportAvailable) {
+                                            comment.support = String.valueOf(Integer.parseInt(comment.support) + 1);
+                                            notifyDataSetChanged();
+                                            comment.supportAvailable = false;
+                                        }
+                                    }
+
+                                }
+                            });
+                        }
+                        break;
+                    case R.id.oppose:
+                        comment = getItem((Integer) v.getTag());
+                        if (comment.againstAvailable) {
+                            doAganst(mSid, comment.tid, new OnDoAgainstSuccessListener() {
+                                @Override
+                                public void onDoAgainstSuccess() {
+                                    synchronized(this) {
+                                        if (comment.againstAvailable) {
+                                            comment.against = String.valueOf(Integer.parseInt(comment.against) + 1);
+                                            notifyDataSetChanged();
+                                            comment.againstAvailable = false;
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                        break;
+                }
             }
 
         }
@@ -331,19 +380,71 @@ public class CommentActivity extends BaseActivity implements ObservableScrollVie
                 mNameView = ((TextView) itemView.findViewById(R.id.name));
                 mContentView = ((TextView) itemView.findViewById(R.id.content));
                 mTimeView = ((TextView) itemView.findViewById(R.id.time));
-                mSupportView = ((TextView) itemView.findViewById(R.id.support));
-                mOpposeView = ((TextView) itemView.findViewById(R.id.oppose));
+                mSupportView = ((Button) itemView.findViewById(R.id.support));
+                mOpposeView = ((Button) itemView.findViewById(R.id.oppose));
                 mContainer = (ViewGroup) itemView.findViewById(R.id.container);
+
+//                mSupportView.setOnClickListener(CommentListAdapter.this);
+//                mOpposeView.setOnClickListener(CommentListAdapter.this);
             }
 
             // each data item is just a string in this case
             public TextView mNameView;
             public TextView mContentView;
             public TextView mTimeView;
-            public TextView mSupportView;
-            public TextView mOpposeView;
+            public Button mSupportView;
+            public Button mOpposeView;
 
             public ViewGroup mContainer;
         }
+    }
+
+    public Drawable getSelectedItemDrawable() {
+        int[] attrs = new int[]{R.attr.selectableItemBackground};
+        TypedArray ta = obtainStyledAttributes(attrs);
+        Drawable selectedItemDrawable = ta.getDrawable(0);
+        ta.recycle();
+        return selectedItemDrawable;
+    }
+    private void doSupport(int sid, String tid, final OnDoSupportSuccessListener listener) {
+        MainApplication.requestQueue.add(new GsonRequest<String>(APIUtils.getDoCmtSupportUrl(sid, tid), String.class,
+                null, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String s) {
+                if (s.equals("操作成功")) {
+                    listener.onDoSupportSuccess();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+
+            }
+        }));
+    }
+
+    private void doAganst(int sid, String tid, final OnDoAgainstSuccessListener listener) {
+        MainApplication.requestQueue.add(new GsonRequest<String>(APIUtils.getDoCmtSupportUrl(sid, tid), String.class,
+                null, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String s) {
+                if (s.equals("操作成功")) {
+                    listener.onDoAgainstSuccess();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+
+            }
+        }));
+    }
+
+    public interface OnDoSupportSuccessListener {
+        public void onDoSupportSuccess();
+    }
+
+    public interface OnDoAgainstSuccessListener {
+        public void onDoAgainstSuccess();
     }
 }

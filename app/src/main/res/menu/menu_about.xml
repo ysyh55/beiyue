@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (C) 2015 Baidu, Inc. All Rights Reserved.
+  -->
+<menu xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+            android:title="如果你觉得这个App有用"
+            app:showAsAction="never"/>
+    <item
+            android:title="那个邮箱也是支付宝帐号"
+            app:showAsAction="never"/>
+    <item
+            android:title="欢迎打赏几毛钱 ^_^"
+            android:id="@+id/heihei"
+            app:showAsAction="never"/>
+    <item
+            android:title="开发者要25美刀有木有"
+            app:showAsAction="never"/>
+    <item
+            android:title="更欢迎提改进意见"
+            app:showAsAction="never"/>
+
+</menu>

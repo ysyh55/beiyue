@@ -9,6 +9,8 @@ import me.zheteng.cbreader.utils.TimeUtils;
  * NewsPoJO
  */
 public class NewsComment {
+    public boolean supportAvailable = true; //表示是否可点
+    public boolean againstAvailable = true; //表示是否可点
     public String tid;
     public String username;
     public String content;

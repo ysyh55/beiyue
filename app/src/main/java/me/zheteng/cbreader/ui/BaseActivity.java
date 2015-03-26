@@ -3,13 +3,15 @@
  */
 package me.zheteng.cbreader.ui;
 
+import com.umeng.analytics.MobclickAgent;
+
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 
 /**
- * TODO 记得添加注释
+ * 基础Activity
  */
 public class BaseActivity extends ActionBarActivity {
 
@@ -36,6 +38,17 @@ public class BaseActivity extends ActionBarActivity {
         return mIsToolbarShow;
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
+    }
 
     public Toolbar getToolbar() {
         return mToolbar;

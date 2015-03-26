@@ -12,6 +12,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
     <include layout="@layout/no_data_hint" />
+    <include layout="@layout/loading_progress" />
 
     <include layout="@layout/toolbar_normal" />
 </FrameLayout>

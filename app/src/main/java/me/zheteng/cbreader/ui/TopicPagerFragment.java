@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 junyuecao@gmail.com All Rights Reserved.
+ * Copyright (C) 2015 Baidu, Inc. All Rights Reserved.
  */
 package me.zheteng.cbreader.ui;
 
@@ -18,32 +18,13 @@ import me.zheteng.cbreader.R;
 import me.zheteng.cbreader.utils.UIUtils;
 
 /**
- * 热门新闻
+ * TODO 记得添加注释
  */
-public class TopPagerFragment extends Fragment {
-    public static final int COUNTER = 0;
-    public static final int COMMENTS = 1;
-    public static final int DIG = 2;
-    public static final int TOP10 = 3;
-    public static int[] TOP_TYPES = {
-            COUNTER,
-            COMMENTS,
-            DIG,
-            TOP10
-    };
-    //    protected static final int NAVDRAWER_ITEM_TOP_DIG = 6;
-    //    protected static final int NAVDRAWER_ITEM_TOP_COMMENTS = 2;
-    //    protected static final int NAVDRAWER_ITEM_TOP_COUNTER = 3;
-    //    protected static final int NAVDRAWER_ITEM_TOP10 = 4;
-
-    //http://api.cnbeta.com/capi?app_key=10000&format=json&method=Article.TodayRank&timestamp=1427129230&type=counter
-    //http://api.cnbeta.com/capi?app_key=10000&format=json&method=Article.TodayRank&timestamp=1427129249&type=comments
-    //http://api.cnbeta.com/capi?app_key=10000&format=json&method=Article.TodayRank&timestamp=1427129266&type=dig
-    //http://api.cnbeta.com/capi?app_key=10000&format=json&method=Article.Top10&timestamp=1427129318
+public class TopicPagerFragment extends Fragment {
 
     private ViewPager mViewPager;
 
-    private TopPagerAdapter mAdapter;
+    private TopicPagerAdapter mAdapter;
     private PagerSlidingTabStrip mTabs;
     private MainActivity mActivity;
 
@@ -64,7 +45,7 @@ public class TopPagerFragment extends Fragment {
     }
 
     private void initDatas() {
-        mAdapter = new TopPagerAdapter(getChildFragmentManager());
+        mAdapter = new TopicPagerAdapter(getChildFragmentManager());
         mViewPager.setAdapter(mAdapter);
         mViewPager.setOffscreenPageLimit(3);
         mViewPager.setPageMargin((int) UIUtils.dpToPixels(mActivity, getResources().getDimension(R.dimen.viewpager_gap)));
@@ -90,33 +71,25 @@ public class TopPagerFragment extends Fragment {
 
     }
 
-    private class TopPagerAdapter extends FragmentPagerAdapter {
+    private class TopicPagerAdapter extends FragmentPagerAdapter {
 
-        public final int[] TITLES = {
-                R.string.top_counter,
-                R.string.top_comments,
-                R.string.top_dig,
-                R.string.top_top10,
-        };
-
-        public TopPagerAdapter(FragmentManager fm) {
+        public TopicPagerAdapter(FragmentManager fm) {
             super(fm);
         }
 
         @Override
         public int getCount() {
-            return TOP_TYPES.length;
+            return 0;
         }
 
         @Override
         public Fragment getItem(int position) {
-            return TopFragment.newInstance(TOP_TYPES[position]);
+            return null;
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
-            return getActivity().getString(TITLES[position]);
+            return "";
         }
     }
-
 }

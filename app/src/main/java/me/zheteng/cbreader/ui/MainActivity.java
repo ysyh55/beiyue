@@ -12,6 +12,7 @@ import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.graphics.Palette;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 import android.view.Menu;
@@ -27,7 +28,7 @@ import me.zheteng.cbreader.ui.widget.ScrimInsetsScrollView;
 import me.zheteng.cbreader.utils.PrefUtils;
 import me.zheteng.cbreader.utils.UIUtils;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity implements Palette.PaletteAsyncListener {
     public static final String TAG_NEWS_ARTICES = "news_artices";
     public static final String TAG_RECOMMEND_COMMENT = "recommend_comment";
     public static final String TAG_TOP = "top";
@@ -74,14 +75,23 @@ public class MainActivity extends BaseActivity {
     private View[] mNavDrawerItemViews;
     private boolean mSelected;
     private boolean mDoubleBackToExitPressedOnce;
+    private int mDrawerHeaderBg;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        initViews();
+        Random random = new Random();
+        mDrawerHeaderBg = MainApplication.DRAWER_HEADER_BACKGROUND[random.nextInt(MainApplication
+                .DRAWER_HEADER_BACKGROUND.length)];
+//
+//        Drawable drawable = getResources().getDrawable(mDrawerHeaderBg);
+//        if (drawable instanceof BitmapDrawable) {
+//            Palette.generateAsync(((BitmapDrawable) drawable).getBitmap(), this);
+//        }
 
+        initViews();
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                 NewsListFragment.newInstance(mActionBarSize),
                 TAG_NEWS_ARTICES).commit();
@@ -111,9 +121,8 @@ public class MainActivity extends BaseActivity {
                 mDrawerLayout.findViewById(R.id.navdrawer);
 
         View drawerHeader = navDrawer.findViewById(R.id.drawer_header);
-        Random random = new Random();
-        int i = random.nextInt(MainApplication.DRAWER_HEADER_BACKGROUND.length);
-        drawerHeader.setBackgroundResource(MainApplication.DRAWER_HEADER_BACKGROUND[i]);
+
+        drawerHeader.setBackgroundResource(mDrawerHeaderBg);
 
         ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(
                 this, mDrawerLayout, mToolbar,
@@ -356,7 +365,7 @@ public class MainActivity extends BaseActivity {
             case NAVDRAWER_ITEM_TOPIC:
                 fragment = getSupportFragmentManager().findFragmentByTag(TAG_TOPIC);
                 if (fragment == null) {
-                    fragment = new TopPagerFragment();
+                    fragment = new TopicFragment();
                 }
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                         fragment, TAG_TOPIC).commit();
@@ -369,6 +378,31 @@ public class MainActivity extends BaseActivity {
                 intent = new Intent(this, AboutActivity.class);
                 startActivity(intent);
                 break;
+        }
+    }
+
+
+    @Override
+    public void onGenerated(Palette palette) {
+        if (palette != null) {
+
+            Palette.Swatch vibrantSwatch = palette
+                    .getVibrantSwatch();
+
+            Palette.Swatch darkVibrantSwatch = palette
+                    .getDarkVibrantSwatch();
+
+            Palette.Swatch lightSwatch = palette
+                    .getLightVibrantSwatch();
+
+            if (lightSwatch != null) {
+
+//                vibrantSwatch.
+//                暂时没啥用
+//                获取一个图片的主要颜色
+//                ((ImageView) findViewById(R.id.image)).setColorFilter(vibrantSwatch.getRgb(), PorterDuff.Mode.OVERLAY);
+
+            }
         }
     }
 }

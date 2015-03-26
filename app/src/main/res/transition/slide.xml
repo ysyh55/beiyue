@@ -3,10 +3,11 @@
   ~ Copyright (C) 2015 Baidu, Inc. All Rights Reserved.
   -->
 <transitionSet xmlns:android="http://schemas.android.com/apk/res/android">
-    <explode android:duration="250" >
-        <targets >
+    <slide android:duration="250" android:slideEdge="left" android:startDelay="100">
+        <targets>
             <target android:excludeId="@android:id/statusBarBackground"/>
             <target android:excludeId="@android:id/navigationBarBackground"/>
         </targets>
-    </explode>  
+    </slide>
+      
 </transitionSet>

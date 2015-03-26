@@ -24,6 +24,10 @@
     <dimen name="keyline_1">16dp</dimen>
     <dimen name="drawer_header_height">172dp</dimen>
     <dimen name="navdrawer_profile_image_size">64dp</dimen>
+    <dimen name="thumb_image_size">60dp</dimen>
+    <dimen name="comment_do_button_width">54dp</dimen>
+    <dimen name="comment_list_item_margin_top">1dp</dimen>
+    <dimen name="download_photo_size">48dp</dimen>
 
 
 </resources>

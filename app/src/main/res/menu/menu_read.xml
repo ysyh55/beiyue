@@ -15,6 +15,14 @@
             android:icon="@drawable/ic_share_white_24dp"
             android:title="@string/share"
             app:actionProviderClass="android.support.v7.widget.ShareActionProvider"/>
+    <item
+            android:visible="true"
+            android:id="@+id/action_toggle_image"
+            app:showAsAction="never"
+            android:icon="@drawable/ic_share_white_24dp"
+            android:checkable="true"
+            android:checked="false"
+            android:title="@string/toggle_image" />
     <item android:id="@+id/action_view_in_browser"
           android:title="@string/action_view_in_browser"
           android:orderInCategory="100"

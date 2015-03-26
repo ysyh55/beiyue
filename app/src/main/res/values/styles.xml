@@ -2,7 +2,7 @@
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-
+        <!-- enable window content transitions -->
     </style>
     <style name="FeedListItemHeadlineReaded"
            parent="@style/Base.TextAppearance.AppCompat.Headline">
@@ -19,6 +19,9 @@
     <style name="drawer_title_text_style">
         <item name="android:textSize">16sp</item>
         <item name="android:textColor">#ffffffff</item>
+    </style>
+    <style name="AppThemeWindowIsTranslucent" parent="AppTheme">
+        <item name="android:windowIsTranslucent">true</item>
     </style>
 
 

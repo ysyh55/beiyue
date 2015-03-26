@@ -2,17 +2,16 @@
 <!--
   ~ Copyright (C) 2015 Baidu, Inc. All Rights Reserved.
   -->
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools"
              android:layout_width="match_parent"
              android:layout_height="match_parent">
 
     <FrameLayout android:layout_width="match_parent" android:layout_height="match_parent">
-        <android.support.v4.view.ViewPager
+        <me.zheteng.cbreader.ui.widget.HackyViewPager
                 android:id="@+id/article_pager"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent" />
 
-        </android.support.v4.view.ViewPager>
     </FrameLayout>
     <include layout="@layout/toolbar_normal"/>
 </FrameLayout>

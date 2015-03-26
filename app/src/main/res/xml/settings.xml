@@ -13,12 +13,18 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-            android:title="@string/pref_network">
+            android:title="@string/pref_image">
         <SwitchPreference
-                android:key="pref_autoload_image_in_webview"
-                android:title="@string/pref_autoload_image_in_webview"
-                android:summary="移动网络下自动加载正文图片"
+                android:key="@string/pref_autoload_image_in_list_key"
+                android:title="@string/pref_autoload_image_in_list"
+                android:summary="@string/pref_autoload_image_in_list_summary"
                 android:defaultValue="true"/>
+        <SwitchPreference
+                android:key="@string/pref_autoload_image_in_webview_key"
+                android:title="@string/pref_autoload_image_in_webview"
+                android:summary="@string/pref_autoload_image_in_webview_summary"
+                android:defaultValue="true"/>
+
 
     </PreferenceCategory>
 

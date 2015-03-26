@@ -180,12 +180,12 @@ public class APIUtils {
         return "http://api.cnbeta.com/capi?" + str7;
     }
 
-    public static String getDoCmtSupportUrl(int paramInt1, int paramInt2) {
+    public static String getDoCmtSupportUrl(int sid, String tid) {
         String str1 = "app_key=10000" + "&format=json";
         String str2 = str1 + "&method=Article.DoCmt";
         String str3 = str2 + "&op=support";
-        String str4 = str3 + "&sid=" + paramInt1;
-        String str5 = str4 + "&tid=" + paramInt2;
+        String str4 = str3 + "&sid=" + sid;
+        String str5 = str4 + "&tid=" + tid;
         String str6 = str5 + "&timestamp=" + getTimestampInApi();
         String str7 = str6 + "&v=1.0";
         String str8 = str7 + "&sign=" + getSign(

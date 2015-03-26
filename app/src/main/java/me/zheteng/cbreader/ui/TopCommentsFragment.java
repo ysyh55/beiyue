@@ -232,6 +232,7 @@ public class TopCommentsFragment extends Fragment {
             if (mData != null) {
                 Intent intent = new Intent(mContext, ReadActivity.class);
                 intent.putExtra(ReadActivity.TOP_COMMENT_SID_KEY, Integer.parseInt(mData.get(position).sid));
+                intent.putExtra(ReadActivity.FROM_TOP_COMMENT_KEY, true);
 
                 mContext.startActivity(intent);
             }

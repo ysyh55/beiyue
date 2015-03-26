@@ -12,7 +12,9 @@ import com.nineoldandroids.view.ViewHelper;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -33,7 +35,8 @@ import me.zheteng.cbreader.utils.UIUtils;
 /**
  * TODO 记得添加注释
  */
-public class NewsListFragment extends BaseListFragment implements ObservableScrollViewCallbacks {
+public class NewsListFragment extends BaseListFragment implements ObservableScrollViewCallbacks,
+        SharedPreferences.OnSharedPreferenceChangeListener {
 
     public static final int CURRENT_STATE_REQUEST = 1;
 
@@ -66,7 +69,7 @@ public class NewsListFragment extends BaseListFragment implements ObservableScro
     private int mToolbarHeight;
     private int mStartY;
     private boolean mIsInTranslate2; // 是第一类变换还是第二类
-    private String mArticleListUrl = APIUtils.getArticleListsUrl();;
+    private SharedPreferences mPref;
 
     public static NewsListFragment newInstance(int toolbarHeight) {
         NewsListFragment fragment = new NewsListFragment();
@@ -102,15 +105,29 @@ public class NewsListFragment extends BaseListFragment implements ObservableScro
         mToolbar.getBackground().setAlpha(0);
         mToolbarHeight = mToolbar.getHeight();
         mActivity.setTitle(null);
+        mPref = PreferenceManager.getDefaultSharedPreferences(mActivity);
 
         setupRecyclerView();
 
         if (!loadCachedData()) {
-            refreshData(mArticleListUrl);
+            refreshData(APIUtils.getArticleListsUrl());
         }
+
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        mPref.unregisterOnSharedPreferenceChangeListener(this);
+    }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        mPref.registerOnSharedPreferenceChangeListener(this);
+        mAdapter.setIsShowThumb(mPref.getBoolean(getString(R.string.pref_autoload_image_in_list_key), true));
+        mAdapter.notifyDataSetChanged();
+    }
 
     private void initViews(View view) {
 
@@ -253,7 +270,13 @@ public class NewsListFragment extends BaseListFragment implements ObservableScro
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setHasFixedSize(false);
 
-        mAdapter = new ArticleListAdapter(mActivity, null, true, mRecyclerView, mFlexibleSpaceImageHeight);
+
+        mAdapter = new ArticleListAdapter(mActivity,
+                null,
+                true,
+                mRecyclerView,
+                mFlexibleSpaceImageHeight,
+                mPref.getBoolean(getString(R.string.pref_autoload_image_in_list_key), true));
         mRecyclerView.setAdapter(mAdapter);
     }
 
@@ -267,7 +290,7 @@ public class NewsListFragment extends BaseListFragment implements ObservableScro
             mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                 @Override
                 public void onRefresh() {
-                    refreshData(mArticleListUrl);
+                    refreshData(APIUtils.getArticleListsUrl());
                 }
             });
             updateSwipeRefreshProgressBarTop();
@@ -359,6 +382,11 @@ public class NewsListFragment extends BaseListFragment implements ObservableScro
         mHeaderBar.getBackground().setAlpha(mToolbarAlpha);
     }
 
-
-
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (key.equals(getString(R.string.pref_autoload_image_in_list_key))) {
+            boolean showThumb = sharedPreferences.getBoolean(key, true);
+            mAdapter.setIsShowThumb(showThumb);
+        }
+    }
 }

@@ -12,7 +12,9 @@ import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCal
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.google.gson.Gson;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.text.TextUtils;
@@ -33,7 +35,8 @@ import me.zheteng.cbreader.utils.volley.GsonRequest;
 /**
  * TODO 记得添加注释
  */
-public class TopFragment extends BaseListFragment implements ObservableScrollViewCallbacks {
+public class TopFragment extends BaseListFragment implements ObservableScrollViewCallbacks,
+        SharedPreferences.OnSharedPreferenceChangeListener {
 
     private MainActivity mActivity;
     private ArticleListAdapter mAdapter;
@@ -41,6 +44,7 @@ public class TopFragment extends BaseListFragment implements ObservableScrollVie
     private boolean mHasLoaded;
     private MaterialProgressBar mProgressBar;
     private TextView mNodataHint;
+    private SharedPreferences mPref;
 
     public static TopFragment newInstance(int i) {
         TopFragment fragment = new TopFragment();
@@ -72,10 +76,23 @@ public class TopFragment extends BaseListFragment implements ObservableScrollVie
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mActivity = (MainActivity) getActivity();
-        setupRecyclerView();
         mActivity.getToolbar().getBackground().setAlpha(255);
+        mPref = PreferenceManager.getDefaultSharedPreferences(mActivity);
+        setupRecyclerView();
 
 
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mPref.registerOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mPref.unregisterOnSharedPreferenceChangeListener(this);
     }
 
     protected boolean loadCachedData() {
@@ -137,7 +154,14 @@ public class TopFragment extends BaseListFragment implements ObservableScrollVie
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setHasFixedSize(false);
 
-        mAdapter = new ArticleListAdapter(mActivity, null, false, mRecyclerView, 0);
+
+        mAdapter = new ArticleListAdapter(mActivity,
+                null,
+                false,
+                mRecyclerView,
+                0,
+                mPref.getBoolean(getString(R.string.pref_autoload_image_in_list_key), true));
+        mAdapter.setIsFromTopFragment(true);
         mRecyclerView.setAdapter(mAdapter);
     }
 
@@ -278,5 +302,12 @@ public class TopFragment extends BaseListFragment implements ObservableScrollVie
     @Override
     public void onUpOrCancelMotionEvent(ScrollState scrollState) {
 
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (key.equals(getString(R.string.pref_autoload_image_in_list_key))){
+            mAdapter.setIsShowThumb(sharedPreferences.getBoolean(key,true));
+        }
     }
 }

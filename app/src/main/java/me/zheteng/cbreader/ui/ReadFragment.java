@@ -3,42 +3,74 @@
  */
 package me.zheteng.cbreader.ui;
 
+import static android.widget.AdapterView.AdapterContextMenuInfo;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
 import com.github.ksoichiro.android.observablescrollview.ObservableWebView;
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
+import com.google.gson.Gson;
+import com.squareup.picasso.Picasso;
 
+import android.animation.IntEvaluator;
+import android.animation.ObjectAnimator;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 import me.zheteng.cbreader.BuildConfig;
 import me.zheteng.cbreader.MainApplication;
 import me.zheteng.cbreader.R;
 import me.zheteng.cbreader.model.Article;
 import me.zheteng.cbreader.model.NewsContent;
+import me.zheteng.cbreader.ui.widget.HackyViewPager;
 import me.zheteng.cbreader.ui.widget.MaterialProgressBar;
 import me.zheteng.cbreader.utils.APIUtils;
+import me.zheteng.cbreader.utils.Utils;
 import me.zheteng.cbreader.utils.volley.GsonRequest;
+import uk.co.senab.photoview.PhotoView;
+import uk.co.senab.photoview.PhotoViewAttacher;
 
 /**
  * 阅读详情页
  */
-public class ReadFragment extends Fragment implements ObservableScrollViewCallbacks {
+public class ReadFragment extends Fragment implements ObservableScrollViewCallbacks,
+        SharedPreferences.OnSharedPreferenceChangeListener {
     public static final String ACTION_DATA_LOADED = "me.zheteng.cbreader.ReadActivity.DATA_LOADED";
 
     public static final String ARTICLE_SID_KEY = "sid";
@@ -64,6 +96,14 @@ public class ReadFragment extends Fragment implements ObservableScrollViewCallba
     private boolean mHasLoaded;
     private TextView mNoDatHint;
     private Intent mShareIntent;
+    private SharedPreferences mPref;
+    private List<String> mAllImgUrls = new ArrayList<>();
+    private HackyViewPager mViewPager;
+    private PhotoViewPagerAdapter mAdapter;
+    private TextView mPhotoCounter;
+    private ImageButton mDownloadPhoto;
+    private ViewGroup mPhotoViewContainer;
+    private boolean mIsPhotoViewShow;
 
     public static ReadFragment newInstance(Article article) {
         ReadFragment fragment = new ReadFragment();
@@ -110,9 +150,52 @@ public class ReadFragment extends Fragment implements ObservableScrollViewCallba
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
         mActivity = ((ReadActivity) getActivity());
         mToolbarHeight = getToolbar().getHeight();
-        super.onActivityCreated(savedInstanceState);
+        mPref = PreferenceManager.getDefaultSharedPreferences(mActivity);
+        mWebView.getSettings().setLoadsImagesAutomatically(
+                mPref.getBoolean(getString(R.string.pref_autoload_image_in_webview_key), true));
+        mAdapter = new PhotoViewPagerAdapter();
+        mViewPager.setAdapter(mAdapter);
+
+        mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                mPhotoCounter.setText("" + (position + 1) + " / " + mAllImgUrls.size());
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+
+        //        registerForContextMenu(mViewPager);
+        mDownloadPhoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new AsyncTask<Void, Void, String>() {
+
+                    @Override
+                    protected String doInBackground(Void... params) {
+                        return savePhoto(mAllImgUrls.get(mViewPager.getCurrentItem()));
+                    }
+
+                    @Override
+                    protected void onPostExecute(String filename) {
+                        Toast.makeText(mActivity, "图片保存在" + filename, Toast.LENGTH_LONG).show();
+                    }
+                }.execute();
+
+            }
+        });
+
     }
 
     public void requestData() {
@@ -159,6 +242,22 @@ public class ReadFragment extends Fragment implements ObservableScrollViewCallba
         mActivity.unregisterReceiver(dataLoadedReciever);
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        PreferenceManager.getDefaultSharedPreferences(mActivity).registerOnSharedPreferenceChangeListener(this);
+        mWebView.onResume();
+
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        PreferenceManager.getDefaultSharedPreferences(mActivity).unregisterOnSharedPreferenceChangeListener(this);
+        mWebView.onPause();
+
+    }
+
     private void initView(View view) {
         mWebView = (ObservableWebView) view.findViewById(R.id.webview);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
@@ -171,6 +270,7 @@ public class ReadFragment extends Fragment implements ObservableScrollViewCallba
         mWebView.setWebChromeClient(new WebChromeClient() {
 
         });
+        mWebView.addJavascriptInterface(new MyJsInterface(), "cbreader");
 
         mWebView.setScrollViewCallbacks(this);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -190,6 +290,11 @@ public class ReadFragment extends Fragment implements ObservableScrollViewCallba
                 requestData();
             }
         });
+
+        mViewPager = (HackyViewPager) view.findViewById(R.id.photo_viewpager);
+        mPhotoCounter = (TextView) view.findViewById(R.id.photo_counter);
+        mDownloadPhoto = (ImageButton) view.findViewById(R.id.download_photo_button);
+        mPhotoViewContainer = (ViewGroup) view.findViewById(R.id.photoview_container);
     }
 
     @Override
@@ -213,14 +318,18 @@ public class ReadFragment extends Fragment implements ObservableScrollViewCallba
             String source = mNewsContent.source.replaceAll("\\$", "\\\\\\$");
             String body = mNewsContent.bodytext.replaceAll("\\$", "\\\\\\$");
             String intro = mNewsContent.hometext.replaceAll("\\$", "\\\\\\$");
-            String pubTime = mNewsContent.time.replaceAll("\\$", "\\\\\\$");
+            String pubTime = mNewsContent.time;
+            String comments = String.valueOf(mNewsContent.comments);
 
             String html = getHtmlTemplate();
             html = html.replaceAll("\\$\\{title\\}", title)
                     .replaceAll("\\$\\{time\\}", pubTime)
                     .replaceAll("\\$\\{source\\}", source)
                     .replaceAll("\\$\\{intro\\}", intro)
-                    .replaceAll("\\$\\{content\\}", body);
+                    .replaceAll("\\$\\{content\\}", body)
+                    .replaceAll("\\$\\{good\\}", mNewsContent.good)
+                    .replaceAll("\\$\\{comments\\}", comments)
+                    .replaceAll("\\$\\{score\\}", mNewsContent.score);
 
             mWebView.loadData(html, "text/html; charset=UTF-8", null);
 
@@ -266,6 +375,14 @@ public class ReadFragment extends Fragment implements ObservableScrollViewCallba
 
     }
 
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (key.equals(getString(R.string.pref_autoload_image_in_webview_key))) {
+            mWebView.getSettings().setLoadsImagesAutomatically(sharedPreferences.getBoolean(key, true));
+            mWebView.reload();
+        }
+    }
+
     private class DataLoadedReciever extends BroadcastReceiver {
 
         @Override
@@ -278,6 +395,185 @@ public class ReadFragment extends Fragment implements ObservableScrollViewCallba
         mCommentsMenuItem = mActivity.getCommentMenuItem();
         if (mCommentsMenuItem != null && mNewsContent != null) {
             mCommentsMenuItem.setTitle(getString(R.string.action_view_comments) + " (" + mNewsContent.comments + ")");
+        }
+    }
+
+    private class MyJsInterface {
+
+        @JavascriptInterface
+        public void showComments() {
+            Intent intent = new Intent(mActivity, CommentActivity.class);
+            intent.putExtra(CommentActivity.ARTICLE_SID_KEY, mSid);
+            intent.putExtra(CommentActivity.ARTICLE_COUNTD_KEY,
+                    mNewsContent.comments);
+            startActivity(intent);
+        }
+
+        @JavascriptInterface
+        public void setImgUrls(String json) {
+            Gson gson = new Gson();
+            mAllImgUrls.addAll(Arrays.asList(gson.fromJson(json, String[].class)));
+            mActivity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mAdapter.notifyDataSetChanged();
+                }
+            });
+        }
+
+        @JavascriptInterface
+        public void showImgSlide(final String index) {
+            mActivity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    showSlide(Integer.parseInt(index));
+                }
+            });
+        }
+    }
+
+    protected void showSlide(int i) {
+
+        mViewPager.setCurrentItem(i, false);
+        Animation animation = new AlphaAnimation(0.0f, 1.0f);
+        animation.setDuration(150);
+        mPhotoViewContainer.startAnimation(animation);
+        mPhotoViewContainer.setVisibility(View.VISIBLE);
+
+        mPhotoCounter.setText("" + (i + 1) + " / " + mAllImgUrls.size());
+
+        mActivity.getFragmentViewPager().toggleLock();
+
+        if (!mActivity.isToolbarShow()) {
+            mActivity.showToolbar();
+        }
+
+        Drawable bg = mToolbar.getBackground();
+        ObjectAnimator animator = ObjectAnimator.ofInt(bg, "alpha", 255, 0).setDuration(150);
+        animator.setEvaluator(new IntEvaluator());
+        animator.start();
+        //        mToolbar.getBackground().setAlpha(0);
+
+        mIsPhotoViewShow = true;
+
+        mActivity.setOnBackPressedListener(new ReadActivity.OnBackPressedListener() {
+            @Override
+            public boolean doBack() {
+                if (mIsPhotoViewShow) {
+                    hideSlide();
+                    return true;
+                }
+                return false;
+            }
+        });
+    }
+
+    protected void hideSlide() {
+        Animation animation = new AlphaAnimation(1.0f, 0.0f);
+        animation.setDuration(150);
+        mPhotoViewContainer.startAnimation(animation);
+
+        mPhotoViewContainer.setVisibility(View.GONE);
+
+        mActivity.getFragmentViewPager().toggleLock();
+
+        mToolbar.getBackground().setAlpha(255);
+        mIsPhotoViewShow = false;
+        mActivity.setOnBackPressedListener(null);
+
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        mActivity.getMenuInflater().inflate(R.menu.photo_context, menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+        switch (item.getItemId()) {
+            case R.id.save:
+                //                savePhoto(info.id);
+                return true;
+            default:
+                return super.onContextItemSelected(item);
+        }
+    }
+
+    private String savePhoto(String url) {
+        File filename;
+        try {
+            Bitmap bitmap = Picasso.with(mActivity).load(url).get();
+
+            filename = new File(Utils.getSaveImageDir().getAbsolutePath() +"/" +  Utils.getFileNameFromURL(url));
+
+            FileOutputStream out = new FileOutputStream(filename);
+
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
+            out.flush();
+            out.close();
+
+//            MediaStore.Images.Media.insertImage(mActivity.getContentResolver(), filename.getAbsolutePath(),
+//                    filename.getName(), filename.getName());
+
+            return filename.toString();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return "文件保存不成功";
+    }
+
+    class PhotoViewPagerAdapter extends PagerAdapter {
+
+        @Override
+        public int getCount() {
+            return mAllImgUrls.size();
+        }
+
+        @Override
+        public boolean isViewFromObject(View view, Object object) {
+            return view == object;
+        }
+
+        @Override
+        public View instantiateItem(ViewGroup container, int position) {
+            View view = mActivity.getLayoutInflater().inflate(R.layout.photoview_item, container, false);
+
+            final PhotoView photoView = (PhotoView) view.findViewById(R.id.photoview);
+            Picasso.with(mActivity).load(mAllImgUrls.get(position)).into(photoView);
+            photoView.setOnViewTapListener(new PhotoViewAttacher.OnViewTapListener() {
+                @Override
+                public void onViewTap(View view, float v, float v2) {
+                    hideSlide();
+                }
+            });
+            photoView.setOnPhotoTapListener(new PhotoViewAttacher.OnPhotoTapListener() {
+                @Override
+                public void onPhotoTap(View view, float v, float v2) {
+                    Log.d(TAG, "图片点击");
+
+                }
+            });
+            photoView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    Log.d(TAG, "Long clicked");
+                    //                    mActivity.openContextMenu(mViewPager);
+                    return true;
+                }
+            });
+
+            // Now just add PhotoView to ViewPager and return it
+            container.addView(view);
+            return view;
+        }
+
+        @Override
+        public void destroyItem(ViewGroup container, int position, Object object) {
+            container.removeView((View) object);
         }
     }
 }

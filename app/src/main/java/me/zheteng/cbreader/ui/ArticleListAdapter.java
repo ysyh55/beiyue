@@ -6,6 +6,8 @@ package me.zheteng.cbreader.ui;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.squareup.picasso.Picasso;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
@@ -13,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
+import android.widget.ImageView;
 import android.widget.TextView;
 import me.zheteng.cbreader.R;
 import me.zheteng.cbreader.model.Article;
@@ -30,25 +33,21 @@ public class ArticleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private int mFlexibleSpaceImageHeight;
     private RecyclerView mRecyclerView;
     private Activity mContext;
+    private boolean mIsShowThumb = true;
+    public boolean mIsFromTopFragment;
 
     public ArticleListAdapter(Activity context, List<Article> data, boolean hasHeaderView, RecyclerView view,
-                              int flexibleSpaceImageHeight) {
-        this(context, data, hasHeaderView);
-        this.mRecyclerView = view;
-        this.mFlexibleSpaceImageHeight = flexibleSpaceImageHeight;
-    }
-
-    public ArticleListAdapter(Activity context, List<Article> data, boolean hasHeaderView) {
+                              int flexibleSpaceImageHeight, boolean showImage) {
         mContext = context;
         mData = data == null ? new ArrayList<Article>() : data;
         if (hasHeaderView) {
             mHasHeaderView = hasHeaderView;
         }
+        this.mRecyclerView = view;
+        this.mFlexibleSpaceImageHeight = flexibleSpaceImageHeight;
+        mIsShowThumb = showImage;
     }
 
-    public ArticleListAdapter(Activity context, boolean hasHeaderView) {
-        this(context, null, hasHeaderView);
-    }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -84,9 +83,18 @@ public class ArticleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
             Article article = getItem(position);
             holder1.mTitleView.setText(article.title);
-            holder1.mDescriptionView.setText(article.summary);
+            holder1.mDescriptionView.setText(article.summary.replaceAll("&nbsp;", " "));
             holder1.mTimeView.setText(article.getReadableTime());
             holder1.mCommentCountView.setText("" + article.comments);
+            if (mIsShowThumb) {
+                holder1.mThumbImage.setVisibility(View.VISIBLE);
+                Picasso.with(mContext)
+                        .load(article.thumb)
+                        .resizeDimen(R.dimen.thumb_image_size, R.dimen.thumb_image_size)
+                        .into(holder1.mThumbImage);
+            } else {
+                holder1.mThumbImage.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -187,6 +195,7 @@ public class ArticleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             intent.putParcelableArrayListExtra(ReadActivity.ARTICLE_ARTICLES_KEY,
                     (ArrayList<? extends android.os.Parcelable>) mData);
             intent.putExtra(ReadActivity.ARTICLE_POSITON_KEY, mData.indexOf(getItem(position)));
+            intent.putExtra(ReadActivity.FROM_TOP_KEY, mIsFromTopFragment);
 
             mContext.startActivityForResult(intent, NewsListFragment.CURRENT_STATE_REQUEST);
         }
@@ -197,7 +206,17 @@ public class ArticleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         return mData;
     }
 
+    public void setIsShowThumb(boolean mIsShowThumb) {
+        this.mIsShowThumb = mIsShowThumb;
+        mRecyclerView.invalidate();
+    }
+
+    public void setIsFromTopFragment(boolean b) {
+        mIsFromTopFragment = b;
+    }
+
     public class ArticleItemViewHolder extends RecyclerView.ViewHolder {
+
         public ArticleItemViewHolder(View itemView) {
             super(itemView);
 
@@ -206,6 +225,7 @@ public class ArticleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             mTimeView = ((TextView) itemView.findViewById(R.id.time));
             mCommentCountView = ((TextView) itemView.findViewById(R.id.comment_count));
             mContainer = (ViewGroup) itemView.findViewById(R.id.container);
+            mThumbImage = (ImageView) itemView.findViewById(R.id.thumb_image);
         }
 
         // each data item is just a string in this case
@@ -215,6 +235,8 @@ public class ArticleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         public TextView mCommentCountView;
 
         public ViewGroup mContainer;
+        public ImageView mThumbImage;
+
     }
 
     public class HeaderViewHolder extends RecyclerView.ViewHolder {

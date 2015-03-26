@@ -36,7 +36,7 @@
         }
         iframe,embed, video,object {
         width: 100%!important;
-        height: 215px;
+        height: 215px!important;
         }
         #intro{
         margin-top:1em;
@@ -76,5 +76,36 @@
     ${intro}
 </div>
 ${content}
+
+
+<div id="footer" style="text-align:center;border-top:1px solid #ddd;padding-top:8px;">
+    ${good} 次推荐 | ${comments} 次打分 | 事件分: ${score}
+
+    <div style="text-align:center;" id="btnShowComment">
+        <button style="padding:8px;margin-top:16px;">查看评论</button>
+    </div>
+</div>
+
+<script>
+    var btnShowComment = document.getElementById("btnShowComment");
+    btnShowComment.onclick = function(){
+        window.cbreader.showComments();
+    };
+    var allImg = document.querySelectorAll("img");
+    var allImgUrls = [];
+    for (var i = 0; i < allImg.length; i++) {
+        allImg[i].onclick = (function(index) {
+                return function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    window.cbreader.showImgSlide(index);
+                }
+            })(i);
+
+        allImgUrls.push(allImg[i].src);
+    };
+    window.cbreader.setImgUrls(JSON.stringify(allImgUrls));
+
+</script>
 </body>
 </html>
