@@ -10,13 +10,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
 import com.github.ksoichiro.android.observablescrollview.ObservableWebView;
-import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 
@@ -42,7 +42,6 @@ import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
@@ -57,10 +56,12 @@ import me.zheteng.cbreader.BuildConfig;
 import me.zheteng.cbreader.MainApplication;
 import me.zheteng.cbreader.R;
 import me.zheteng.cbreader.model.Article;
+import me.zheteng.cbreader.model.NewsComment;
 import me.zheteng.cbreader.model.NewsContent;
 import me.zheteng.cbreader.ui.widget.HackyViewPager;
 import me.zheteng.cbreader.ui.widget.MaterialProgressBar;
 import me.zheteng.cbreader.utils.APIUtils;
+import me.zheteng.cbreader.utils.PrefUtils;
 import me.zheteng.cbreader.utils.Utils;
 import me.zheteng.cbreader.utils.volley.GsonRequest;
 import uk.co.senab.photoview.PhotoView;
@@ -69,8 +70,7 @@ import uk.co.senab.photoview.PhotoViewAttacher;
 /**
  * 阅读详情页
  */
-public class ReadFragment extends Fragment implements ObservableScrollViewCallbacks,
-        SharedPreferences.OnSharedPreferenceChangeListener {
+public class ReadFragment extends Fragment implements SharedPreferences.OnSharedPreferenceChangeListener {
     public static final String ACTION_DATA_LOADED = "me.zheteng.cbreader.ReadActivity.DATA_LOADED";
 
     public static final String ARTICLE_SID_KEY = "sid";
@@ -104,6 +104,7 @@ public class ReadFragment extends Fragment implements ObservableScrollViewCallba
     private ImageButton mDownloadPhoto;
     private ViewGroup mPhotoViewContainer;
     private boolean mIsPhotoViewShow;
+    private String mCommentsHtml;
 
     public static ReadFragment newInstance(Article article) {
         ReadFragment fragment = new ReadFragment();
@@ -133,6 +134,11 @@ public class ReadFragment extends Fragment implements ObservableScrollViewCallba
         return view;
     }
 
+    /**
+     * 切换到当前页的时候,要嘛加载页面,要嘛替换TOOLBAR的评论数
+     *
+     * @param isVisibleToUser
+     */
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
@@ -142,7 +148,7 @@ public class ReadFragment extends Fragment implements ObservableScrollViewCallba
                 requestData();
             } else {
                 replaceCount();
-                setShareIntent();
+                //setShareIntent();
             }
 
         }
@@ -154,8 +160,8 @@ public class ReadFragment extends Fragment implements ObservableScrollViewCallba
         mActivity = ((ReadActivity) getActivity());
         mToolbarHeight = getToolbar().getHeight();
         mPref = PreferenceManager.getDefaultSharedPreferences(mActivity);
-        mWebView.getSettings().setLoadsImagesAutomatically(
-                mPref.getBoolean(getString(R.string.pref_autoload_image_in_webview_key), true));
+        mWebView.setScrollViewCallbacks(new ShowHideToolbarListener(mActivity, mWebView));
+
         mAdapter = new PhotoViewPagerAdapter();
         mViewPager.setAdapter(mAdapter);
 
@@ -205,10 +211,11 @@ public class ReadFragment extends Fragment implements ObservableScrollViewCallba
             public void onResponse(NewsContent newsContent) {
 
                 mNewsContent = newsContent;
-                setShareIntent();
+                //                setShareIntent();
                 mActivity.getShareMenuItem().setVisible(true);
                 mActivity.sendBroadcast(new Intent(ACTION_DATA_LOADED + mSid));
                 mProgressBar.setVisibility(View.GONE);
+                requestComments(1);
                 renderContent();
                 mHasLoaded = true;
             }
@@ -222,6 +229,57 @@ public class ReadFragment extends Fragment implements ObservableScrollViewCallba
                 mProgressBar.setVisibility(View.GONE);
             }
         }));
+    }
+
+    public void requestComments(int page) {
+        MainApplication.requestQueue.add(new GsonRequest<NewsComment[]>(
+                APIUtils.getCommentListWithPageUrl(mSid, page),
+                NewsComment[].class, null, new Response.Listener<NewsComment[]>() {
+            @Override
+            public void onResponse(NewsComment[] newsComment) {
+                List<NewsComment> list = Utils.getListFromArray(newsComment);
+                Collections.sort(list, new Comparator<NewsComment>() {
+                    @Override
+                    public int compare(NewsComment lhs, NewsComment rhs) {
+                        int l = Integer.parseInt(lhs.support) + Integer.parseInt(lhs.against);
+                        int r = Integer.parseInt(rhs.support) + Integer.parseInt(rhs.against);
+                        return r - l;
+                    }
+                });
+                appendHotComments(list);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+
+            }
+        }));
+    }
+
+    private void appendHotComments(List<NewsComment> list) {
+        if (list.size() == 0) {
+            return;
+        }
+
+        String tpl = mActivity.getCommentsTemplate();
+        String itemTpl = mActivity.getCommentsItemTemplate();
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < list.size(); i++) {
+            NewsComment comment = list.get(i);
+            String content = comment.content.replaceAll("\\$", "\\\\\\$");
+            String name = comment.getUsername().replaceAll("\\$", "\\\\\\$");
+
+            String itemHtml = itemTpl.replaceAll("\\$\\{content\\}", content)
+                    .replaceAll("\\$\\{name\\}", name)
+                    .replaceAll("\\$\\{support\\}", comment.support)
+                    .replaceAll("\\$\\{against\\}", comment.against);
+            builder.append(itemHtml);
+        }
+
+        String result = tpl.replaceAll("\\$\\{comments\\}", builder.toString())
+                .replaceAll("\\n", " ");
+
+        mWebView.loadUrl("javascript:appendComments('" + result + "')");
     }
 
     private void setShareIntent(){
@@ -272,7 +330,6 @@ public class ReadFragment extends Fragment implements ObservableScrollViewCallba
         });
         mWebView.addJavascriptInterface(new MyJsInterface(), "cbreader");
 
-        mWebView.setScrollViewCallbacks(this);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             if (BuildConfig.DEBUG) {
                 WebView.setWebContentsDebuggingEnabled(true);
@@ -329,7 +386,14 @@ public class ReadFragment extends Fragment implements ObservableScrollViewCallba
                     .replaceAll("\\$\\{content\\}", body)
                     .replaceAll("\\$\\{good\\}", mNewsContent.good)
                     .replaceAll("\\$\\{comments\\}", comments)
+                    .replaceAll("\\$\\{font\\}", String.valueOf(PrefUtils.getFontSize(mActivity)))
                     .replaceAll("\\$\\{score\\}", mNewsContent.score);
+
+            if (!Utils.isConnectedWifi(mActivity)) {
+                if (!mPref.getBoolean(getString(R.string.pref_autoload_image_in_webview_key), true)) {
+                    mWebView.getSettings().setLoadsImagesAutomatically(false);
+                }
+            }
 
             mWebView.loadData(html, "text/html; charset=UTF-8", null);
 
@@ -345,41 +409,14 @@ public class ReadFragment extends Fragment implements ObservableScrollViewCallba
     }
 
     @Override
-    public void onScrollChanged(int scrollY, boolean b, boolean b2) {
-        ViewConfiguration vc = ViewConfiguration.get(mActivity);
-        boolean scrollUp = mPrevScrollY < scrollY; // 页面向上滚动
-        int slop = Math.abs(scrollY - mStartY);
-
-        if (slop > vc.getScaledTouchSlop()) {
-            if (scrollUp) {
-                if (mActivity.isToolbarShow()) {
-                    mActivity.hideToolbar();
-                }
-            } else {
-                if (!mActivity.isToolbarShow()) {
-                    mActivity.showToolbar();
-                }
-            }
-        }
-
-        mPrevScrollY = scrollY;
-    }
-
-    @Override
-    public void onDownMotionEvent() {
-        mStartY = mWebView.getCurrentScrollY();
-    }
-
-    @Override
-    public void onUpOrCancelMotionEvent(ScrollState scrollState) {
-
-    }
-
-    @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         if (key.equals(getString(R.string.pref_autoload_image_in_webview_key))) {
-            mWebView.getSettings().setLoadsImagesAutomatically(sharedPreferences.getBoolean(key, true));
-            mWebView.reload();
+            if (!Utils.isConnectedWifi(mActivity)) {
+                mWebView.getSettings().setLoadsImagesAutomatically(sharedPreferences.getBoolean(key, true));
+                mWebView.reload();
+            }
+        } else if (key.equals(PrefUtils.KEY_FONT_SIZE)) {
+            mWebView.loadUrl("javascript:setFontSize(" + sharedPreferences.getInt(key, 16) + ")");
         }
     }
 

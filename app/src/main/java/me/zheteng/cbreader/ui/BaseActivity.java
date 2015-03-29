@@ -9,6 +9,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
+import me.zheteng.cbreader.BuildConfig;
 
 /**
  * 基础Activity
@@ -41,13 +42,17 @@ public class BaseActivity extends ActionBarActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        MobclickAgent.onResume(this);
+        if (!BuildConfig.DEBUG) {
+            MobclickAgent.onResume(this);
+        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        MobclickAgent.onPause(this);
+        if (!BuildConfig.DEBUG) {
+            MobclickAgent.onPause(this);
+        }
     }
 
     public Toolbar getToolbar() {

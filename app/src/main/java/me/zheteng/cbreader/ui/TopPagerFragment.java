@@ -14,6 +14,8 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewPropertyAnimator;
+import android.view.animation.DecelerateInterpolator;
 import me.zheteng.cbreader.R;
 import me.zheteng.cbreader.utils.UIUtils;
 
@@ -46,6 +48,7 @@ public class TopPagerFragment extends Fragment {
     private TopPagerAdapter mAdapter;
     private PagerSlidingTabStrip mTabs;
     private MainActivity mActivity;
+    private ViewGroup mTabsContainer;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -79,6 +82,26 @@ public class TopPagerFragment extends Fragment {
         mTabs.setIndicatorColor(Color.WHITE);
         mTabs.setIndicatorHeight((int) UIUtils.dpToPixels(mActivity, 2));
         mTabs.setUnderlineColorResource(R.color.theme_primary);
+        mTabs.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                if (!mActivity.isToolbarShow()) {
+                    mActivity.showToolbar();
+                    ViewPropertyAnimator animator1 = mTabsContainer.animate().translationY(0).setInterpolator(new
+                            DecelerateInterpolator());
+                    animator1.start();
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
         //        mTabs.setIndicatorColorResource(R.color.theme_primary);
 
     }
@@ -87,6 +110,7 @@ public class TopPagerFragment extends Fragment {
         mViewPager = (ViewPager) view.findViewById(R.id.top_pager);
 
         mTabs = (PagerSlidingTabStrip) view.findViewById(R.id.tabs);
+        mTabsContainer = (ViewGroup) view.findViewById(R.id.tabs_container);
 
     }
 
@@ -110,7 +134,9 @@ public class TopPagerFragment extends Fragment {
 
         @Override
         public Fragment getItem(int position) {
-            return TopFragment.newInstance(TOP_TYPES[position]);
+            TopFragment fragment = TopFragment.newInstance(TOP_TYPES[position]);
+            fragment.setTabs(mTabsContainer);
+            return fragment;
         }
 
         @Override

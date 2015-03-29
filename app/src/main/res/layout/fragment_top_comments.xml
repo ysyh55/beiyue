@@ -10,13 +10,14 @@
             android:id="@+id/swipe_refresh_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="?attr/actionBarSize"
             >
         <com.github.ksoichiro.android.observablescrollview.ObservableRecyclerView
                 android:id="@+id/top_comments_list"
                 android:scrollbars="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:paddingTop="?attr/actionBarSize"
+                android:clipToPadding="false"
                 />
     </android.support.v4.widget.SwipeRefreshLayout>
 

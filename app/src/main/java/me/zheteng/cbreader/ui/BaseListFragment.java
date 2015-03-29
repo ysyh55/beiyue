@@ -58,22 +58,21 @@ public class BaseListFragment extends Fragment {
     protected void loadMoreArticles(String url) {
         mLoadingData = true;
 
-        mAdapter.addItem(null); // 添加null多出进度条;
-
         MainApplication.requestQueue.add(new GsonRequest<Article[]>(url, Article[].class, null,
                 new Response.Listener<Article[]>() {
                     @Override
                     public void onResponse(Article[] s) {
                         List<Article> articles = Utils.getListFromArray(s);
-                        mAdapter.removeLast(); // 去掉最后的一个, 进度条
                         mAdapter.appendData(articles);
                         mLoadingData = false;
+                        mAdapter.resetLoadMoreButton();
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
                 mSwipeRefreshLayout.setRefreshing(false);
                 mLoadingData = false;
+                mAdapter.resetLoadMoreButton();
                 Toast.makeText(mActivity, "加载错误", Toast.LENGTH_SHORT).show();
             }
         }));
@@ -81,6 +80,9 @@ public class BaseListFragment extends Fragment {
 
     protected void refreshData(String url) {
         mLoadingData = true;
+        if (! mSwipeRefreshLayout.isRefreshing()) {
+            mSwipeRefreshLayout.setRefreshing(true);
+        }
         final GsonRequest request = new GsonRequest<Article[]>(url, Article[].class, null,
                 new Response.Listener<Article[]>() {
                     @Override

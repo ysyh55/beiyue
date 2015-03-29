@@ -16,7 +16,7 @@ import me.zheteng.cbreader.R;
 /**
  * 关于界面
  */
-public class AboutActivity extends BaseActivity {
+public class AboutActivity extends SwipeBackActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

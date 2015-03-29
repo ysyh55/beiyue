@@ -21,8 +21,8 @@ android {
         applicationId "me.zheteng.cbreader"
         minSdkVersion 14
         targetSdkVersion 21
-        versionCode 10
-        versionName "1.2.1.3"
+        versionCode 12
+        versionName "1.2.2.0"
     }
     buildTypes {
         debug {
@@ -53,6 +53,10 @@ android {
         google_play {
             manifestPlaceholders = [channel: "google_play"]
         }
+//        yingyongbao {
+//            manifestPlaceholders = [channel: "yingyongbao"]
+//        }
+
     }
 
     lintOptions {
@@ -67,6 +71,7 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile project(':ActionableToastbar')
     compile 'com.android.support:appcompat-v7:21.0.3'
     compile 'com.android.support:cardview-v7:21.0.+'
     compile 'com.android.support:recyclerview-v7:21.0.+'
@@ -76,11 +81,12 @@ dependencies {
     compile 'com.github.ksoichiro:android-observablescrollview:1.5.0'
     compile 'com.umeng.analytics:analytics:latest.integration'
     compile 'com.github.chrisbanes.photoview:library:1.2.3'
+    compile 'de.greenrobot:greendao:1.3+'
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.astuetz:pagerslidingtabstrip:1.0.1'
     compile 'com.mcxiaoke.volley:library:1.0.+@aar'
     compile 'joda-time:joda-time:2.7'
     compile 'org.jsoup:jsoup:1.8.1'
     compile 'com.loopeer.android.thirdparty:swipe-back-layout:1.0'
-
+    compile 'com.bignerdranch.android:recyclerview-multiselect:+'
 }

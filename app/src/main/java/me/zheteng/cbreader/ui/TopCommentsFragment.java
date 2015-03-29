@@ -73,6 +73,8 @@ public class TopCommentsFragment extends Fragment {
         mActivity.setTitle(R.string.top_comments_fragment_title);
 
         setupRecyclerView();
+        trySetupSwipeRefresh();
+
 
         if (!loadCachedData()) {
             refreshData(APIUtils.getRecommendCommentUrl());
@@ -138,10 +140,10 @@ public class TopCommentsFragment extends Fragment {
 
         mAdapter = new TopCommentsListAdapter(mActivity, null);
         mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.setScrollViewCallbacks(new ShowHideToolbarListener(mActivity, mRecyclerView));
     }
 
-    private void trySetupSwipeRefresh(View root) {
-        mSwipeRefreshLayout = (SwipeRefreshLayout) root.findViewById(R.id.swipe_refresh_layout);
+    private void trySetupSwipeRefresh() {
         if (mSwipeRefreshLayout != null) {
             mSwipeRefreshLayout.setColorSchemeResources(
                     R.color.refresh_progress_1,
@@ -166,7 +168,7 @@ public class TopCommentsFragment extends Fragment {
                 R.dimen.swipe_refresh_progress_bar_start_margin);
         int progressBarEndMargin = getResources().getDimensionPixelSize(
                 R.dimen.swipe_refresh_progress_bar_end_margin);
-        int top = mToolbarHeight;
+        int top = mActivity.getToolbar().getHeight();
         mSwipeRefreshLayout.setProgressViewOffset(false,
                 top + progressBarStartMargin, top + progressBarEndMargin);
 
@@ -178,7 +180,7 @@ public class TopCommentsFragment extends Fragment {
 
         mProgressBar = (MaterialProgressBar) view.findViewById(R.id.loading_progress);
         mNoDataHint = (TextView) view.findViewById(R.id.no_data_hint);
-        trySetupSwipeRefresh(view);
+        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
     }
 
     private class TopCommentsListAdapter extends RecyclerView.Adapter implements View.OnClickListener {

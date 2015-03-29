@@ -22,6 +22,7 @@ public class PrefUtils {
 
     public static final String KEY_COMMENT_ORDER = "pref_comment_order";
     public static final String KEY_TOP_COMMENTS = "key_top_comments"; // 热门评论页数据
+    public static final String KEY_FONT_SIZE = "key_font_size";
 
     /**
      * 保存首页缓存
@@ -64,5 +65,21 @@ public class PrefUtils {
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
         editor.putBoolean("is_welcome_done", true);
         editor.commit();
+    }
+
+    public static int getFontSize(Context context) {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+
+        return sp.getInt(KEY_FONT_SIZE, 16);
+    }
+
+    public static void setFontSize(Context context, int fontSize) {
+        if (fontSize < 10 || fontSize > 25) {
+            return;
+        }
+        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
+
+        editor.putInt(KEY_FONT_SIZE, fontSize);
+        editor.apply();
     }
 }

@@ -2,6 +2,9 @@
 <head>
     <meta content="width=device-width,initial-scale=1.0" name="viewport">
     <style type="text/css">
+        html {
+        font-size:${font}px;
+        }
         body {
         margin: 0;
         margin-top: 50px;
@@ -13,15 +16,15 @@
         word-break: break-all;
         }
         h1 {
-        font-size: 24px;
+        font-size: 1.3em;
         font-weight: 500;
         margin-top: 50px;
         mari
         }
         p {
         color: #242424;
-        font-size: 16px;
-        line-height: 22px;
+        font-size: 1em;
+        line-height: 1.375em;
         }
         img {
         width: 100%!important;
@@ -32,7 +35,7 @@
         }
         #time {
         color: #616161;
-        font-size: 13px;
+        font-size: 0.81em;
         }
         iframe,embed, video,object {
         width: 100%!important;
@@ -41,11 +44,11 @@
         #intro{
         margin-top:1em;
         margin-bottom:1em;
-        font-size: 14px;
+        font-size: 0.88em;
         background: #F5F5F5;
         padding: 10px; }
         #intro p {
-        font-size: 15px;
+        font-size: 0.95em;
         margin: 0;
         }
         #source{
@@ -56,6 +59,46 @@
         #source a{
         color: #444444;
         text-decoration: none;
+        }
+        #viewComment {
+        padding:10px 25px;margin-top:16px;background: #ddd;border: none;outline:none;
+        user-select:none;
+        width: 100%;
+        }
+        #viewComment:active {
+        background:#e6e6e6;
+        }
+
+        .hot-comments h5 {
+        border-top: 2px solid #EFB16A;
+        padding-top: 1em;
+        color: #EFB16A;
+        font-size:0.93em;
+        }
+        .comments-ul {
+        padding: 0;
+
+        }
+        .comments-ul p.comments-supports{
+        color: #909090;
+        font-size: 0.75em;
+        margin-bottom: 5px;
+        }
+        .comments-ul p {
+        font-size: 0.93em;
+        margin: 0;
+        }
+        .comments-li {
+        border-top: 1px solid #ddd;
+        padding: 10px 0;
+        margin: 0;
+        list-style:none;
+        }
+        .comments-author {
+        color: #67BCF9;
+        }
+        .comments-content {
+
         }
     </style>
 </head>
@@ -75,17 +118,19 @@
 <div id="intro">
     ${intro}
 </div>
+
 ${content}
 
 
 <div id="footer" style="text-align:center;border-top:1px solid #ddd;padding-top:8px;">
     ${good} 次推荐 | ${comments} 次打分 | 事件分: ${score}
-
-    <div style="text-align:center;" id="btnShowComment">
-        <button style="padding:8px;margin-top:16px;">查看评论</button>
-    </div>
 </div>
+<div id="commentsContainer">
 
+</div>
+<div style="text-align:center;user-select: none;" id="btnShowComment">
+    <button id="viewComment">查看全部评论</button>
+</div>
 <script>
     var btnShowComment = document.getElementById("btnShowComment");
     btnShowComment.onclick = function(){
@@ -106,6 +151,14 @@ ${content}
     };
     window.cbreader.setImgUrls(JSON.stringify(allImgUrls));
 
+
+    function appendComments(html) {
+        document.getElementById("commentsContainer").innerHTML = html;
+    }
+
+    function setFontSize(size) {
+        document.body.style.fontSize = "" + size + "px";
+    }
 </script>
 </body>
 </html>

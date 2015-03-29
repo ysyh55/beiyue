@@ -44,7 +44,7 @@
     <string name="press_again">再按一次退出CNBETA Now</string>
     <string name="top_comments_fragment_title">热门评论</string>
     <string name="publish_sub">发表于</string>
-    <string name="pref_image">图片控制</string>
+    <string name="pref_image">流量控制</string>
     <string name="pref_autoload_image_in_webview">正文图片</string>
     <string name="topic">类别</string>
     <string name="pref_autoload_image_in_list">列表图片</string>
@@ -57,4 +57,20 @@
     <string name="action_save_pic">保存图片</string>
     <string name="pref_open_image_folder_key">pref_open_image_folder</string>
     <string name="pref_open_image_folder">打开保存的图片</string>
+    <string name="menu_share">分享</string>
+    <string name="favorite">我的收藏</string>
+    <string name="delete">删除</string>
+    <string name="add_favorite">收藏</string>
+    <string name="pref_style">显示风格</string>
+    <string name="pref_list_style_key">pref_list_style</string>
+    <string name="pref_list_style">列表风格</string>
+    <string name="pref_card_style">卡片风格</string>
+    <string name="list_style_dialog_title">选择列表显示风格</string>
+    <string name="load_more">点击加载更多</string>
+    <string name="favorite_success">收藏成功</string>
+    <string name="pref_autoload_when_start_key">pref_autoload_when_start</string>
+    <string name="pref_autoload_when_start">自动刷新</string>
+    <string name="pref_autoload_when_start_summary">打开列表时自动更新列表</string>
+    <string name="big_font">增大字号</string>
+    <string name="small_font">减小字号</string>
 </resources>

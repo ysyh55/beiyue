@@ -3,6 +3,8 @@
  */
 package me.zheteng.cbreader.model;
 
+import org.jsoup.Jsoup;
+
 import android.os.Parcel;
 import android.os.Parcelable;
 import me.zheteng.cbreader.utils.TimeUtils;
@@ -26,6 +28,22 @@ public class Article implements Parcelable {
     public String thumb;
 
     private String readableTime;
+
+    public void readFromNewsContent(NewsContent content) {
+        title = content.title;
+        pubtime = content.time;
+        summary = Jsoup.parse(content.hometext).text();
+        topic = Integer.parseInt(content.topic);
+        counter = Integer.parseInt(content.counter);
+        comments = content.comments;
+        ratings = Float.parseFloat(content.ratings);
+        score = Float.parseFloat(content.score);
+        ratings_story = content.ratings_story;
+        score_story = content.score_story;
+        topic_logo = content.thumb;
+        thumb = content.thumb;
+
+    }
 
     public String getReadableTime() {
         if (readableTime == null) {

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (C) 2015 Baidu, Inc. All Rights Reserved.
+  -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:orientation="vertical"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             android:paddingTop="?attr/actionBarSize">
+    <com.github.ksoichiro.android.observablescrollview.ObservableRecyclerView
+            android:id="@+id/favorite_list"
+            android:scrollbars="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            />
+    <FrameLayout android:id="@+id/undo_frame"
+                 android:layout_width="match_parent"
+                 android:layout_height="match_parent"
+                 android:visibility="gone" >
+        <me.zheteng.actionabletoastbar.ActionableToastBar
+                android:id="@+id/undo_bar"
+                android:layout_width="match_parent"
+                android:layout_height="64dip"
+                android:layout_alignParentBottom="true"
+                android:layout_gravity="bottom"
+                android:layout_marginBottom="96dp"
+                android:layout_marginLeft="@dimen/alarm_undo_bar_horizontal_margin"
+                android:layout_marginStart="@dimen/alarm_undo_bar_horizontal_margin"
+                android:layout_marginRight="@dimen/alarm_undo_bar_horizontal_margin"
+                android:layout_marginEnd="@dimen/alarm_undo_bar_horizontal_margin"
+                style="@style/ToastBarStyle"/>
+    </FrameLayout>
+
+
+</FrameLayout>

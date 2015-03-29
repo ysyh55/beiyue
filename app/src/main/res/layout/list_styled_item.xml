@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (C) 2015 Baidu, Inc. All Rights Reserved.
+  -->
+<android.support.v7.widget.CardView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/feed_list_item_margin_left"
+        android:layout_marginRight="@dimen/feed_list_item_margin_right"
+        android:layout_marginBottom="2dp"
+        card_view:cardCornerRadius="0dp"
+        card_view:cardElevation="0dp"
+        card_view:cardUseCompatPadding="false"
+        card_view:contentPadding="16dp"
+        android:clickable="false"
+        android:background="?attr/selectableItemBackground"
+        >
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        <ImageView
+                tools:visibility="visible"
+                tools:src="@drawable/ic_launcher"
+                android:id="@+id/thumb_image"
+                android:layout_marginRight="16dp"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                />
+        <LinearLayout android:layout_width="0dp"
+                      android:layout_height="wrap_content"
+                      android:layout_weight="1"
+                      android:orientation="vertical">
+            <TextView
+                    android:id="@+id/title"
+                    tools:text="推进三证合一年内力争实现"
+                    style="@style/Base.TextAppearance.AppCompat.Subhead"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+            <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp">
+                <TextView
+                        android:id="@+id/comment_count"
+                        tools:text="20条评论"
+                        style="@style/Base.TextAppearance.AppCompat.Caption"
+                        android:textColor="@color/theme_primary_light"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                <TextView
+                        android:text=" - "
+                        style="@style/Base.TextAppearance.AppCompat.Caption"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                <TextView
+                        android:id="@+id/time"
+                        tools:text="5天前"
+                        style="@style/Base.TextAppearance.AppCompat.Caption"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+</android.support.v7.widget.CardView>

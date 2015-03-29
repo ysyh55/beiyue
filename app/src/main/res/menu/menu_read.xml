@@ -23,6 +23,25 @@
             android:checkable="true"
             android:checked="false"
             android:title="@string/toggle_image" />
+    <item
+            android:visible="true"
+            android:id="@+id/action_favorite"
+            app:showAsAction="never"
+            android:icon="@drawable/ic_share_white_24dp"
+            android:title="@string/add_favorite"/>
+
+    <item
+            android:visible="true"
+            android:id="@+id/action_font_big"
+            app:showAsAction="never"
+            android:title="@string/big_font"/>
+
+    <item
+            android:visible="true"
+            android:id="@+id/action_font_small"
+            app:showAsAction="never"
+            android:title="@string/small_font"/>
+
     <item android:id="@+id/action_view_in_browser"
           android:title="@string/action_view_in_browser"
           android:orderInCategory="100"

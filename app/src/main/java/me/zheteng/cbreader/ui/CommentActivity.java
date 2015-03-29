@@ -40,7 +40,7 @@ import me.zheteng.cbreader.utils.volley.GsonRequest;
 /**
  * 查看评论
  */
-public class CommentActivity extends BaseActivity implements ObservableScrollViewCallbacks {
+public class CommentActivity extends SwipeBackActionBarActivity implements ObservableScrollViewCallbacks {
     public static final String ARTICLE_SID_KEY = "sid";
     public static final String ARTICLE_COUNTD_KEY = "count";
 

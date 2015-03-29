@@ -18,6 +18,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,7 +40,6 @@ public class TopFragment extends BaseListFragment implements ObservableScrollVie
         SharedPreferences.OnSharedPreferenceChangeListener {
 
     private MainActivity mActivity;
-    private ArticleListAdapter mAdapter;
     private LinearLayoutManager mLayoutManager;
     private boolean mHasLoaded;
     private MaterialProgressBar mProgressBar;
@@ -57,6 +57,7 @@ public class TopFragment extends BaseListFragment implements ObservableScrollVie
     private int mType;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private ObservableRecyclerView mRecyclerView;
+    private View mTabsContainer;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -79,8 +80,13 @@ public class TopFragment extends BaseListFragment implements ObservableScrollVie
         mActivity.getToolbar().getBackground().setAlpha(255);
         mPref = PreferenceManager.getDefaultSharedPreferences(mActivity);
         setupRecyclerView();
+        trySetupSwipeRefresh();
 
-
+        loadCachedData();
+        if (mPref.getBoolean(getString(R.string.pref_autoload_when_start_key), true)) {
+            Log.d("junyue", "auto_load_data");
+            refreshData(getAPIUrl());
+        }
     }
 
     @Override
@@ -95,6 +101,11 @@ public class TopFragment extends BaseListFragment implements ObservableScrollVie
         mPref.unregisterOnSharedPreferenceChangeListener(this);
     }
 
+    /**
+     * 会自动根据当前的分类来进行缓存
+     *
+     * @return 是否获取到缓存数据
+     */
     protected boolean loadCachedData() {
         mLoadingData = true;
         String json = PrefUtils.getCacheOfKey(getActivity(), getCacheKey());
@@ -121,52 +132,22 @@ public class TopFragment extends BaseListFragment implements ObservableScrollVie
         mRecyclerView.setScrollViewCallbacks(this);
         mLayoutManager = new LinearLayoutManager(mActivity);
 
-        //        mRecyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
-        //
-        //            @Override
-        //            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-        //                super.onScrolled(recyclerView, dx, dy);
-        //
-        //                visibleItemCount = mRecyclerView.getChildCount();
-        //                totalItemCount = mLayoutManager.getItemCount();
-        //                firstVisibleItem = mLayoutManager.findFirstVisibleItemPosition();
-        //
-        //                if (loading) {
-        //                    if (totalItemCount > previousTotal) {
-        //                        loading = false;
-        //                        previousTotal = totalItemCount;
-        //                    }
-        //                }
-        //                if (!loading && (totalItemCount - visibleItemCount)
-        //                        <= (firstVisibleItem + visibleThreshold)) {
-        //                    // End has been reached
-        //
-        //                    Log.i("...", "end called");
-        //
-        //                    if (!mLoadingData) {
-        //                        loadMoreArticles(mApiUrl);
-        //                    }
-        //
-        //                    loading = true;
-        //                }
-        //            }
-        //        });
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setHasFixedSize(false);
-
+        mRecyclerView.setScrollViewCallbacks(new MyShowHideToolbarListener(mActivity, mRecyclerView, mTabsContainer));
 
         mAdapter = new ArticleListAdapter(mActivity,
                 null,
-                false,
                 mRecyclerView,
-                0,
-                mPref.getBoolean(getString(R.string.pref_autoload_image_in_list_key), true));
-        mAdapter.setIsFromTopFragment(true);
+                mPref.getBoolean(getString(R.string.pref_autoload_image_in_list_key), true), false);
+        String style = mPref.getString(mActivity.getString(R.string.pref_list_style_key),
+                mActivity.getString(R.string.pref_card_style_value));
+        mAdapter.setStyle(style);
+        mAdapter.setLoadOnlyOneArticle(true);
         mRecyclerView.setAdapter(mAdapter);
     }
 
-    private void trySetupSwipeRefresh(View root) {
-        mSwipeRefreshLayout = (SwipeRefreshLayout) root.findViewById(R.id.swipe_refresh_layout);
+    private void trySetupSwipeRefresh() {
         if (mSwipeRefreshLayout != null) {
             mSwipeRefreshLayout.setColorSchemeResources(
                     R.color.refresh_progress_1,
@@ -237,7 +218,7 @@ public class TopFragment extends BaseListFragment implements ObservableScrollVie
                 R.dimen.swipe_refresh_progress_bar_start_margin);
         int progressBarEndMargin = getResources().getDimensionPixelSize(
                 R.dimen.swipe_refresh_progress_bar_end_margin);
-        int top = 0;
+        int top = mActivity.getToolbar().getHeight();
         mSwipeRefreshLayout.setProgressViewOffset(false,
                 top + progressBarStartMargin, top + progressBarEndMargin);
 
@@ -245,7 +226,6 @@ public class TopFragment extends BaseListFragment implements ObservableScrollVie
     }
 
     private void initViews(View view) {
-        trySetupSwipeRefresh(view);
         mRecyclerView = ((ObservableRecyclerView) view.findViewById(R.id.feed_list));
         mProgressBar = ((MaterialProgressBar) view.findViewById(R.id.loading_progress));
 
@@ -258,6 +238,8 @@ public class TopFragment extends BaseListFragment implements ObservableScrollVie
                 refreshData(getAPIUrl());
             }
         });
+        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
+
     }
 
     private String getAPIUrl() {
@@ -310,4 +292,13 @@ public class TopFragment extends BaseListFragment implements ObservableScrollVie
             mAdapter.setIsShowThumb(sharedPreferences.getBoolean(key,true));
         }
     }
+
+    public View getTabs() {
+        return mTabsContainer;
+    }
+
+    public void setTabs(View mTabs) {
+        this.mTabsContainer = mTabs;
+    }
+
 }

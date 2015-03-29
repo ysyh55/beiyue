@@ -3,6 +3,8 @@
  */
 package me.zheteng.cbreader.ui;
 
+import static me.zheteng.cbreader.data.CnBetaContract.FavoriteEntry;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,7 +14,9 @@ import java.util.List;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.google.gson.Gson;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -40,6 +44,7 @@ import me.zheteng.cbreader.model.Article;
 import me.zheteng.cbreader.model.NewsContent;
 import me.zheteng.cbreader.ui.widget.HackyViewPager;
 import me.zheteng.cbreader.utils.APIUtils;
+import me.zheteng.cbreader.utils.PrefUtils;
 import me.zheteng.cbreader.utils.UIUtils;
 import me.zheteng.cbreader.utils.Utils;
 import me.zheteng.cbreader.utils.volley.GsonRequest;
@@ -55,8 +60,8 @@ public class ReadActivity extends SwipeBackActionBarActivity {
     public static final String KEY_RESULT_ARTICELS = "result_articles";
     private static final String TAG = "ReadActivity";
     public static final String TOP_COMMENT_SID_KEY = "top_comment_sid";
-    public static final String FROM_TOP_COMMENT_KEY = "from_top_comment_key";
-    public static final String FROM_TOP_KEY = "from_top_key";
+    public static final String FROM_TOP_COMMENT_KEY = "from_top_comment_key"; //TopComment是热门评论页
+    public static final String DISABLE_LOAD_MORE_KEY = "from_top_key"; // Top是指排行榜
 
     private int mToolbarHeight;
 
@@ -65,6 +70,8 @@ public class ReadActivity extends SwipeBackActionBarActivity {
     private HackyViewPager mViewPager;
     private ReadFragmentPagerAdapter mReadFragmentAdapter;
     private String mHtmlTemplate;
+    private String mCommentsTemplate;
+    private String mCommentsItemTemplate;
     private boolean mIsLoadingMoreData;
     private MenuItem mCommentMenuItem;
 
@@ -152,7 +159,10 @@ public class ReadActivity extends SwipeBackActionBarActivity {
         mShareIntent.putExtra(Intent.EXTRA_TEXT, newsContent.title + " http://www.cnbeta.com/articles/" +
                 newsContent.sid + ".htm");
 
-        mShareActionProvider.setShareIntent(mShareIntent);
+        mShareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        startActivity(Intent.createChooser(mShareIntent, getString(R.string.menu_share)));
+        //        mShareActionProvider.setShareIntent(mShareIntent);
     }
 
 
@@ -194,7 +204,7 @@ public class ReadActivity extends SwipeBackActionBarActivity {
                 mCurrentFragment = mReadFragmentAdapter.getRegisteredFragment(position);
                 if (position == mReadFragmentAdapter.getCount() - 1
                         && !mIsLoadingMoreData
-                        && !getIntent().getBooleanExtra(FROM_TOP_KEY, false)) {
+                        && !getIntent().getBooleanExtra(DISABLE_LOAD_MORE_KEY, false)) {
                     loadMoreData();
                 }
             }
@@ -206,6 +216,15 @@ public class ReadActivity extends SwipeBackActionBarActivity {
         });
         if (mIsFromTopComment) {
             mViewPager.setEnabled(false);
+        }
+    }
+
+    public ReadFragment getCurrentFragment() {
+        if (mCurrentFragment == null) {
+            mCurrentFragment = mReadFragmentAdapter.getRegisteredFragment(mPosition);
+            return mCurrentFragment;
+        } else {
+            return mCurrentFragment;
         }
     }
 
@@ -221,6 +240,16 @@ public class ReadActivity extends SwipeBackActionBarActivity {
                 startActivity(intent);
                 return true;
             }
+            case R.id.action_share:
+                setShareIntent(getCurrentFragment().getNewsContent());
+                return true;
+            case R.id.action_favorite:
+                if (mIsFromTopComment) {
+                    getArticleInfoAndAddFavorite();
+                } else {
+                    addFavorite(this, getCurrentFragment().getNewsContent(), mArticles.get(mCurrentPosition));
+                }
+                return true;
             case R.id.action_view_comments: {
                 if (mReadFragmentAdapter.getRegisteredFragment(mCurrentPosition).getNewsContent() == null) {
                     return true;
@@ -234,6 +263,12 @@ public class ReadActivity extends SwipeBackActionBarActivity {
                 startActivity(intent);
                 return true;
             }
+            case R.id.action_font_big:
+                PrefUtils.setFontSize(this, PrefUtils.getFontSize(this) + 1);
+                break;
+            case R.id.action_font_small:
+                PrefUtils.setFontSize(this, PrefUtils.getFontSize(this) - 1);
+                break;
             case R.id.action_toggle_image:
                 mPref.edit().putBoolean(getString(R.string.pref_autoload_image_in_webview_key),
                         mImageToggleMenuItem.isChecked()).apply();
@@ -245,6 +280,39 @@ public class ReadActivity extends SwipeBackActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void getArticleInfoAndAddFavorite() {
+        MainApplication.requestQueue.add(new GsonRequest<NewsContent>(APIUtils.getNewsContentUrl(mCurrentSid),
+                NewsContent.class, null, new Response.Listener<NewsContent>() {
+            @Override
+            public void onResponse(NewsContent newsContent) {
+                mArticles.get(mCurrentPosition).readFromNewsContent(newsContent);
+                addFavorite(ReadActivity.this, newsContent, mArticles.get(mCurrentPosition));
+
+            }
+        }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                Toast.makeText(ReadActivity.this, "拉取信息错误,请检查网络", Toast.LENGTH_SHORT).show();
+            }
+        }));
+        mArticles.get(mCurrentPosition).readFromNewsContent(getCurrentFragment().getNewsContent());
+
+    }
+
+    private void addFavorite(ReadActivity context, NewsContent newsContent, Article article) {
+        Gson gson = new Gson();
+        ContentValues cv = new ContentValues();
+        cv.put(FavoriteEntry.COLUMN_SID, mCurrentSid);
+        cv.put(FavoriteEntry.COLUMN_ARTICLE, gson.toJson(article));
+        cv.put(FavoriteEntry.COLUMN_NEWSCONTENT, gson.toJson(newsContent));
+        cv.put(FavoriteEntry.COLUMN_CREATE_TIME, System.currentTimeMillis());
+        Uri uri = context.getContentResolver().insert(FavoriteEntry.CONTENT_URI, cv);
+        if (uri != null) {
+            Toast.makeText(this, R.string.favorite_success, Toast.LENGTH_SHORT).show();
+        }
     }
 
     public HackyViewPager getFragmentViewPager() {
@@ -341,6 +409,20 @@ public class ReadActivity extends SwipeBackActionBarActivity {
 
     public void setOnBackPressedListener(OnBackPressedListener mOnBackPressedListener) {
         this.mOnBackPressedListener = mOnBackPressedListener;
+    }
+
+    public String getCommentsTemplate() {
+        if (mCommentsTemplate == null) {
+            mCommentsTemplate = loadAssetTextAsString(this, "comments.html");
+        }
+        return mCommentsTemplate;
+    }
+
+    public String getCommentsItemTemplate() {
+        if (mCommentsItemTemplate == null) {
+            mCommentsItemTemplate = loadAssetTextAsString(this, "commentsitem.html");
+        }
+        return mCommentsItemTemplate;
     }
 
     public class ReadFragmentPagerAdapter extends FragmentStatePagerAdapter {

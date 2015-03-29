@@ -2,22 +2,29 @@
 <!--
   ~ Copyright (C) 2015 junyuecao@gmail.com All Rights Reserved.
   -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:card_view="http://schemas.android.com/apk/res-auto"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:layout_marginTop="?attr/actionBarSize">
-    <android.support.v7.widget.CardView android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"
-                                        card_view:cardCornerRadius="0dp">
-        <com.astuetz.PagerSlidingTabStrip
-                android:id="@+id/tabs"
-                android:layout_width="match_parent"
-                android:layout_height="48dip"/>
-    </android.support.v7.widget.CardView>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent">
     <android.support.v4.view.ViewPager
             android:id="@+id/top_pager"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-</LinearLayout>
+            android:layout_height="match_parent"
+            android:paddingTop="@dimen/top_pager_tabs_height"/>
+    <FrameLayout
+            android:id="@+id/tabs_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="0dp"
+            android:background="@color/theme_primary"
+            android:clipToPadding="false"
+            android:layout_marginTop="?attr/actionBarSize"
+            android:layout_marginLeft="0dp"
+            android:layout_marginRight="0dp"
+            android:layout_marginBottom="0dp">
+        <com.astuetz.PagerSlidingTabStrip
+                android:id="@+id/tabs"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/top_pager_tabs_height"/>
+    </FrameLayout>
+
+</FrameLayout>

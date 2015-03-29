@@ -11,7 +11,7 @@ import me.zheteng.cbreader.R;
 /**
  * 设置界面
  */
-public class SettingsActivity extends BaseActivity {
+public class SettingsActivity extends SwipeBackActionBarActivity {
 
 
     @Override

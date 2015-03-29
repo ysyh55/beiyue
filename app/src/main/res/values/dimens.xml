@@ -8,8 +8,8 @@
     <dimen name="feed_list_item_margin_bottom">4dp</dimen>
     <dimen name="feed_list_item_padding">12dp</dimen>
     <dimen name="feedlist_item_description_margin">16dp</dimen>
-    <dimen name="swipe_refresh_progress_bar_start_margin">-40dp</dimen>
-    <dimen name="swipe_refresh_progress_bar_end_margin">16dp</dimen>
+    <dimen name="swipe_refresh_progress_bar_start_margin">-30dp</dimen>
+    <dimen name="swipe_refresh_progress_bar_end_margin">15dp</dimen>
     <dimen name="flexible_space_image_height">240dp</dimen>
     <dimen name="intersection_height">16dp</dimen>
     <dimen name="space_support_oppose">16dp</dimen>
@@ -28,6 +28,8 @@
     <dimen name="comment_do_button_width">54dp</dimen>
     <dimen name="comment_list_item_margin_top">1dp</dimen>
     <dimen name="download_photo_size">48dp</dimen>
+    <dimen name="vertical_swipe_threshold">48dp</dimen>
+    <dimen name="top_pager_tabs_height">48dp</dimen>
 
 
 </resources>

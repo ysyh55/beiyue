@@ -31,6 +31,7 @@ import me.zheteng.cbreader.utils.UIUtils;
 public class MainActivity extends BaseActivity implements Palette.PaletteAsyncListener {
     public static final String TAG_NEWS_ARTICES = "news_artices";
     public static final String TAG_RECOMMEND_COMMENT = "recommend_comment";
+    public static final String TAG_FAVORITE = "favorite";
     public static final String TAG_TOP = "top";
     public static final String TAG_TOPIC = "topic";
 
@@ -40,6 +41,7 @@ public class MainActivity extends BaseActivity implements Palette.PaletteAsyncLi
     protected static final int NAVDRAWER_ITEM_TOPIC = 3;
     protected static final int NAVDRAWER_ITEM_SETTINGS = 4;
     protected static final int NAVDRAWER_ITEM_ABOUT = 5;
+    protected static final int NAVDRAWER_ITEM_FAVORITE = 6;
     protected static final int NAVDRAWER_ITEM_INVALID = -1;
     protected static final int NAVDRAWER_ITEM_SEPARATOR = -2;
     protected static final int NAVDRAWER_ITEM_SEPARATOR_SPECIAL = -3;
@@ -52,6 +54,7 @@ public class MainActivity extends BaseActivity implements Palette.PaletteAsyncLi
             R.string.navdrawer_item_topic,
             R.string.navdrawer_item_settings,
             R.string.navdrawer_item_about,
+            R.string.favorite
     };
     private static final int[] NAVDRAWER_ICON_RES_ID = new int[] {
             R.drawable.ic_comment_grey600_24dp,  // My Schedule
@@ -59,6 +62,7 @@ public class MainActivity extends BaseActivity implements Palette.PaletteAsyncLi
             R.drawable.ic_equalizer_grey600_24dp, // Map
             R.drawable.ic_comment_grey600_24dp, // Social
             R.drawable.ic_settings_grey600_24dp, // Video Library
+            R.drawable.ic_person_grey600_24dp, // Video Library
             R.drawable.ic_person_grey600_24dp, // Video Library
     };
 
@@ -170,6 +174,7 @@ public class MainActivity extends BaseActivity implements Palette.PaletteAsyncLi
         mNavDrawerItems.add(NAVDRAWER_ITEM_RECOMMEND_COMMENT);
         mNavDrawerItems.add(NAVDRAWER_ITEM_TOP);
 //        mNavDrawerItems.add(NAVDRAWER_ITEM_TOPIC);
+        mNavDrawerItems.add(NAVDRAWER_ITEM_FAVORITE);
         mNavDrawerItems.add(NAVDRAWER_ITEM_SEPARATOR);
         mNavDrawerItems.add(NAVDRAWER_ITEM_SETTINGS);
         mNavDrawerItems.add(NAVDRAWER_ITEM_ABOUT);
@@ -353,6 +358,14 @@ public class MainActivity extends BaseActivity implements Palette.PaletteAsyncLi
                 }
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                         fragment, TAG_RECOMMEND_COMMENT).commit();
+                break;
+            case NAVDRAWER_ITEM_FAVORITE:
+                fragment = getSupportFragmentManager().findFragmentByTag(TAG_FAVORITE);
+                if (fragment == null) {
+                    fragment = new FavoriteFragment();
+                }
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                        fragment, TAG_FAVORITE).commit();
                 break;
             case NAVDRAWER_ITEM_TOP:
                 fragment = getSupportFragmentManager().findFragmentByTag(TAG_TOP);

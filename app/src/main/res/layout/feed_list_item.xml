@@ -12,7 +12,8 @@
         android:layout_marginTop="@dimen/feed_list_item_margin_top"
         android:layout_marginBottom="@dimen/feed_list_item_margin_bottom"
         card_view:cardCornerRadius="4dp"
-        android:foreground="?attr/selectableItemBackground">
+        android:clickable="false"
+        android:background="?attr/selectableItemBackground">
     <LinearLayout
             android:id="@+id/container"
             android:orientation="vertical"
