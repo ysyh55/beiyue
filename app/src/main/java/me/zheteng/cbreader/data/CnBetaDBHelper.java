@@ -17,7 +17,6 @@ import android.util.Log;
 
 /**
  * 数据库OpenHelper
- * TODO 升级模式
  */
 public class CnBetaDBHelper extends SQLiteOpenHelper {
     // If you change the database schema, you must increment the database version.
