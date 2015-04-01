@@ -60,7 +60,7 @@
                         tools:text="支持1"
                         android:minWidth="@dimen/comment_do_button_width"
                         style="@style/Base.TextAppearance.AppCompat.Caption"
-                        android:background="@android:color/transparent"
+                        android:background="?attr/selectableItemBackgroundBorderless"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
 
@@ -69,7 +69,7 @@
                         android:text="@string/oppose"
                         android:minWidth="@dimen/comment_do_button_width"
                         style="@style/Base.TextAppearance.AppCompat.Caption"
-                        android:background="@android:color/transparent"
+                        android:background="?attr/selectableItemBackgroundBorderless"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         tools:text="反对0"/>

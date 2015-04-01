@@ -11,7 +11,7 @@ import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
 
 /**
- * TODO 记得添加注释
+ * 时间工具类
  */
 public class TimeUtils {
     public static final DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");

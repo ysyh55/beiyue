@@ -1,1 +1,1 @@
-include ':app',  ':ActionableToastbar'
+include ':app',  ':ActionableToastbar', 'IndexableListView'

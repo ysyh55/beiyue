@@ -3,7 +3,11 @@
  */
 package me.zheteng.cbreader.utils;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +16,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Environment;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 import android.webkit.URLUtil;
 
 /**
@@ -159,5 +164,38 @@ public class Utils {
         }else{
             return false;
         }
+    }
+
+
+    public static String loadAssetTextAsString(Context context, String name) {
+        BufferedReader in = null;
+        try {
+            StringBuilder buf = new StringBuilder();
+            InputStream is = context.getAssets().open(name);
+            in = new BufferedReader(new InputStreamReader(is));
+
+            String str;
+            boolean isFirst = true;
+            while ( (str = in.readLine()) != null ) {
+                if (isFirst)
+                    isFirst = false;
+                else
+                    buf.append('\n');
+                buf.append(str);
+            }
+            return buf.toString();
+        } catch (IOException e) {
+            Log.e("AssetLoad", "Error opening asset " + name);
+        } finally {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    Log.e("AssetLoad", "Error closing asset " + name);
+                }
+            }
+        }
+
+        return null;
     }
 }

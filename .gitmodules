@@ -1,0 +1,3 @@
+[submodule "IndexableListView"]
+	path = IndexableListView
+	url = https://github.com/woozzu/IndexableListView.git

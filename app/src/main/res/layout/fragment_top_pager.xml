@@ -4,7 +4,8 @@
   -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
              android:layout_width="match_parent"
-             android:layout_height="match_parent">
+             android:layout_height="match_parent"
+        android:clipChildren="false">
     <android.support.v4.view.ViewPager
             android:id="@+id/top_pager"
             android:layout_width="match_parent"
@@ -13,7 +14,7 @@
     <FrameLayout
             android:id="@+id/tabs_container"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="48dp"
             android:padding="0dp"
             android:background="@color/theme_primary"
             android:clipToPadding="false"
@@ -21,10 +22,17 @@
             android:layout_marginLeft="0dp"
             android:layout_marginRight="0dp"
             android:layout_marginBottom="0dp">
+        <View android:layout_width="match_parent"
+              android:layout_height="600dp"
+              android:layout_gravity="bottom"
+              android:background="@color/theme_primary"/>
         <com.astuetz.PagerSlidingTabStrip
                 android:id="@+id/tabs"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/top_pager_tabs_height"/>
+                android:layout_height="@dimen/top_pager_tabs_height"
+                android:elevation="10dp"/>
+
+
     </FrameLayout>
 
 </FrameLayout>

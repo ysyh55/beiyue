@@ -19,9 +19,12 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         addPreferencesFromResource(R.xml.settings);
+    }
 
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
         lp = (ListPreference) findPreference(getString(R.string.pref_list_style_key));
         lp.setOnPreferenceChangeListener(this);
         lp.setSummary(lp.getEntry());

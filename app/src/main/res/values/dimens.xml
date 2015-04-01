@@ -30,6 +30,7 @@
     <dimen name="download_photo_size">48dp</dimen>
     <dimen name="vertical_swipe_threshold">48dp</dimen>
     <dimen name="top_pager_tabs_height">48dp</dimen>
+    <dimen name="toolbar_elevation">10dp</dimen>
 
 
 </resources>

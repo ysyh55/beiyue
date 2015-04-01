@@ -5,11 +5,14 @@ package me.zheteng.cbreader.ui;
 
 import com.umeng.analytics.MobclickAgent;
 
+import android.os.Build;
+import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import me.zheteng.cbreader.BuildConfig;
+import me.zheteng.cbreader.utils.UIUtils;
 
 /**
  * 基础Activity
@@ -18,6 +21,22 @@ public class BaseActivity extends ActionBarActivity {
 
     protected Toolbar mToolbar;
     private boolean mIsToolbarShow = true;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (getToolbar() != null) {
+                getToolbar().setElevation(UIUtils.dpToPixels(this, 10));
+            }
+        }
+    }
 
     protected  void showToolbar() {
         if (mToolbar == null) {

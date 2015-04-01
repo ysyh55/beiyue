@@ -14,7 +14,7 @@ import android.os.Build;
 import android.view.View;
 
 /**
- * TODO 记得添加注释
+ * 和界面有关的工具类
  */
 public class UIUtils {
     /**

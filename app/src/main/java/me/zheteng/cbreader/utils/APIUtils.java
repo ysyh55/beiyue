@@ -5,6 +5,9 @@ package me.zheteng.cbreader.utils;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Matcher;
 
 public class APIUtils {
 
@@ -13,9 +16,20 @@ public class APIUtils {
     public static final String TOP_TYPE_DIG = "dig"; //推荐
 
     private static final char[] SIGN_BYTES = {48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 65, 66, 67, 68, 69, 70};
+    public static final String CMT_URL = "http://www.cnbeta.com/cmt";
+    public static final String DO_CMT_URL = "http://www.cnbeta.com/comment";
 
     public static String getTimestampInApi() {
         return Long.valueOf(System.currentTimeMillis() / 1000L).toString();
+    }
+
+    public static final Map<String, String> ajaxHeaders = new HashMap<>();
+
+    static {
+        ajaxHeaders.put("X-Requested-With", "XMLHttpRequest");
+        ajaxHeaders.put("Origin", "http://www.cnbeta.com");
+        ajaxHeaders.put("Referer", "http://www.cnbeta.com/");
+        ajaxHeaders.put("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
     }
 
     public static String getSign(String paramString) {
@@ -111,7 +125,7 @@ public class APIUtils {
         return "http://api.cnbeta.com/capi?" + str5;
     }
 
-    public static String getTopicListUrl(int paramInt) {
+    public static String getTopicListUrl(String paramInt) {
         String str1 = "app_key=10000" + "&format=json";
         String str2 = str1 + "&method=Article.Lists";
         String str3 = str2 + "&timestamp=" + getTimestampInApi();
@@ -191,6 +205,26 @@ public class APIUtils {
         String str8 = str7 + "&sign=" + getSign(
                 new StringBuilder().append(str7).append("&").append("mpuffgvbvbttn3Rc").toString());
         return "http://api.cnbeta.com/capi?" + str8;
+    }
+
+    /**
+     * 支持反对时需要用页面的接口
+     *
+     * @param sid
+     *
+     * @return
+     */
+    public static String getArticleAddressBySid(int sid) {
+        return "http://www.cnbeta.com/articles/" + sid + ".htm";
+    }
+
+    public static String getSNFromArticleBody(String body) {
+        Matcher snMatcher = Constants.SN_PATTERN.matcher(body);
+        if (snMatcher.find()) {
+            return snMatcher.group(1);
+        } else {
+            return null;
+        }
     }
 
 }

@@ -9,7 +9,7 @@ import android.content.Context;
 import android.util.AttributeSet;
 
 /**
- * TODO 记得添加注释
+ * 快速返回的RecyclerView //TODO 未完成
  */
 public class QuickReturnRecyclerView extends ObservableRecyclerView{
     public QuickReturnRecyclerView(Context context) {

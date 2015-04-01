@@ -6,6 +6,7 @@ package me.zheteng.cbreader.ui;
 import com.astuetz.PagerSlidingTabStrip;
 
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -63,6 +64,9 @@ public class TopPagerFragment extends Fragment {
         mActivity = ((MainActivity) getActivity());
         mActivity.setTitle(R.string.top_title);
         mActivity.showToolbar();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            mActivity.getToolbar().setElevation(UIUtils.dpToPixels(mActivity, 0));
+        }
         initDatas();
     }
 

@@ -12,6 +12,7 @@ import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -27,7 +28,7 @@ import me.zheteng.cbreader.utils.APIUtils;
 import me.zheteng.cbreader.utils.UIUtils;
 
 /**
- * TODO 记得添加注释
+ * 新闻列表页, 首页
  */
 public class NewsListFragment extends BaseListFragment implements ObservableScrollViewCallbacks,
         SharedPreferences.OnSharedPreferenceChangeListener {
@@ -75,6 +76,9 @@ public class NewsListFragment extends BaseListFragment implements ObservableScro
         mActivity = (MainActivity) getActivity();
         mToolbar = mActivity.getToolbar();
         mToolbar.getBackground().setAlpha(255);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            mToolbar.setElevation(UIUtils.dpToPixels(mActivity, 10));
+        }
         mActivity.showToolbar();
         mToolbarHeight = mToolbar.getHeight();
         mActivity.setTitle(R.string.app_name);
@@ -84,7 +88,7 @@ public class NewsListFragment extends BaseListFragment implements ObservableScro
         trySetupSwipeRefresh();
 
         loadCachedData();
-        if (mPref.getBoolean(getString(R.string.pref_autoload_when_start_key), true)) {
+        if (mPref.getBoolean(mActivity.getString(R.string.pref_autoload_when_start_key), true)) {
             Log.d("junyue", "auto_load_data");
             refreshData(APIUtils.getArticleListsUrl());
         }
@@ -101,9 +105,10 @@ public class NewsListFragment extends BaseListFragment implements ObservableScro
     public void onResume() {
         super.onResume();
         mPref.registerOnSharedPreferenceChangeListener(this);
-        mAdapter.setIsShowThumb(mPref.getBoolean(getString(R.string.pref_autoload_image_in_list_key), true));
+        mAdapter.setIsShowThumb(mPref.getBoolean(mActivity.getString(R.string.pref_autoload_image_in_list_key), true));
         String value =
-                mPref.getString(getString(R.string.pref_list_style_key), getString(R.string.pref_card_style_value));
+                mPref.getString(mActivity.getString(R.string.pref_list_style_key), mActivity.getString(
+                        R.string.pref_card_style_value));
         mAdapter.setStyle(value);
         mAdapter.notifyDataSetChanged();
 
@@ -128,43 +133,40 @@ public class NewsListFragment extends BaseListFragment implements ObservableScro
     protected void setupRecyclerView() {
         mRecyclerView.setScrollViewCallbacks(this);
         mLayoutManager = new LinearLayoutManager(mActivity);
+        mRecyclerView.setScrollViewCallbacks(new ShowHideToolbarListener(mActivity, mRecyclerView) {
+            @Override
+            public void onScrollChanged(int scrollY, boolean b, boolean b2) {
+                super.onScrollChanged(scrollY, b, b2);
+                visibleItemCount = mRecyclerView.getChildCount();
+                totalItemCount = mLayoutManager.getItemCount();
+                firstVisibleItem = mLayoutManager.findFirstVisibleItemPosition();
 
-        //        mRecyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
-        //
-        //            @Override
-        //            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-        //                super.onScrolled(recyclerView, dx, dy);
-        //
-        //                visibleItemCount = mRecyclerView.getChildCount();
-        //                totalItemCount = mLayoutManager.getItemCount();
-        //                firstVisibleItem = mLayoutManager.findFirstVisibleItemPosition();
-        //
-        //                if (loading) {
-        //                    if (totalItemCount > previousTotal) {
-        //                        loading = false;
-        //                        previousTotal = totalItemCount;
-        //                    }
-        //                }
-        //                if (!loading && (totalItemCount - visibleItemCount)
-        //                        <= (firstVisibleItem + visibleThreshold)) {
-        //                    // End has been reached
-        //
-        //                    Log.i("...", "end called");
-        //
-        //                    if (!mLoadingData) {
-        //                        String url = APIUtils
-        //                                .getArticleListUrl(0, mAdapter.getData().get(mAdapter.getData().size() - 1)
-        // .sid);
-        //
-        //                        loadMoreArticles(url);
-        //                    }
-        //
-        //                    loading = true;
-        //                }
-        //            }
-        //        });
+                if (loading) {
+                    if (totalItemCount > previousTotal) {
+                        loading = false;
+                        previousTotal = totalItemCount;
+                    }
+                }
+                if (!loading && (totalItemCount - visibleItemCount)
+                        <= (firstVisibleItem + visibleThreshold)) {
+                    // End has been reached
 
-        mRecyclerView.setScrollViewCallbacks(new ShowHideToolbarListener(mActivity, mRecyclerView));
+                    Log.i("...", "end called");
+
+                    if (!mLoadingData &&
+                            mPref.getBoolean(mActivity.getString(R.string.pref_autoload_when_scroll_key), true)) {
+                        String url = APIUtils
+                                .getArticleListUrl(0, mAdapter.getData().get(mAdapter.getData().size() - 1)
+                                        .sid);
+
+                        loadMoreArticles(url);
+                        loading = true;
+                    }
+
+                }
+            }
+        });
+
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setHasFixedSize(false);
 
@@ -172,14 +174,18 @@ public class NewsListFragment extends BaseListFragment implements ObservableScro
         mAdapter = new ArticleListAdapter(mActivity,
                 null,
                 mRecyclerView,
-                mPref.getBoolean(getString(R.string.pref_autoload_image_in_list_key), true), false);
+                mPref.getBoolean(mActivity.getString(R.string.pref_autoload_image_in_list_key), true), false);
+        mAdapter.setItemClickable(true);
         String style = mPref.getString(mActivity.getString(R.string.pref_list_style_key),
                 mActivity.getString(R.string.pref_card_style_value));
         mAdapter.setStyle(style);
 
         mAdapter.setOnLoadMoreListener(new ArticleListAdapter.OnLoadMoreListener() {
             @Override
-            public void onLoadMore() {
+            public void onLoadMoreButtonClicked() {
+                if (mAdapter.getData().size() == 0) {
+                    return;
+                }
                 String url = APIUtils
                         .getArticleListUrl(0, mAdapter.getData().get(mAdapter.getData().size() - 1).sid);
                 loadMoreArticles(url);
@@ -254,7 +260,7 @@ public class NewsListFragment extends BaseListFragment implements ObservableScro
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key.equals(getString(R.string.pref_autoload_image_in_list_key))) {
+        if (key.equals(mActivity.getString(R.string.pref_autoload_image_in_list_key))) {
             boolean showThumb = sharedPreferences.getBoolean(key, true);
             mAdapter.setIsShowThumb(showThumb);
         }

@@ -5,10 +5,6 @@ package me.zheteng.cbreader.ui;
 
 import static me.zheteng.cbreader.data.CnBetaContract.FavoriteEntry;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +13,6 @@ import com.android.volley.VolleyError;
 import com.google.gson.Gson;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -50,7 +45,7 @@ import me.zheteng.cbreader.utils.Utils;
 import me.zheteng.cbreader.utils.volley.GsonRequest;
 
 /**
- * TODO 记得添加注释
+ * 阅读页
  */
 public class ReadActivity extends SwipeBackActionBarActivity {
 
@@ -326,42 +321,12 @@ public class ReadActivity extends SwipeBackActionBarActivity {
      */
     public String getHtmlTemplate() {
         if (mHtmlTemplate == null) {
-            mHtmlTemplate = loadAssetTextAsString(this, "index.html");
+            mHtmlTemplate = Utils.loadAssetTextAsString(this, "index.html");
         }
         return mHtmlTemplate;
     }
 
-    private String loadAssetTextAsString(Context context, String name) {
-        BufferedReader in = null;
-        try {
-            StringBuilder buf = new StringBuilder();
-            InputStream is = context.getAssets().open(name);
-            in = new BufferedReader(new InputStreamReader(is));
-
-            String str;
-            boolean isFirst = true;
-            while ( (str = in.readLine()) != null ) {
-                if (isFirst)
-                    isFirst = false;
-                else
-                    buf.append('\n');
-                buf.append(str);
-            }
-            return buf.toString();
-        } catch (IOException e) {
-            Log.e(TAG, "Error opening asset " + name);
-        } finally {
-            if (in != null) {
-                try {
-                    in.close();
-                } catch (IOException e) {
-                    Log.e(TAG, "Error closing asset " + name);
-                }
-            }
-        }
-
-        return null;
-    }
+    
 
     @Override
     public void finish() {
@@ -413,14 +378,14 @@ public class ReadActivity extends SwipeBackActionBarActivity {
 
     public String getCommentsTemplate() {
         if (mCommentsTemplate == null) {
-            mCommentsTemplate = loadAssetTextAsString(this, "comments.html");
+            mCommentsTemplate = Utils.loadAssetTextAsString(this, "comments.html");
         }
         return mCommentsTemplate;
     }
 
     public String getCommentsItemTemplate() {
         if (mCommentsItemTemplate == null) {
-            mCommentsItemTemplate = loadAssetTextAsString(this, "commentsitem.html");
+            mCommentsItemTemplate = Utils.loadAssetTextAsString(this, "commentsitem.html");
         }
         return mCommentsItemTemplate;
     }

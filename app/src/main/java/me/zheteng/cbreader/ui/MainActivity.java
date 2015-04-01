@@ -67,6 +67,9 @@ public class MainActivity extends BaseActivity implements Palette.PaletteAsyncLi
     };
 
     private static final int CURRENT_STATE_REQUEST = 1;
+    private static final long NAVDRAWER_LAUNCH_DELAY = 250;
+    private static final long MAIN_CONTENT_FADEOUT_DURATION = 150;
+    private static final long MAIN_CONTENT_FADEIN_DURATION = 150;
 
     protected int mActionBarSize;
     protected int mIntersectionHeight;
@@ -80,6 +83,7 @@ public class MainActivity extends BaseActivity implements Palette.PaletteAsyncLi
     private boolean mSelected;
     private boolean mDoubleBackToExitPressedOnce;
     private int mDrawerHeaderBg;
+    private Handler mHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,6 +103,8 @@ public class MainActivity extends BaseActivity implements Palette.PaletteAsyncLi
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                 NewsListFragment.newInstance(mActionBarSize),
                 TAG_NEWS_ARTICES).commit();
+
+        mHandler = new Handler();
     }
 
     private int getActionBarSize() {
@@ -173,7 +179,7 @@ public class MainActivity extends BaseActivity implements Palette.PaletteAsyncLi
         mNavDrawerItems.add(NAVDRAWER_ITEM_NEWS_ARTICES);
         mNavDrawerItems.add(NAVDRAWER_ITEM_RECOMMEND_COMMENT);
         mNavDrawerItems.add(NAVDRAWER_ITEM_TOP);
-//        mNavDrawerItems.add(NAVDRAWER_ITEM_TOPIC);
+        mNavDrawerItems.add(NAVDRAWER_ITEM_TOPIC);
         mNavDrawerItems.add(NAVDRAWER_ITEM_FAVORITE);
         mNavDrawerItems.add(NAVDRAWER_ITEM_SEPARATOR);
         mNavDrawerItems.add(NAVDRAWER_ITEM_SETTINGS);
@@ -242,12 +248,21 @@ public class MainActivity extends BaseActivity implements Palette.PaletteAsyncLi
         return view;
     }
 
-    private void onNavDrawerItemClicked(int itemId) {
-        goToNavDrawerItem(itemId);
+    private void onNavDrawerItemClicked(final int itemId) {
+        // launch the target Activity after a short delay, to allow the close animation to play
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                goToNavDrawerItem(itemId);
+            }
+        }, NAVDRAWER_LAUNCH_DELAY);
         if (itemId != NAVDRAWER_ITEM_ABOUT && itemId != NAVDRAWER_ITEM_SETTINGS) {
             mDrawerLayout.closeDrawer(Gravity.START);
             setSelectedNavDrawerItem(itemId);
+            // fade out the main content
+            final View mainContent = findViewById(R.id.fragment_container);
         }
+
     }
 
     private void formatNavDrawerItem(View view, int itemId, boolean selected) {
@@ -262,7 +277,6 @@ public class MainActivity extends BaseActivity implements Palette.PaletteAsyncLi
         if (selected) {
             view.setBackgroundResource(R.drawable.selected_navdrawer_item_background);
         } else {
-            //TODO
             view.setBackgroundResource(R.drawable.screen_background_light_transparent);
         }
 
@@ -378,7 +392,7 @@ public class MainActivity extends BaseActivity implements Palette.PaletteAsyncLi
             case NAVDRAWER_ITEM_TOPIC:
                 fragment = getSupportFragmentManager().findFragmentByTag(TAG_TOPIC);
                 if (fragment == null) {
-                    fragment = new TopicFragment();
+                    fragment = new TopicPagerFragment();
                 }
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                         fragment, TAG_TOPIC).commit();

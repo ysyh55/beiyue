@@ -3,6 +3,8 @@
  */
 package me.zheteng.cbreader.ui;
 
+import com.umeng.analytics.MobclickAgent;
+
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -47,12 +49,19 @@ public class AboutActivity extends SwipeBackActionBarActivity {
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MobclickAgent.onEventValue(this, "open_donate_menu", null, 0);
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
                 return true;
             case R.id.heihei:
+                MobclickAgent.onEventValue(this, "open_donate_menu", null, 1);
                 Toast.makeText(this, "嘿嘿", Toast.LENGTH_SHORT).show();
                 return true;
         }

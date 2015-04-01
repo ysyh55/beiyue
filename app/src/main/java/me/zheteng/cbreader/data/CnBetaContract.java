@@ -9,7 +9,7 @@ import android.provider.BaseColumns;
 import android.text.format.Time;
 
 /**
- * TODO 记得添加注释
+ * 数据约定
  */
 public class CnBetaContract {
 
@@ -17,7 +17,7 @@ public class CnBetaContract {
 
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
 
-    public static final String PATH_ARTICLE = "article";
+    public static final String PATH_TOPIC = "topic";
     public static final String PATH_FAVORITE = "favorite";
     public static final String PATH_NEWSCONTENT = "newscontent";
 
@@ -66,6 +66,43 @@ public class CnBetaContract {
          */
         public static Uri buildFavoriteUri(String sid) {
             return CONTENT_URI.buildUpon().appendPath(sid).build();
+        }
+    }
+
+    /**
+     * 关于topics的数据表
+     */
+    public static final class TopicEntry implements BaseColumns {
+        public static final Uri CONTENT_URI =
+                BASE_CONTENT_URI.buildUpon().appendPath(PATH_TOPIC).build();
+
+        public static final String CONTENT_TYPE =
+                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_TOPIC;
+
+        public static final String CONTENT_ITEM_TYPE =
+                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_TOPIC;
+
+        // Table name
+        public static final String TABLE_NAME = "topics";
+        public static final String COLUMN_TID = "tid";
+        public static final String COLUMN_TITLE = "title";
+        public static final String COLUMN_THUMB = "thumb";
+        public static final String COLUMN_LETTER = "letter";
+        public static final String COLUMN_CHECKED = "checked";
+
+        public static String getTidFromUri(Uri uri) {
+            return uri.getPathSegments().get(1);
+        }
+
+        /**
+         * 从tid生成uri
+         *
+         * @param tid 这条数据的tid
+         *
+         * @return 代表该条数据的Uri
+         */
+        public static Uri buildFavoriteUri(String tid) {
+            return CONTENT_URI.buildUpon().appendPath(tid).build();
         }
     }
 

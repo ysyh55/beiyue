@@ -45,6 +45,10 @@
                 android:label="@string/settings">
         </activity>
         <activity
+                android:name=".ui.AllTopicsActivity"
+                android:label="@string/all_topics">
+        </activity>
+        <activity
                 android:name=".ui.AboutActivity"
                 android:label="@string/about">
             <intent-filter>

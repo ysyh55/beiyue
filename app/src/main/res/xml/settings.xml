@@ -30,6 +30,12 @@
                 android:summary="@string/pref_autoload_when_start_summary"
                 android:defaultValue="true"/>
 
+        <SwitchPreference
+                android:key="@string/pref_autoload_when_scroll_key"
+                android:title="@string/pref_autoload_when_scroll"
+                android:summary="@string/pref_autoload_when_scroll_summary"
+                android:defaultValue="true"/>
+
 
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/pref_style">

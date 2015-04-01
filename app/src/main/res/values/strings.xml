@@ -21,7 +21,7 @@
     <string name="navdrawer_item_top_comments">今日热评</string>
     <string name="navdrawer_item_top_counter">今日焦点</string>
     <string name="navdrawer_item_top10">新闻Top10</string>
-    <string name="navdrawer_item_topic">分类资讯</string>
+    <string name="navdrawer_item_topic">新闻主题</string>
     <string name="navdrawer_item_top_dig">推荐资讯</string>
     <string name="font_fontFamily_medium">sans-serif-medium</string>
     <string name="placeholder_lorem_ipsum">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</string>
@@ -29,8 +29,8 @@
     <string name="navdrawer_item_about">关于和反馈</string>
     <string name="navigation_drawer_open">打开</string>
     <string name="navigation_drawer_close">关闭</string>
-    <string name="drawer_title">CNBETA Now</string>
-    <string name="navdrawer_item_top">热门新闻</string>
+    <string name="drawer_title">@string/app_name</string>
+    <string name="navdrawer_item_top">排行</string>
     <string name="top_counter">今日最多阅读</string>
     <string name="top_comments">今日热评</string>
     <string name="top_dig">热门推荐</string>
@@ -51,7 +51,7 @@
     <string name="pref_autoload_image_in_list_key">pref_autoload_image_in_list</string>
     <string name="pref_autoload_image_in_webview_key">pref_autoload_image_in_webview</string>
     <string name="toggle_image">无图模式</string>
-    <string name="pref_autoload_image_in_webview_summary">是否自动加载正文图片</string>
+    <string name="pref_autoload_image_in_webview_summary">2G/3G/4G下是否自动加载正文图片</string>
     <string name="pref_autoload_image_in_list_summary">是否展示列表页缩略图</string>
     <string name="about_version">最求美好</string>
     <string name="action_save_pic">保存图片</string>
@@ -73,4 +73,12 @@
     <string name="pref_autoload_when_start_summary">打开列表时自动更新列表</string>
     <string name="big_font">增大字号</string>
     <string name="small_font">减小字号</string>
+    <string name="search_hint">搜索主题</string>
+    <string name="all_topics">全部主题</string>
+    <string name="support_success">支持成功, 可能需要过一会生效</string>
+    <string name="against_success">反对成功, 可能需要过一会生效</string>
+    <string name="pref_autoload_when_scroll_key">pref_autoload_when_scroll</string>
+    <string name="pref_autoload_when_scroll">列表滚动时</string>
+    <string name="pref_autoload_when_scroll_summary">列表滚动时自动加载更多</string>
+    <string name="topic_title">主题</string>
 </resources>

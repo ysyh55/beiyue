@@ -4,7 +4,7 @@
 package me.zheteng.cbreader.model;
 
 /**
- * TODO 记得添加注释
+ * 评论
  */
 public class Comment {
 

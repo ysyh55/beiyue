@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.bignerdranch.android.multiselector.MultiSelector;
 import com.github.ksoichiro.android.observablescrollview.ObservableRecyclerView;
 import com.google.gson.Gson;
 
@@ -17,6 +16,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -35,6 +35,7 @@ import android.view.ViewGroup;
 import me.zheteng.actionabletoastbar.ActionableToastBar;
 import me.zheteng.cbreader.R;
 import me.zheteng.cbreader.model.Article;
+import me.zheteng.cbreader.utils.UIUtils;
 
 /**
  * 收藏界面
@@ -68,7 +69,6 @@ public class FavoriteFragment extends Fragment implements LoaderManager.LoaderCa
     private View mUndoFrame;
     private List<Article> mToDeleteList;
 
-    private MultiSelector mMultiSelector = new MultiSelector();
     private boolean mUndoBarShow;
 
     @Override
@@ -99,7 +99,7 @@ public class FavoriteFragment extends Fragment implements LoaderManager.LoaderCa
         mRecyclerView.setScrollViewCallbacks(new ShowHideToolbarListener(mActivity, mRecyclerView));
 
         mAdapter = new ArticleListAdapter(mActivity, null, mRecyclerView,
-                mPref.getBoolean(getString(R.string.pref_autoload_image_in_list_key), true), true);
+                mPref.getBoolean(mActivity.getString(R.string.pref_autoload_image_in_list_key), true), true);
         String style = mPref.getString(mActivity.getString(R.string.pref_list_style_key),
                 mActivity.getString(R.string.pref_card_style_value));
         mAdapter.setStyle(style);
@@ -171,9 +171,11 @@ public class FavoriteFragment extends Fragment implements LoaderManager.LoaderCa
         mActivity = (MainActivity) getActivity();
         mPref = PreferenceManager.getDefaultSharedPreferences(mActivity);
         mActivity.showToolbar();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            mActivity.getToolbar().setElevation(UIUtils.dpToPixels(mActivity, 10));
+        }
         mActivity.getToolbar().getBackground().setAlpha(255);
         mActivity.getToolbar().setTitle(R.string.favorite);
-
         setupRecyclerView();
 
         getLoaderManager().initLoader(LOADER_ID, null, this);

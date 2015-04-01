@@ -34,7 +34,7 @@ import me.zheteng.cbreader.utils.Utils;
 import me.zheteng.cbreader.utils.volley.GsonRequest;
 
 /**
- * TODO 记得添加注释
+ * 排行页
  */
 public class TopFragment extends BaseListFragment implements ObservableScrollViewCallbacks,
         SharedPreferences.OnSharedPreferenceChangeListener {
@@ -83,7 +83,7 @@ public class TopFragment extends BaseListFragment implements ObservableScrollVie
         trySetupSwipeRefresh();
 
         loadCachedData();
-        if (mPref.getBoolean(getString(R.string.pref_autoload_when_start_key), true)) {
+        if (mPref.getBoolean(mActivity.getString(R.string.pref_autoload_when_start_key), true)) {
             Log.d("junyue", "auto_load_data");
             refreshData(getAPIUrl());
         }
@@ -134,12 +134,45 @@ public class TopFragment extends BaseListFragment implements ObservableScrollVie
 
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setHasFixedSize(false);
-        mRecyclerView.setScrollViewCallbacks(new MyShowHideToolbarListener(mActivity, mRecyclerView, mTabsContainer));
+        mRecyclerView.setScrollViewCallbacks(new MyShowHideToolbarListener(mActivity, mRecyclerView, mTabsContainer) {
+            @Override
+            public void onScrollChanged(int scrollY, boolean b, boolean b2) {
+                super.onScrollChanged(scrollY, b, b2);
+                visibleItemCount = mRecyclerView.getChildCount();
+                totalItemCount = mLayoutManager.getItemCount();
+                firstVisibleItem = mLayoutManager.findFirstVisibleItemPosition();
+
+                if (loading) {
+                    if (totalItemCount > previousTotal) {
+                        loading = false;
+                        previousTotal = totalItemCount;
+                    }
+                }
+                if (!loading && (totalItemCount - visibleItemCount)
+                        <= (firstVisibleItem + visibleThreshold)) {
+                    // End has been reached
+
+                    Log.i("...", "end called");
+
+                    if (!mLoadingData &&
+                            mPref.getBoolean(mActivity.getString(R.string.pref_autoload_when_scroll_key), true)) {
+                        String url = APIUtils
+                                .getArticleListUrl(0, mAdapter.getData().get(mAdapter.getData().size() - 1)
+                                        .sid);
+
+                        loadMoreArticles(url);
+                        loading = true;
+                    }
+
+                }
+            }
+        });
 
         mAdapter = new ArticleListAdapter(mActivity,
                 null,
                 mRecyclerView,
-                mPref.getBoolean(getString(R.string.pref_autoload_image_in_list_key), true), false);
+                mPref.getBoolean(mActivity.getString(R.string.pref_autoload_image_in_list_key), true), false);
+        mAdapter.setItemClickable(true);
         String style = mPref.getString(mActivity.getString(R.string.pref_list_style_key),
                 mActivity.getString(R.string.pref_card_style_value));
         mAdapter.setStyle(style);
@@ -288,7 +321,7 @@ public class TopFragment extends BaseListFragment implements ObservableScrollVie
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key.equals(getString(R.string.pref_autoload_image_in_list_key))){
+        if (key.equals(mActivity.getString(R.string.pref_autoload_image_in_list_key))) {
             mAdapter.setIsShowThumb(sharedPreferences.getBoolean(key,true));
         }
     }

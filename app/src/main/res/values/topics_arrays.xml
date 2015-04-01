@@ -1,0 +1,401 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (C) 2015 Baidu, Inc. All Rights Reserved.
+  -->
+<resources>
+    <string-array name="topic_sqls">
+        <item>CREATE TABLE IF NOT EXISTS "topics" ("tid" TEXT NOT NULL, "title" TEXT,  "thumb" TEXT, "letter" TEXT,   "checked" INTEGER DEFAULT 0, "_id" INTEGER PRIMARY KEY AUTOINCREMENT, UNIQUE("tid" ASC) ON CONFLICT REPLACE);</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (3, \'ATI\', \'http://static.cnbetacdn.com/topics/2-6-2009 9-18-16 AM.gif\', \'A\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (9, \'Apple 苹果\', \'http://static.cnbetacdn.com/topics/apple.png\', \'A\', 1)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (13, \'Adobe\', \'http://static.cnbetacdn.com/topics/adobe.gif\', \'A\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (42, \'AMD\', \'http://static.cnbetacdn.com/topics/amdcn.gif\', \'A\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (49, \'AOL / AIM\', \'http://static.cnbetacdn.com/topics/aol.gif\', \'A\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (50, \'Apple QuickTime\', \'http://static.cnbetacdn.com/topics/quicktimex.gif\', \'A\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (53, \'ACDSee\', \'http://static.cnbetacdn.com/topics/13-05-22 11-41-41.gif\', \'A\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (59, \'Apache OpenOffice\', \'http://static.cnbetacdn.com/topics/1386209213.gif\', \'A\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (66, \'Apple iTunes / App Store\', \'http://static.cnbetacdn.com/topics/d7a79f321c9aa99.png\', \'A\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (79, \'Apple Mac OS X\', \'http://static.cnbetacdn.com/topics/osx.gif\', \'A\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (93, \'ASUS 华硕\', \'http://static.cnbetacdn.com/topics/asus.gif\', \'A\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (118, \'Alcohol\', \'http://static.cnbetacdn.com/topics/118_alcohol.gif\', \'A\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (158, \'Apple Safari\', \'http://static.cnbetacdn.com/topics/2-6-2009 1-48-20 AM.gif\', \'A\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (169, \'AnyDVD\', \'http://static.cnbetacdn.com/topics/anydvd.gif\', \'A\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (183, \'AutoDesk\', \'http://static.cnbetacdn.com/topics/183_autodesk.gif\', \'A\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (188, \'Avant Browser\', \'http://static.cnbetacdn.com/topics/188_avant.gif\', \'A\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (325, \'ARSwp Windows 清理助手\', \'http://static.cnbetacdn.com/topics/logo_14.gif\', \'A\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (343, \'Apple iPod\', \'http://static.cnbetacdn.com/topics/12-09-13 08-16-08.gif\', \'A\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (346, \'avast! Antivirus\', \'http://static.cnbetacdn.com/topics/avastav.gif\', \'A\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (356, \'Ashampoo\', \'http://static.cnbetacdn.com/topics/Ashampoo.gif\', \'A\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (364, \'Avira AntiVir\', \'http://static.cnbetacdn.com/topics/avira.gif\', \'A\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (370, \'AVG Antivirus\', \'http://static.cnbetacdn.com/topics/avg.gif\', \'A\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (379, \'Apple iPhone\', \'http://static.cnbetacdn.com/topics/1410918123.png\', \'A\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (464, \'Apple iPad\', \'http://static.cnbetacdn.com/topics/1410918153.png\', \'A\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (535, \'Apple Watch\', \'http://static.cnbetacdn.com/topics/0b0d9526b3a0ab9.png\', \'A\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (77, \'BitTorrent\', \'http://static.cnbetacdn.com/topics/bittorrent.gif\', \'B\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (200, \'BitSpirit 比特精灵\', \'http://static.cnbetacdn.com/topics/200_bitspirit.gif\', \'B\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (209, \'BitComet\', \'http://static.cnbetacdn.com/topics/bitcomet1.gif\', \'B\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (232, \'BlackIce\', \'http://static.cnbetacdn.com/topics/232_blackice.gif\', \'B\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (261, \'Baidu 百度\', \'http://static.cnbetacdn.com/topics/aada0e439b8da89.png\', \'B\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (376, \'Bluetooth 蓝牙\', \'http://static.cnbetacdn.com/topics/2-6-2009 2-11-24 AM.gif\', \'B\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (377, \'Blu-Ray Disc 蓝光\', \'http://static.cnbetacdn.com/topics/2-6-2009 2-16-36 AM.gif\', \'B\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (400, \'Blog 博客\', \'http://static.cnbetacdn.com/topics/blog.gif\', \'B\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (411, \'BlackBerry 黑莓\', \'http://static.cnbetacdn.com/topics/blackberry.gif\', \'B\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (414, \'BitDefender\', \'http://static.cnbetacdn.com/topics/2011-9-20 11-28-03.gif\', \'B\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (419, \'Blizzard 暴雪\', \'http://static.cnbetacdn.com/topics/blizzard.gif\', \'B\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (8, \'cnBeta 软件新闻\', \'http://static.cnbetacdn.com/topics/1386207221.gif\', \'B\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (70, \'cnBeta 硬件新闻\', \'http://static.cnbetacdn.com/topics/hardware.gif\', \'B\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (105, \'CA technologies\', \'http://static.cnbetacdn.com/topics/2010-5-18 8-10-56.gif\', \'C\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (125, \'cnBeta 原创独家\', \'http://static.cnbetacdn.com/topics/original.gif\', \'C\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (135, \'cnBeta 人物 - Bill Gates\', \'http://static.cnbetacdn.com/topics/6289ff1e0f2de7f.png\', \'C\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (165, \'cnBeta 七日谈\', \'http://static.cnbetacdn.com/topics/0834692ea183f84.png\', \'C\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (186, \'CloneCD / CloneDVD\', \'http://static.cnbetacdn.com/topics/clonecd.gif\', \'C\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (219, \'Counter-Strike 反恐精英 / 半条命\', \'http://static.cnbetacdn.com/topics/2-6-2009 2-22-09 AM.gif\', \'C\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (228, \'Cisco 思科\', \'http://static.cnbetacdn.com/topics/228_cisco.gif\', \'C\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (243, \'Cellphones 手机\', \'http://static.cnbetacdn.com/topics/cell.gif\', \'C\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (245, \'cnBeta 精品软件\', \'http://static.cnbetacdn.com/topics/cbsoft.gif\', \'C\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (246, \'cnBeta 精品驱动\', \'http://static.cnbetacdn.com/topics/drivers.gif\', \'C\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (260, \'cnBeta 最新消息\', \'http://static.cnbetacdn.com/topics/8e366435864b910.png\', \'C\', 1)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (291, \'cnBeta 团队新闻\', \'http://static.cnbetacdn.com/topics/9cf4a8edf8d0f3c.png\', \'C\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (293, \'cnBeta 网站推介\', \'http://static.cnbetacdn.com/topics/7196181f9e9a3de.png\', \'C\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (294, \'CuteFTP\', \'http://static.cnbetacdn.com/topics/294_cuteftp.gif\', \'C\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (305, \'cnBeta 视点观察\', \'http://static.cnbetacdn.com/topics/201fc12d7e546a0.png\', \'C\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (306, \'cnBeta 访客互动\', \'http://static.cnbetacdn.com/topics/ea7b1eb14c6d020.png\', \'C\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (311, \'cnBeta 博客文摘\', \'http://static.cnbetacdn.com/topics/aef6d47889f95b7.png\', \'C\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (316, \'China Telecom 中国电信\', \'http://static.cnbetacdn.com/topics/b221d21ee42e75d.png\', \'C\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (348, \'China Mobile 中国移动\', \'http://static.cnbetacdn.com/topics/d1727b9ae21e1e3.png\', \'C\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (350, \'CCleaner\', \'http://static.cnbetacdn.com/topics/13-05-28 04-14-52.gif\', \'C\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (357, \'CyberLink PowerDVD\', \'http://static.cnbetacdn.com/topics/powerdvd.gif\', \'C\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (358, \'China Mobile Fetion 飞信\', \'http://static.cnbetacdn.com/topics/ec6b83eca06d85e.png\', \'C\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (369, \'cnBeta 人物 - Steve Jobs\', \'http://static.cnbetacdn.com/topics/6b6702c2167e5a2.jpg\', \'C\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (375, \'cnBeta 人物 - Steve Ballmer\', \'http://static.cnbetacdn.com/topics/d6c66b3becf1a4c.jpg\', \'C\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (391, \'China Unicom 中国联通\', \'http://static.cnbetacdn.com/topics/884bc7f6b70e428.png\', \'C\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (420, \'comsenz 康盛创想 / Discuz!\', \'http://static.cnbetacdn.com/topics/comsenz.gif\', \'C\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (424, \'CHINA 中国\', \'http://static.cnbetacdn.com/topics/china.gif\', \'C\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (425, \'cFos Software\', \'http://static.cnbetacdn.com/topics/cfos.gif\', \'C\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (428, \'cnBeta 人物 - 马云\', \'http://static.cnbetacdn.com/topics/0638f8cec914846.jpg\', \'C\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (430, \'cnBeta 现场报道\', \'http://static.cnbetacdn.com/topics/445d09e1000e41b.png\', \'C\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (432, \'Creative 创新\', \'http://static.cnbetacdn.com/topics/creative.gif\', \'C\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (448, \'cnBeta 科学探索\', \'http://static.cnbetacdn.com/topics/79d0969d43aab92.png\', \'C\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (451, \'cnBeta 硬件 - 摄影器材\', \'http://static.cnbetacdn.com/topics/1ce83500eac07e2.png\', \'C\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (453, \'cnBeta 人物\', \'http://static.cnbetacdn.com/topics/97823206d522f55.jpg\', \'C\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (466, \'cnBeta 专栏\', \'http://static.cnbetacdn.com/topics/49180707755b808.jpg\', \'C\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (479, \'cnBeta 评测室\', \'http://static.cnbetacdn.com/topics/1ac594fa2d6ecb0.png\', \'C\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (488, \'cnBeta 人物 - Tim Cook\', \'http://static.cnbetacdn.com/topics/be31c649af25b9f.png\', \'C\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (491, \'Chubao 触宝输入法\', \'http://static.cnbetacdn.com/topics/4d2a390409b3dc6.png\', \'C\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (495, \'Camera 360\', \'http://static.cnbetacdn.com/topics/3cd4fcc515a2020.png\', \'C\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (525, \'Coocaa 创维酷开\', \'http://static.cnbetacdn.com/topics/5c0065f3b50f107.png\', \'C\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (82, \'DELL 戴尔\', \'http://static.cnbetacdn.com/topics/dell.gif\', \'D\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (121, \'DVD\', \'http://static.cnbetacdn.com/topics/121_dvd.gif\', \'D\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (191, \'DAEMON Tools\', \'http://static.cnbetacdn.com/topics/daemon.gif\', \'D\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (218, \'DreamMail 梦幻快车\', \'http://static.cnbetacdn.com/topics/2010-4-9 8-53-08.gif\', \'D\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (253, \'DivX Codec\', \'http://static.cnbetacdn.com/topics/divx.gif\', \'D\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (256, \'电子商务 - C2C\', \'http://static.cnbetacdn.com/topics/09afef83c4df10b.png\', \'D\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (281, \'电子商务 - 支付平台\', \'http://static.cnbetacdn.com/topics/20f9edcfe5778b0.png\', \'D\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (353, \'电子商务 - B2C / B2B\', \'http://static.cnbetacdn.com/topics/4fe416f1fb73112.png\', \'D\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (431, \'Debian GNU/Linux\', \'http://static.cnbetacdn.com/topics/debian.gif\', \'D\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (502, \'Duzhe 读者手机\', \'http://static.cnbetacdn.com/topics/7ed2e10fff7b92a.png\', \'D\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (54, \'eMule\', \'http://static.cnbetacdn.com/topics/054_172_emule.gif\', \'E\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (171, \'emEditor\', \'http://static.cnbetacdn.com/topics/171_emeditor.gif\', \'E\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (194, \'email 电子邮件\', \'http://static.cnbetacdn.com/topics/2010-4-9 8-48-36.gif\', \'E\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (229, \'Edit+\', \'http://static.cnbetacdn.com/topics/229_edit+.gif\', \'E\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (449, \'EA Games\', \'http://static.cnbetacdn.com/topics/ea.gif\', \'E\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (36, \'FTPRush\', \'http://static.cnbetacdn.com/topics/036_ftprush.gif\', \'F\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (72, \'FlashFXP\', \'http://static.cnbetacdn.com/topics/072_flashfxp.gif\', \'F\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (104, \'FreeBSD\', \'http://static.cnbetacdn.com/topics/freebsd.gif\', \'F\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (108, \'foobar2000\', \'http://static.cnbetacdn.com/topics/foobar2000.gif\', \'F\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (166, \'Flashget 快车\', \'http://static.cnbetacdn.com/topics/flashget.gif\', \'F\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (189, \'FileZilla\', \'http://static.cnbetacdn.com/topics/filezilla.gif\', \'F\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (262, \'FlashBT\', \'http://static.cnbetacdn.com/topics/262_flashbt.gif\', \'F\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (277, \'Foxit Reader 福昕阅读器\', \'http://static.cnbetacdn.com/topics/2013-04-18_08-29-22.gif\', \'F\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (280, \'FeedDemon\', \'http://static.cnbetacdn.com/topics/2010-4-9 8-57-06.gif\', \'F\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (363, \'FastStone\', \'http://static.cnbetacdn.com/topics/2010-4-9 8-55-30.gif\', \'F\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (435, \'Flock\', \'http://static.cnbetacdn.com/topics/flock.gif\', \'F\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (470, \'Foxconn 富士康\', \'http://static.cnbetacdn.com/topics/2010-5-21 11-56-16.gif\', \'F\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (52, \'Google / 谷歌\', \'http://static.cnbetacdn.com/topics/850a52010eb551a.png\', \'G\', 1)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (101, \'GNOME\', \'http://static.cnbetacdn.com/topics/101_gnome.gif\', \'G\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (126, \'GreenBrowser\', \'http://static.cnbetacdn.com/topics/GreenBrowser.gif\', \'G\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (142, \'Google Buzz / Google Wave\', \'http://static.cnbetacdn.com/topics/wavebuzz.gif\', \'G\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (192, \'Google Toolbar\', \'http://static.cnbetacdn.com/topics/192_gtool.gif\', \'G\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (215, \'Google Gmail\', \'http://static.cnbetacdn.com/topics/gmail.gif\', \'G\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (257, \'Google Talk\', \'http://static.cnbetacdn.com/topics/gtalk.gif\', \'G\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (275, \'GoSURF\', \'http://static.cnbetacdn.com/topics/275_gosurf.gif\', \'G\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (326, \'Google GLASS\', \'http://static.cnbetacdn.com/topics/google_glass.gif\', \'G\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (347, \'Google Earth\', \'http://static.cnbetacdn.com/topics/gearth.gif\', \'G\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (373, \'Google YouTube\', \'http://static.cnbetacdn.com/topics/youtube.gif\', \'G\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (443, \'Google Chrome 谷歌浏览器\', \'http://static.cnbetacdn.com/topics/chrome1.gif\', \'G\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (444, \'Google Android\', \'http://static.cnbetacdn.com/topics/android.gif\', \'G\', 1)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (486, \'Google Plus\', \'http://static.cnbetacdn.com/topics/5f333930cf35e38.png\', \'G\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (493, \'Google Drive\', \'http://static.cnbetacdn.com/topics/421ad303daa6f12.png\', \'G\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (71, \'Hasee 神舟\', \'http://static.cnbetacdn.com/topics/1387602536.gif\', \'H\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (122, \'HyperSnap\', \'http://static.cnbetacdn.com/topics/2010-4-9 8-35-35.gif\', \'H\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (150, \'Hewlett-Packard 惠普\', \'http://static.cnbetacdn.com/topics/2009-7-25 21-49-25.gif\', \'H\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (331, \'Huawei 华为\', \'http://static.cnbetacdn.com/topics/huawei.gif\', \'H\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (439, \'HTC\', \'http://static.cnbetacdn.com/topics/htc.gif\', \'H\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (31, \'Internet Explorer\', \'http://static.cnbetacdn.com/topics/12-08-26 21-26-48.gif\', \'I\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (32, \'Intel 英特尔\', \'http://static.cnbetacdn.com/topics/intel.gif\', \'I\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (58, \'ICQ\', \'http://static.cnbetacdn.com/topics/1386209086.gif\', \'I\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (87, \'IBM\', \'http://static.cnbetacdn.com/topics/2010-4-9 8-33-55.gif\', \'I\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (100, \'intel Centrino 英特尔迅驰\', \'http://static.cnbetacdn.com/topics/2010-4-9 8-31-57.gif\', \'I\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (159, \'Intel Core 英特尔酷睿\', \'http://static.cnbetacdn.com/topics/2010-4-9 8-29-36.gif\', \'I\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (175, \'IT 与体育\', \'http://static.cnbetacdn.com/topics/175_sports.gif\', \'I\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (354, \'Internet Download Manager\', \'http://static.cnbetacdn.com/topics/1163781012_0.gif\', \'I\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (403, \'IM 即时通信\', \'http://static.cnbetacdn.com/topics/im.gif\', \'I\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (416, \'InstallShield\', \'http://static.cnbetacdn.com/topics/installshield.gif\', \'I\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (421, \'IT 与交通\', \'http://static.cnbetacdn.com/topics/5cf96895bcff60f.png\', \'I\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (484, \'iFly 讯飞\', \'http://static.cnbetacdn.com/topics/3c4c7ccc6eb2223.jpeg\', \'I\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (511, \'IUNI 智能手机\', \'http://static.cnbetacdn.com/topics/c6e723a194d6639.png\', \'I\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (45, \'警告!\', \'http://static.cnbetacdn.com/topics/1386207671.gif\', \'J\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (537, \'就医宝\', \'http://static.cnbetacdn.com/topics/fa31f81617a8506.png\', \'J\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (89, \'KDE\', \'http://static.cnbetacdn.com/topics/kde.gif\', \'K\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (102, \'Kingsoft 金山\', \'http://static.cnbetacdn.com/topics/2010-4-9 8-21-37.gif\', \'K\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (133, \'Kaspersky 卡巴斯基\', \'http://static.cnbetacdn.com/topics/Kaspersky_logo.gif\', \'K\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (409, \'KV 江民杀毒软件\', \'http://static.cnbetacdn.com/topics/2010-4-9 8-04-56.gif\', \'K\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (415, \'K-Meleon\', \'http://static.cnbetacdn.com/topics/K-Meleon.gif\', \'K\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (426, \'Kodak 柯达\', \'http://static.cnbetacdn.com/topics/kodak.gif\', \'K\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (472, \'Kingsoft Security 金山安全\', \'http://static.cnbetacdn.com/topics/2010-12-2 13-37-48.gif\', \'K\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (476, \'Kingsoft 金山快快\', \'http://static.cnbetacdn.com/topics/2010-8-16 13-33-44.gif\', \'K\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (481, \'Kanbox 酷盘\', \'http://static.cnbetacdn.com/topics/bf26083a10990b6.png\', \'K\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (498, \'Kingsoft 金山猎豹浏览器\', \'http://static.cnbetacdn.com/topics/33f619852580e9c.png\', \'K\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (513, \'Kaiboer 开博尔\', \'http://static.cnbetacdn.com/topics/b6905c33b1bcc07.png\', \'K\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (7, \'历史 - Microsoft Office 2003\', \'http://static.cnbetacdn.com/topics/mso2003.gif\', \'L\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (17, \'历史 - Windows 2000\', \'http://static.cnbetacdn.com/topics/Win2000.gif\', \'L\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (28, \'历史 - Messenger Plus!\', \'http://static.cnbetacdn.com/topics/028_msg_plus.gif\', \'L\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (40, \'历史 - Macromedia\', \'http://static.cnbetacdn.com/topics/2010-4-9 8-07-40.gif\', \'L\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (44, \'历史 - Sun\', \'http://static.cnbetacdn.com/topics/sun.gif\', \'L\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (83, \'LG\', \'http://static.cnbetacdn.com/topics/8b3ccc58abe35ea.png\', \'L\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (84, \'历史 - Napster\', \'http://static.cnbetacdn.com/topics/2009-3-23 16-09-04.gif\', \'L\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (95, \'Linux\', \'http://static.cnbetacdn.com/topics/linux.gif\', \'L\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (103, \'Logitech 罗技\', \'http://static.cnbetacdn.com/topics/logitech.gif\', \'L\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (114, \'历史 - NetCaptor\', \'http://static.cnbetacdn.com/topics/2009-3-23 16-17-32.gif\', \'L\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (120, \'历史 - TGTSoft StyleXP\', \'http://static.cnbetacdn.com/topics/stylexp.gif\', \'L\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (124, \'历史 - AOL Netscape\', \'http://static.cnbetacdn.com/topics/2009-3-23 15-47-55.gif\', \'L\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (181, \'历史 - MSN Messenger\', \'http://static.cnbetacdn.com/topics/2009-3-23 16-01-49.gif\', \'L\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (199, \'历史 - Microsoft Encarta\', \'http://static.cnbetacdn.com/topics/encarta.gif\', \'L\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (222, \'Lycos 莱科斯\', \'http://static.cnbetacdn.com/topics/2010-4-9 8-12-12.gif\', \'L\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (239, \'Lenovo 联想\', \'http://static.cnbetacdn.com/topics/lenovo.gif\', \'L\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (265, \'历史 - Microsoft Office 2007\', \'http://static.cnbetacdn.com/topics/mso2007.gif\', \'L\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (269, \'历史 - Windows 桌面搜索\', \'http://static.cnbetacdn.com/topics/11-12-12 10-45-49.gif\', \'L\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (292, \'历史 - 风雷软件\', \'http://static.cnbetacdn.com/topics/2009-3-23 15-45-04.gif\', \'L\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (296, \'历史 - Mess Patch\', \'http://static.cnbetacdn.com/topics/296_mess.gif\', \'L\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (312, \'历史 - Windows Live Spaces\', \'http://static.cnbetacdn.com/topics/livespaces.png\', \'L\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (319, \'Lingoes 灵格斯\', \'http://static.cnbetacdn.com/topics/319_lingoes.gif\', \'L\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (362, \'历史 - CNC 中国网通\', \'http://static.cnbetacdn.com/topics/CNClogo.gif\', \'L\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (367, \'历史 - Mozilla Sunbird\', \'http://static.cnbetacdn.com/topics/sunbird.gif\', \'L\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (405, \'历史 - CoralQQ 珊瑚虫\', \'http://static.cnbetacdn.com/topics/coralqq.gif\', \'L\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (408, \'历史 - HD-DVD / EVD\', \'http://static.cnbetacdn.com/topics/hddvd.png\', \'L\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (434, \'历史 - Sony-Ericsson 索尼爱立信\', \'http://static.cnbetacdn.com/topics/sonyeric.gif\', \'L\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (2, \'MSN\', \'http://static.cnbetacdn.com/topics/msn.gif\', \'M\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (4, \'Microsoft 微软\', \'http://static.cnbetacdn.com/topics/12-08-24 23-03-07.gif\', \'M\', 1)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (15, \'Mozilla 谋智网络\', \'http://static.cnbetacdn.com/topics/015_mozilla.gif\', \'M\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (27, \'Microsoft Visual Studio\', \'http://static.cnbetacdn.com/topics/12-08-24 23-47-29.gif\', \'M\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (33, \'Microsoft SQL Server\', \'http://static.cnbetacdn.com/topics/13-05-22 10-51-01.gif\', \'M\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (34, \'Microsoft DirectX\', \'http://static.cnbetacdn.com/topics/12-08-24 23-11-43.gif\', \'M\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (43, \'MySQL\', \'http://static.cnbetacdn.com/topics/mysql.gif\', \'M\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (47, \'Microsoft .NET\', \'http://static.cnbetacdn.com/topics/msdotnet.png\', \'M\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (57, \'Maxthon 傲游\', \'http://static.cnbetacdn.com/topics/1386207765.gif\', \'M\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (61, \'Microsoft Bing 必应\', \'http://static.cnbetacdn.com/topics/1379404649.gif\', \'M\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (67, \'mIRC\', \'http://static.cnbetacdn.com/topics/mirc.gif\', \'M\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (73, \'Mandriva Linux\', \'http://static.cnbetacdn.com/topics/2-6-2009 9-00-24 AM.gif\', \'M\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (75, \'McAfee\', \'http://static.cnbetacdn.com/topics/mcafee.gif\', \'M\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (85, \'Microsoft XBOX\', \'http://static.cnbetacdn.com/topics/13-05-22 10-44-13.gif\', \'M\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (86, \'Microsoft Skype\', \'http://static.cnbetacdn.com/topics/1384414426.gif\', \'M\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (153, \'Microsoft 法律相关\', \'http://static.cnbetacdn.com/topics/mslaw.gif\', \'M\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (155, \'Microsoft 服务器相关\', \'http://static.cnbetacdn.com/topics/msserver.gif\', \'M\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (163, \'Mozilla FireFox\', \'http://static.cnbetacdn.com/topics/firefox.gif\', \'M\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (177, \'Microsoft TechNet / MSDN\', \'http://static.cnbetacdn.com/topics/msdn-tn.gif\', \'M\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (179, \'Microsoft Office for Mac\', \'http://static.cnbetacdn.com/topics/officemac.gif\', \'M\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (187, \'MindSoft\', \'http://static.cnbetacdn.com/topics/MindSoft.gif\', \'M\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (207, \'Microsoft 硬件\', \'http://static.cnbetacdn.com/topics/ms_mouse.gif\', \'M\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (210, \'MSN Shell\', \'http://static.cnbetacdn.com/topics/210_msnshell.gif\', \'M\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (211, \'Microsoft Office 2013\', \'http://static.cnbetacdn.com/topics/7-18-2012 8-48-00 AM.gif\', \'M\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (214, \'Mozilla ThunderBird\', \'http://static.cnbetacdn.com/topics/thunderbird.gif\', \'M\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (223, \'Microsoft Hyper-V Server\', \'http://static.cnbetacdn.com/topics/hyperv.gif\', \'M\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (251, \'Microsoft 会议\', \'http://static.cnbetacdn.com/topics/12-08-24 23-40-27.gif\', \'M\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (263, \'Microsoft Office\', \'http://static.cnbetacdn.com/topics/12-08-24 23-15-44.gif\', \'M\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (308, \'Microsoft Zune\', \'http://static.cnbetacdn.com/topics/zune.gif\', \'M\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (329, \'Microsoft Expression\', \'http://static.cnbetacdn.com/topics/expression.gif\', \'M\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (359, \'Microsoft Silverlight\', \'http://static.cnbetacdn.com/topics/12-08-24 23-32-07.gif\', \'M\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (361, \'Microsoft Outlook / Hotmail\', \'http://static.cnbetacdn.com/topics/12-08-26 21-37-43.gif\', \'M\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (382, \'Motorola 摩托罗拉\', \'http://static.cnbetacdn.com/topics/11-12-14 08-34-57.gif\', \'M\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (397, \'Media 全球媒体\', \'http://static.cnbetacdn.com/topics/090595492f3e4c2.png\', \'M\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (423, \'Microsoft Error\', \'http://static.cnbetacdn.com/topics/13-05-22 10-58-13.gif\', \'M\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (429, \'Microsoft Surface\', \'http://static.cnbetacdn.com/topics/13-05-22 11-25-08.gif\', \'M\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (436, \'Meizu 魅族\', \'http://static.cnbetacdn.com/topics/1378388808.gif\', \'M\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (438, \'MicroPoint 微点\', \'http://static.cnbetacdn.com/topics/13-05-22 11-01-45.gif\', \'M\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (456, \'Microsoft Office 2010\', \'http://static.cnbetacdn.com/topics/12-08-24 23-20-36.gif\', \'M\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (462, \'Microsoft Security Essentials\', \'http://static.cnbetacdn.com/topics/12-08-24 23-24-38.gif\', \'M\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (496, \'MyMoney 金蝶随手记\', \'http://static.cnbetacdn.com/topics/fba30e1089291e9.png\', \'M\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (509, \'Mele 迈乐\', \'http://static.cnbetacdn.com/topics/d41fe50220900ed.png\', \'M\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (533, \'Microsoft Hololens\', \'http://static.cnbetacdn.com/topics/f28444d27a59413.png\', \'M\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (23, \'Nero\', \'http://static.cnbetacdn.com/topics/nero.gif\', \'N\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (55, \'NVIDIA\', \'http://static.cnbetacdn.com/topics/nvidia.gif\', \'N\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (90, \'Novell\', \'http://static.cnbetacdn.com/topics/novell.gif\', \'N\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (123, \'Net Transport 网络传送带\', \'http://static.cnbetacdn.com/topics/123_transport.gif\', \'N\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (144, \'Netbook 上网本 / 平板 / Ultrabook\', \'http://static.cnbetacdn.com/topics/11-12-14 08-41-43.gif\', \'N\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (147, \'NOKIA 诺基亚\', \'http://static.cnbetacdn.com/topics/nokiapure.gif\', \'N\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (182, \'NVIDIA ForceWare\', \'http://static.cnbetacdn.com/topics/2010-4-9 9-01-29.gif\', \'N\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (203, \'Netease POPO 网易泡泡\', \'http://static.cnbetacdn.com/topics/203_popo.gif\', \'N\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (276, \'NetEase 网易\', \'http://static.cnbetacdn.com/topics/netease.png\', \'N\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (330, \'nod32 Antivirus\', \'http://static.cnbetacdn.com/topics/330_nod32.gif\', \'N\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (360, \'nLite / vLite\', \'http://static.cnbetacdn.com/topics/nvlite.gif\', \'N\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (442, \'Nikon 尼康\', \'http://static.cnbetacdn.com/topics/nikon.gif\', \'N\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (459, \'NetEase 网易有道\', \'http://static.cnbetacdn.com/topics/2010-4-9 10-10-52.gif\', \'N\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (519, \'nubia 努比亚\', \'http://static.cnbetacdn.com/topics/ad795eb3c4727ec.png\', \'N\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (48, \'Opera / 欧朋浏览器\',  \'http://static.cnbetacdn.com/topics/2009-8-28 16-18-09.gif\', \'O\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (160, \'Oracle Java\', \'http://static.cnbetacdn.com/topics/11-12-14 12-06-10.gif\', \'O\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (212, \'Outpost Firewall\', \'http://static.cnbetacdn.com/topics/outpost.gif\', \'O\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (244, \'Oracle 甲骨文\', \'http://static.cnbetacdn.com/topics/oracle.gif\', \'O\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (283, \'Open Source 开源\', \'http://static.cnbetacdn.com/topics/opensource2.png\', \'O\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (393, \'OpenBSD\', \'http://static.cnbetacdn.com/topics/openbsd.gif\', \'O\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (463, \'oppo 欧珀\', \'http://static.cnbetacdn.com/topics/1410403690.png\', \'O\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (478, \'Oray 图度\', \'http://static.cnbetacdn.com/topics/b11ea7bc582c4c4.png\', \'O\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (499, \'OnekeyROM 甜椒\', \'http://static.cnbetacdn.com/topics/eed566387e4092e.png\', \'O\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (21, \'PHP\', \'http://static.cnbetacdn.com/topics/021_php.gif\', \'P\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (107, \'Palm\', \'http://static.cnbetacdn.com/topics/palm.gif\', \'P\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (134, \'Panda Software 熊猫反病毒\', \'http://static.cnbetacdn.com/topics/pandasec.gif\', \'P\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (152, \'PHILIPS 飞利浦\', \'http://static.cnbetacdn.com/topics/2010-4-9 9-26-01.gif\', \'P\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (270, \'Paint.NET\', \'http://static.cnbetacdn.com/topics/paintnet.gif\', \'P\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (352, \'PHPWind\', \'http://static.cnbetacdn.com/topics/logo1.gif\', \'P\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (452, \'Panasonic 松下电器\', \'http://static.cnbetacdn.com/topics/2009-3-23 16-19-15.gif\', \'P\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (208, \'Qihoo 奇虎鲁大师 / Windows 优化大师\', \'http://static.cnbetacdn.com/topics/11-12-12 10-48-39.gif\', \'Q\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (300, \'Qihoo 奇虎 360 安全卫士\', \'http://static.cnbetacdn.com/topics/2011-4-20 22-34-42.gif\', \'Q\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (489, \'QY 群英 CC 企业通讯\', \'http://static.cnbetacdn.com/topics/d3b847577abfd58.png\', \'Q\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (490, \'QY 群英网络\', \'http://static.cnbetacdn.com/topics/4be38b4d1e6dd8b.png\', \'Q\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (37, \'RedHat\', \'http://static.cnbetacdn.com/topics/redhat.gif\', \'R\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (174, \'Rising 瑞星\', \'http://static.cnbetacdn.com/topics/174_rising.gif\', \'R\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (337, \'Raxco PerfectDisk\', \'http://static.cnbetacdn.com/topics/perfectdisk.gif\', \'R\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (368, \'RedHat Fedora\', \'http://static.cnbetacdn.com/topics/fedora.gif\', \'R\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (388, \'RSS\', \'http://static.cnbetacdn.com/topics/11-12-12 10-52-53.gif\', \'R\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (412, \'Returnil Virtual System\', \'http://static.cnbetacdn.com/topics/returnil.gif\', \'R\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (467, \'RockChip 瑞芯微电子\', \'http://static.cnbetacdn.com/topics/2010-4-9 9-29-39.gif\', \'R\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (468, \'RFID / 增强现实 / 物联网\', \'http://static.cnbetacdn.com/topics/rfid.gif\', \'R\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (492, \'Ramos 蓝魔\', \'http://static.cnbetacdn.com/topics/2255c9250689e6f.png\', \'R\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (10, \'视频网站 / 媒体播放器 - K-Lite (Mega)\', \'http://static.cnbetacdn.com/topics/010_klite.gif\', \'S\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (19, \'视频网站 / 媒体播放器\', \'http://static.cnbetacdn.com/topics/13-04-26 16-30-11.gif\', \'S\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (20, \'视频网站 / 媒体播放器 - AOL Winamp\', \'http://static.cnbetacdn.com/topics/winamp1.gif\', \'S\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (25, \'Symantec 赛门铁克\', \'http://static.cnbetacdn.com/topics/11-12-14 08-56-54.gif\', \'S\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (35, \'视频网站 / 媒体播放器 - WinDVD\', \'http://static.cnbetacdn.com/topics/2-6-2009 2-44-00 AM.gif\', \'S\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (46, \'视频网站 / 媒体播放器 - MPC\', \'http://static.cnbetacdn.com/topics/mpc.gif\', \'S\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (112, \'SCO Unix\', \'http://static.cnbetacdn.com/topics/sco.gif\', \'S\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (115, \'Stardock\', \'http://static.cnbetacdn.com/topics/stardock.gif\', \'S\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (132, \'视频网站 / 媒体播放器 - JetAudio\', \'http://static.cnbetacdn.com/topics/jetaudio.gif\', \'S\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (145, \'视频网站 / 媒体播放器 - Real\', \'http://static.cnbetacdn.com/topics/real.gif\', \'S\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (151, \'SuSE Linux / OpenSuSE\', \'http://static.cnbetacdn.com/topics/suse.gif\', \'S\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (176, \'视频网站 / 媒体播放器 - VLC\', \'http://static.cnbetacdn.com/topics/vlc.gif\', \'S\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (196, \'视频网站 / 媒体播放器 - KazaA\', \'http://static.cnbetacdn.com/topics/kazaa.gif\', \'S\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (197, \'SONY 索尼\', \'http://static.cnbetacdn.com/topics/0f3333ff586a53b.png\', \'S\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (217, \'Super Rabbit 超级兔子\', \'http://static.cnbetacdn.com/topics/srabbit.gif\', \'S\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (220, \'Shanda 盛大网络\', \'http://static.cnbetacdn.com/topics/shanda.gif\', \'S\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (221, \'世界之窗浏览器\', \'http://static.cnbetacdn.com/topics/12-19-2008 7-45-07 PM.gif\', \'S\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (224, \'视频网站 / 媒体播放器 - Monkey\'\'s Audio\', \'http://static.cnbetacdn.com/topics/224_monkeyaud.gif\', \'S\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (226, \'Seagate 希捷\', \'http://static.cnbetacdn.com/topics/64c286d8c08ced6.png\', \'S\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (230, \'Smartisan OS 锤子 ROM\', \'http://static.cnbetacdn.com/topics/13-04-07 18-01-29.gif\', \'S\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (267, \'Serv-U\', \'http://static.cnbetacdn.com/topics/servu_logo.gif\', \'S\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (282, \'视频网站 / 媒体播放器 - 千千静听\', \'http://static.cnbetacdn.com/topics/282_ttplayer.gif\', \'S\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (302, \'视频网站 / 媒体播放器 - PPS\', \'http://static.cnbetacdn.com/topics/2010-4-9 9-17-35.gif\', \'S\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (303, \'视频网站 / 媒体播放器 - PPTV\', \'http://static.cnbetacdn.com/topics/2010-4-9 9-12-30.gif\', \'S\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (315, \'视频网站 / 媒体播放器 - KMPlayer\', \'http://static.cnbetacdn.com/topics/kmp.gif\', \'S\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (322, \'视频网站 / 媒体播放器 - ToToLook 偷偷看\', \'http://static.cnbetacdn.com/topics/totolook.gif\', \'S\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (340, \'视频网站 / 媒体播放器 - GOM Player\', \'http://static.cnbetacdn.com/topics/340_gom.gif\', \'S\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (345, \'视频网站 / 媒体播放器 - UUSEE 悠视\', \'http://static.cnbetacdn.com/topics/2010-4-9 9-47-02.gif\', \'S\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (365, \'视频网站 / 媒体播放器 - Lame\', \'http://static.cnbetacdn.com/topics/lame.gif\', \'S\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (371, \'Samsung 三星\', \'http://static.cnbetacdn.com/topics/d807a9ee35b0a33.png\', \'S\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (385, \'Sogou 搜狗\', \'http://static.cnbetacdn.com/topics/sogou.gif\', \'S\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (394, \'视频网站 / 媒体播放器 - KuGoo 酷狗\', \'http://static.cnbetacdn.com/topics/2010-4-9 8-16-42.gif\', \'S\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (407, \'视频网站 / 媒体播放器 - MPlayer\', \'http://static.cnbetacdn.com/topics/mplayer.gif\', \'S\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (433, \'视频网站 / 媒体播放器 - My Codec Pack\', \'http://static.cnbetacdn.com/topics/mcp.gif\', \'S\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (457, \'SHARP 夏普\', \'http://static.cnbetacdn.com/topics/sharp.gif\', \'S\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (465, \'Sogou 搜狗浏览器\', \'http://static.cnbetacdn.com/topics/11-12-14 11-52-49.gif\', \'S\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (494, \'Shuame 刷机精灵\', \'http://static.cnbetacdn.com/topics/a3c49c63c97cd63.png\', \'S\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (500, \'Shendu 深度\', \'http://static.cnbetacdn.com/topics/76f040e64ab3bcb.jpeg\', \'S\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (18, \'Tencent 腾讯 QQ\', \'http://static.cnbetacdn.com/topics/ac145a46763ca90.png\', \'T\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (138, \'通信技术\', \'http://static.cnbetacdn.com/topics/communication.png\', \'T\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (173, \'Tencent 腾讯其他产品\', \'http://static.cnbetacdn.com/topics/2009-3-23 12-06-35.gif\', \'T\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (204, \'TuneUp Utilities\', \'http://static.cnbetacdn.com/topics/tuneup.gif\', \'T\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (237, \'Trend Micro 趋势科技\', \'http://static.cnbetacdn.com/topics/237_trendm.gif\', \'T\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (274, \'Tencent 腾讯\', \'http://static.cnbetacdn.com/topics/2010-4-9 9-35-15.gif\', \'T\', 1)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (278, \'TweakAssist 全能助手\', \'http://static.cnbetacdn.com/topics/tweakassist.gif\', \'T\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (341, \'TuoTu 脱兔\', \'http://static.cnbetacdn.com/topics/tuotu.gif\', \'T\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (344, \'Total Commander\', \'http://static.cnbetacdn.com/topics/tc.gif\', \'T\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (372, \'通信运营商\', \'http://static.cnbetacdn.com/topics/carrier.gif\', \'T\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (422, \'the United States 美国\', \'http://static.cnbetacdn.com/topics/11-12-14 08-53-40.gif\', \'T\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (437, \'通信技术 - 4G/LTE\', \'http://static.cnbetacdn.com/topics/ba60367cb0b82cf.png\', \'T\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (482, \'Top10 十大\', \'http://static.cnbetacdn.com/topics/9ab65630bf4ede1.png\', \'T\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (485, \'Tongbu 同步助手\', \'http://static.cnbetacdn.com/topics/ceaf1e31d2f1616.png\', \'T\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (68, \'UltraEdit\', \'http://static.cnbetacdn.com/topics/ue.gif\', \'U\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (225, \'UltraISO\', \'http://static.cnbetacdn.com/topics/ultraiso.gif\', \'U\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (317, \'Ubuntu\', \'http://static.cnbetacdn.com/topics/ubuntu.gif\', \'U\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (339, \'uTorrent\', \'http://static.cnbetacdn.com/topics/2010-4-9 9-52-08.gif\', \'U\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (446, \'USB 通用串行总线\', \'http://static.cnbetacdn.com/topics/2010-4-9 9-50-50.gif\', \'U\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (458, \'UC 优视浏览器\', \'http://static.cnbetacdn.com/topics/12-12-03 19-45-33.gif\', \'U\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (461, \'Updrv 驱动人生\', \'http://static.cnbetacdn.com/topics/2010-4-9 9-48-18.gif\', \'U\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (471, \'UM 悠米视频聊天\', \'http://static.cnbetacdn.com/topics/um_logo.png\', \'U\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (474, \'unispim 紫光华宇拼音\', \'http://static.cnbetacdn.com/topics/11-12-12 09-30-02.gif\', \'U\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (510, \'UMI 优米手机\', \'http://static.cnbetacdn.com/topics/382ac8a6d95f5b2.png\', \'U\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (16, \'VIA 威盛\', \'http://static.cnbetacdn.com/topics/2010-4-9 9-55-41.gif\', \'V\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (60, \'VMware\', \'http://static.cnbetacdn.com/topics/vmware.gif\', \'V\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (231, \'VBulletin\', \'http://static.cnbetacdn.com/topics/0012.png\', \'V\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (410, \'Vista 优化大师\', \'http://static.cnbetacdn.com/topics/vtweak.gif\', \'V\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (11, \'Windows\', \'http://static.cnbetacdn.com/topics/12-08-26 21-30-16.gif\', \'W\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (12, \'Windows XP\', \'http://static.cnbetacdn.com/topics/fd78901a4aa9fd1.png\', \'W\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (14, \'Windows Server 2003\', \'http://static.cnbetacdn.com/topics/2009-3-23 15-18-07.gif\', \'W\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (29, \'Windows Small Business\', \'http://static.cnbetacdn.com/topics/1386207386.gif\', \'W\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (41, \'Windows 次世代\', \'http://static.cnbetacdn.com/topics/win7.gif\', \'W\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (69, \'WinACE\', \'http://static.cnbetacdn.com/topics/winace.gif\', \'W\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (76, \'Windows 安全\', \'http://static.cnbetacdn.com/topics/11-12-12 10-58-56.gif\', \'W\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (92, \'WiFi\', \'http://static.cnbetacdn.com/topics/wifi.gif\', \'W\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (94, \'Windows + IE\', \'http://static.cnbetacdn.com/topics/WinIE.gif\', \'W\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (98, \'WinRAR\', \'http://static.cnbetacdn.com/topics/11-12-12 10-15-00.gif\', \'W\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (128, \'网络软件\', \'http://static.cnbetacdn.com/topics/global.png\', \'W\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (129, \'Windows 通信网络\', \'http://static.cnbetacdn.com/topics/winnet.gif\', \'W\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (131, \'Windows 存储\', \'http://static.cnbetacdn.com/topics/winstore.gif\', \'W\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (139, \'Windows Media Center\', \'http://static.cnbetacdn.com/topics/139_ms_win_mce.gif\', \'W\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (146, \'WinZip\', \'http://static.cnbetacdn.com/topics/11-12-12 10-01-21.gif\', \'W\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (180, \'Windows Live Messenger\', \'http://static.cnbetacdn.com/topics/12-08-26 21-40-33.gif\', \'W\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (184, \'Windows Phone\', \'http://static.cnbetacdn.com/topics/11-12-12 10-56-36.gif\', \'W\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (185, \'Windows 个性化\', \'http://static.cnbetacdn.com/topics/2009-3-23 15-31-05.gif\', \'W\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (190, \'Windows X\', \'http://static.cnbetacdn.com/topics/2010-4-9 7-56-01.gif\', \'W\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (227, \'Windows Media\', \'http://static.cnbetacdn.com/topics/wmplayer.png\', \'W\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (241, \'Windows Server\', \'http://static.cnbetacdn.com/topics/Windows-S8-Logo.png\', \'W\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (247, \'Windows Update\', \'http://static.cnbetacdn.com/topics/11-12-12 11-02-35.gif\', \'W\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (248, \'Windows Defender\', \'http://static.cnbetacdn.com/topics/windef.gif\', \'W\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (254, \'Windows Vista\', \'http://static.cnbetacdn.com/topics/64e277ceeec131d.png\', \'W\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (259, \'Windows Essentials\', \'http://static.cnbetacdn.com/topics/12-08-26 21-42-14.gif\', \'W\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (264, \'Windows Server 2008\', \'http://static.cnbetacdn.com/topics/2009-3-23 15-21-36.gif\', \'W\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (266, \'Wikipedia 维基百科\', \'http://static.cnbetacdn.com/topics/2010-5-15 9-55-14.gif\', \'W\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (268, \'Windows Live\', \'http://static.cnbetacdn.com/topics/2009-3-23 12-34-39.gif\', \'W\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (285, \'Widgets 小工具 / 侧边栏\', \'http://static.cnbetacdn.com/topics/sidebar.png\', \'W\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (320, \'Windows Virtual PC\', \'http://static.cnbetacdn.com/topics/11-12-12 11-01-21.gif\', \'W\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (332, \'Windows 7\', \'http://static.cnbetacdn.com/topics/5ac39790d90005f.png\', \'W\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (334, \'Windows Home Server\', \'http://static.cnbetacdn.com/topics/ws_HmSvr_v_c_100x67.gif\', \'W\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (335, \'WineHQ\', \'http://static.cnbetacdn.com/topics/11-12-12 10-22-4.gif\', \'W\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (349, \'WordPress\', \'http://static.cnbetacdn.com/topics/11-12-12 09-57-49.gif\', \'W\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (404, \'WinPatrol 看门狗\', \'http://static.cnbetacdn.com/topics/11-12-12 10-11-29.gif\', \'W\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (406, \'WinMount\', \'http://static.cnbetacdn.com/topics/winmount.gif\', \'W\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (427, \'Windows 画图\', \'http://static.cnbetacdn.com/topics/a4873ca809c73da.png\', \'W\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (454, \'Web2.0 - Microblogging 微博\', \'http://static.cnbetacdn.com/topics/11-12-14 08-11-26.gif\', \'W\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (455, \'Web2.0 - SNS 社交网络\', \'http://static.cnbetacdn.com/topics/51f49c3834029e0.png\', \'W\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (480, \'Windows 8\', \'http://static.cnbetacdn.com/topics/ae9e4662520d905.png\', \'W\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (506, \'Windows 8.1\', \'http://static.cnbetacdn.com/topics/9dda76c94727ce6.png\', \'W\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (527, \'网络软件 - 飞兔云传\', \'http://static.cnbetacdn.com/topics/07fe9b33c66a5d0.png\', \'W\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (531, \'Windows 10\', \'http://static.cnbetacdn.com/topics/c9300802dd8cde2.png\', \'W\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (56, \'系统工具\', \'http://static.cnbetacdn.com/topics/1386208204.gif\', \'X\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (157, \'系统安全\', \'http://static.cnbetacdn.com/topics/security.png\', \'X\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (168, \'XnView\', \'http://static.cnbetacdn.com/topics/xnview.gif\', \'X\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (318, \'XunLei 迅雷\', \'http://static.cnbetacdn.com/topics/xunleinew.gif\', \'X\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (487, \'Xiaomi 小米科技\', \'http://static.cnbetacdn.com/topics/milogo.gif\', \'X\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (507, \'系统工具 - Magican Mac 优化\', \'http://static.cnbetacdn.com/topics/72a51e7fb05edb4.png\', \'X\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (39, \'游戏\', \'http://static.cnbetacdn.com/topics/game.png\', \'Y\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (91, \'Yahoo! 雅虎\', \'http://static.cnbetacdn.com/topics/1378386655.gif\', \'Y\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (473, \'Yunduan 云端软件\', \'http://static.cnbetacdn.com/topics/5611975784.gif\', \'Y\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (503, \'应用 - PP 助手\', \'http://static.cnbetacdn.com/topics/c61db69798dd678.jpg\', \'Y\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (504, \'应用 - Root 精灵\', \'http://static.cnbetacdn.com/topics/3d6ebbae8fb93be.png\', \'Y\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (508, \'应用 - 刷机大师\', \'http://static.cnbetacdn.com/topics/fb24fe55f046a4c.png\', \'Y\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (515, \'应用 - 卓大师 一键 Root\', \'http://static.cnbetacdn.com/topics/9467c9a1ef6df79.png\', \'Y\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (523, \'应用 - 卓大师 字体大师\', \'http://static.cnbetacdn.com/topics/761733fdeaf2bc1.png\', \'Y\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (529, \'硬件 - iMagic\', \'http://static.cnbetacdn.com/topics/c40e6d898a8f2f4.png\', \'Y\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (74, \'Zonealarm\', \'http://static.cnbetacdn.com/topics/11-12-12 09-43-47.gif\', \'Z\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (517, \'ZTE 中兴红牛 V5 手机\', \'http://static.cnbetacdn.com/topics/8556f2c47051f75.png\', \'Z\', 0)</item>
+        <item>INSERT INTO "topics" ( "tid", "title", "thumb", "letter", "checked" ) VALUES (521, \'ZTE 中兴\', \'http://static.cnbetacdn.com/topics/20b15bd69c6a6c6.png\', \'Z\', 0)</item>
+
+    </string-array>
+</resources>

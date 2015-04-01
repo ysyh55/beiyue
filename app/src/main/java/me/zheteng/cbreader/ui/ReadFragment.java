@@ -217,6 +217,7 @@ public class ReadFragment extends Fragment implements SharedPreferences.OnShared
                 mProgressBar.setVisibility(View.GONE);
                 requestComments(1);
                 renderContent();
+                replaceCount();
                 mHasLoaded = true;
             }
         }, new Response.ErrorListener() {
@@ -390,7 +391,7 @@ public class ReadFragment extends Fragment implements SharedPreferences.OnShared
                     .replaceAll("\\$\\{score\\}", mNewsContent.score);
 
             if (!Utils.isConnectedWifi(mActivity)) {
-                if (!mPref.getBoolean(getString(R.string.pref_autoload_image_in_webview_key), true)) {
+                if (!mPref.getBoolean(mActivity.getString(R.string.pref_autoload_image_in_webview_key), true)) {
                     mWebView.getSettings().setLoadsImagesAutomatically(false);
                 }
             }
@@ -410,7 +411,7 @@ public class ReadFragment extends Fragment implements SharedPreferences.OnShared
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key.equals(getString(R.string.pref_autoload_image_in_webview_key))) {
+        if (key.equals(mActivity.getString(R.string.pref_autoload_image_in_webview_key))) {
             if (!Utils.isConnectedWifi(mActivity)) {
                 mWebView.getSettings().setLoadsImagesAutomatically(sharedPreferences.getBoolean(key, true));
                 mWebView.reload();
@@ -431,7 +432,7 @@ public class ReadFragment extends Fragment implements SharedPreferences.OnShared
     public void replaceCount() {
         mCommentsMenuItem = mActivity.getCommentMenuItem();
         if (mCommentsMenuItem != null && mNewsContent != null) {
-            mCommentsMenuItem.setTitle(getString(R.string.action_view_comments) + " (" + mNewsContent.comments + ")");
+            mCommentsMenuItem.setTitle(mActivity.getString(R.string.action_view_comments) + " (" + mNewsContent.comments + ")");
         }
     }
 

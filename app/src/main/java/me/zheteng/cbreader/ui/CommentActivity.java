@@ -4,8 +4,11 @@
 package me.zheteng.cbreader.ui;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.github.ksoichiro.android.observablescrollview.ObservableRecyclerView;
@@ -31,11 +34,15 @@ import android.widget.Toast;
 import me.zheteng.cbreader.MainApplication;
 import me.zheteng.cbreader.R;
 import me.zheteng.cbreader.model.NewsComment;
+import me.zheteng.cbreader.model.OrderedCommentsList;
 import me.zheteng.cbreader.ui.widget.MaterialProgressBar;
 import me.zheteng.cbreader.utils.APIUtils;
 import me.zheteng.cbreader.utils.PrefUtils;
 import me.zheteng.cbreader.utils.Utils;
+import me.zheteng.cbreader.utils.volley.CmtGsonRequest;
+import me.zheteng.cbreader.utils.volley.DoCommentRequest;
 import me.zheteng.cbreader.utils.volley.GsonRequest;
+import me.zheteng.cbreader.utils.volley.StringRequest;
 
 /**
  * 查看评论
@@ -67,6 +74,7 @@ public class CommentActivity extends SwipeBackActionBarActivity implements Obser
     private boolean mIsLoadingData;
     private boolean mIsNewerFirst;
     private MaterialProgressBar mProgressbar;
+    private String mToken;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +89,35 @@ public class CommentActivity extends SwipeBackActionBarActivity implements Obser
         mPage = mIsNewerFirst ? mCount / 10 + 1 : 1;
         initViews();
         requestData();
+
+        MainApplication.requestQueue.add(new StringRequest(APIUtils.getArticleAddressBySid(mSid),
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String body) {
+                        String sn = APIUtils.getSNFromArticleBody(body);
+                        Map<String, String> params = new HashMap<String, String>();
+                        params.put("op", "1," + mSid + "," + sn);
+                        MainApplication.requestQueue.add(new CmtGsonRequest<OrderedCommentsList>(
+                                Request.Method.POST, APIUtils.CMT_URL, OrderedCommentsList.class, APIUtils.ajaxHeaders,
+                                params,
+                                new Response.Listener<OrderedCommentsList>() {
+                                    @Override
+                                    public void onResponse(OrderedCommentsList orderedCommentsList) {
+                                        mToken = orderedCommentsList.token;
+                                        System.out.println(orderedCommentsList);
+                                    }
+                                }, new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError volleyError) {
+
+                            }
+                        }));
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+            }
+        }));
     }
 
     private void requestData() {
@@ -334,6 +371,8 @@ public class CommentActivity extends SwipeBackActionBarActivity implements Obser
                                             comment.support = String.valueOf(Integer.parseInt(comment.support) + 1);
                                             notifyDataSetChanged();
                                             comment.supportAvailable = false;
+                                            Toast.makeText(CommentActivity.this,
+                                                    R.string.support_success, Toast.LENGTH_SHORT).show();
                                         }
                                     }
 
@@ -352,6 +391,8 @@ public class CommentActivity extends SwipeBackActionBarActivity implements Obser
                                             comment.against = String.valueOf(Integer.parseInt(comment.against) + 1);
                                             notifyDataSetChanged();
                                             comment.againstAvailable = false;
+                                            Toast.makeText(CommentActivity.this,
+                                                    R.string.against_success, Toast.LENGTH_SHORT).show();
                                         }
                                     }
                                 }
@@ -384,8 +425,8 @@ public class CommentActivity extends SwipeBackActionBarActivity implements Obser
                 mOpposeView = ((Button) itemView.findViewById(R.id.oppose));
                 mContainer = (ViewGroup) itemView.findViewById(R.id.container);
 
-//                mSupportView.setOnClickListener(CommentListAdapter.this);
-//                mOpposeView.setOnClickListener(CommentListAdapter.this);
+                mSupportView.setOnClickListener(CommentListAdapter.this);
+                mOpposeView.setOnClickListener(CommentListAdapter.this);
             }
 
             // each data item is just a string in this case
@@ -407,35 +448,55 @@ public class CommentActivity extends SwipeBackActionBarActivity implements Obser
         return selectedItemDrawable;
     }
     private void doSupport(int sid, String tid, final OnDoSupportSuccessListener listener) {
-        MainApplication.requestQueue.add(new GsonRequest<String>(APIUtils.getDoCmtSupportUrl(sid, tid), String.class,
-                null, new Response.Listener<String>() {
+        if (mToken == null) {
+            Toast.makeText(this, "失败了, 请稍候再试一下吧! ", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        Map<String, String> params = new HashMap<>();
+        params.put("op", "support");
+        params.put("sid", String.valueOf(sid));
+        params.put("tid", tid);
+        params.put("csrf_token", mToken);
+        MainApplication.requestQueue.add(new DoCommentRequest<String>(Request.Method.POST,
+                APIUtils.DO_CMT_URL, String.class,
+                APIUtils.ajaxHeaders, params, new Response.Listener<String>() {
             @Override
             public void onResponse(String s) {
-                if (s.equals("操作成功")) {
+                if (s.equals("voted")) {
                     listener.onDoSupportSuccess();
                 }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-
+                System.out.println(volleyError.networkResponse.toString());
             }
         }));
     }
 
     private void doAganst(int sid, String tid, final OnDoAgainstSuccessListener listener) {
-        MainApplication.requestQueue.add(new GsonRequest<String>(APIUtils.getDoCmtSupportUrl(sid, tid), String.class,
-                null, new Response.Listener<String>() {
+        if (mToken == null) {
+            Toast.makeText(this, "失败了, 请稍候再试一下吧! ", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        Map<String, String> params = new HashMap<>();
+        params.put("op", "against");
+        params.put("sid", String.valueOf(sid));
+        params.put("tid", tid);
+        params.put("csrf_token", mToken);
+        MainApplication.requestQueue.add(new DoCommentRequest<String>(Request.Method.POST,
+                APIUtils.DO_CMT_URL, String.class,
+                APIUtils.ajaxHeaders, params, new Response.Listener<String>() {
             @Override
             public void onResponse(String s) {
-                if (s.equals("操作成功")) {
+                if (s.equals("voted")) {
                     listener.onDoAgainstSuccess();
                 }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-
+                System.out.println(volleyError.networkResponse.toString());
             }
         }));
     }

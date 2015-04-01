@@ -4,6 +4,7 @@
 package me.zheteng.cbreader.data;
 
 import static me.zheteng.cbreader.data.CnBetaContract.FavoriteEntry;
+import static me.zheteng.cbreader.data.CnBetaContract.TopicEntry;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
@@ -13,7 +14,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 
 /**
- * TODO 记得添加注释
+ * ContentProvider
  */
 public class CnBetaProvider extends ContentProvider {
     // The URI Matcher used by this content provider.
@@ -22,6 +23,9 @@ public class CnBetaProvider extends ContentProvider {
 
     static final int FAVORITE = 100;
     static final int FAVORITE_WITH_SID = 101;
+
+    static final int TOPIC = 200;
+    static final int TOPIC_WITH_TID = 201;
 
     static UriMatcher buildUriMatcher() {
         // I know what you're thinking.  Why create a UriMatcher when you can use regular
@@ -36,6 +40,9 @@ public class CnBetaProvider extends ContentProvider {
         // For each type of URI you want to add, create a corresponding code.
         matcher.addURI(authority, CnBetaContract.PATH_FAVORITE, FAVORITE);
         matcher.addURI(authority, CnBetaContract.PATH_FAVORITE + "/#", FAVORITE_WITH_SID);
+
+        matcher.addURI(authority, CnBetaContract.PATH_TOPIC, TOPIC);
+        matcher.addURI(authority, CnBetaContract.PATH_TOPIC + "/#", TOPIC_WITH_TID);
 
         return matcher;
     }
@@ -63,6 +70,18 @@ public class CnBetaProvider extends ContentProvider {
                         FavoriteEntry.COLUMN_SID + " = ? ", new String[] {sid}, null, null, sortOrder);
                 break;
             }
+            case TOPIC: {
+                retCursor = mOpenHelper.getReadableDatabase().query(TopicEntry.TABLE_NAME, projection,
+                        selection, selectionArgs, null, null, sortOrder);
+                break;
+            }
+            case TOPIC_WITH_TID: {
+                String tid = TopicEntry.getTidFromUri(uri);
+                retCursor = mOpenHelper.getReadableDatabase().query(TopicEntry.TABLE_NAME, projection,
+                        TopicEntry.COLUMN_TID + " = ? ", new String[] {tid}, null, null, sortOrder);
+                break;
+            }
+
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -77,8 +96,10 @@ public class CnBetaProvider extends ContentProvider {
         switch (match) {
             // Student: Uncomment and fill out these two cases
             case FAVORITE:
+            case TOPIC:
                 return FavoriteEntry.CONTENT_TYPE;
             case FAVORITE_WITH_SID:
+            case TOPIC_WITH_TID:
                 return FavoriteEntry.CONTENT_ITEM_TYPE;
 
             default:

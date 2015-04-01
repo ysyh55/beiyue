@@ -20,7 +20,7 @@ import me.zheteng.cbreader.utils.Utils;
 import me.zheteng.cbreader.utils.volley.GsonRequest;
 
 /**
- * TODO 记得添加注释
+ * 列表Fragment
  */
 public class BaseListFragment extends Fragment {
 
@@ -36,7 +36,7 @@ public class BaseListFragment extends Fragment {
     protected SwipeRefreshLayout mSwipeRefreshLayout;
     // ----- end  used for load more
 
-    // 首页用的,其他要重写方法
+    // 首页用的,其他的Fragment可能要重写方法,因为接口不一样
     protected boolean loadCachedData() {
         mLoadingData = true;
         String json = PrefUtils.getCacheOfKey(getActivity(), PrefUtils.KEY_ARTICLES);
@@ -55,6 +55,9 @@ public class BaseListFragment extends Fragment {
 
     }
 
+    /**
+     * 首页用的,其他的Fragment可能要重写方法,因为接口不一样
+     */
     protected void loadMoreArticles(String url) {
         mLoadingData = true;
 
@@ -70,10 +73,15 @@ public class BaseListFragment extends Fragment {
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-                mSwipeRefreshLayout.setRefreshing(false);
+                if (mSwipeRefreshLayout != null) {
+                    mSwipeRefreshLayout.setRefreshing(false);
+                }
                 mLoadingData = false;
                 mAdapter.resetLoadMoreButton();
-                Toast.makeText(mActivity, "加载错误", Toast.LENGTH_SHORT).show();
+
+                if (mActivity != null) {
+                    Toast.makeText(mActivity, "加载错误", Toast.LENGTH_SHORT).show();
+                }
             }
         }));
     }

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (C) 2015 Baidu, Inc. All Rights Reserved.
+  -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:orientation="vertical"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent">
+    <com.woozzu.android.widget.IndexableListView
+            android:id="@+id/topic_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingLeft="@dimen/feed_list_item_margin_left"
+            android:paddingRight="32dp"
+            android:layout_marginTop="?attr/actionBarSize"
+            android:clipToPadding="false"/>
+    <include layout="@layout/toolbar_normal" />
+</FrameLayout>

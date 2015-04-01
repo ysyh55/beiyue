@@ -29,6 +29,7 @@ public class ArticleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private static final int VIEW_TYPE_LIST = 3;
     private static final int VIEW_TYPE_PROG = 2;
     private boolean mIsLoadingMore;
+    private boolean mItemClickable;
 
     public void setOnLoadMoreListener(OnLoadMoreListener mLoadMoreListener) {
         this.mLoadMoreListener = mLoadMoreListener;
@@ -37,6 +38,10 @@ public class ArticleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public void resetLoadMoreButton() {
         mIsLoadingMore = false;
         notifyDataSetChanged();
+    }
+
+    public void setItemClickable(boolean b) {
+        mItemClickable = b;
     }
 
     private enum StyleMode {
@@ -105,7 +110,7 @@ public class ArticleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                             if (position == mData.size()) {
                                 view.findViewById(R.id.load_more).setVisibility(View.GONE);
                                 if (mLoadMoreListener != null) {
-                                    mLoadMoreListener.onLoadMore();
+                                    mLoadMoreListener.onLoadMoreButtonClicked();
                                 }
                             } else {
 
@@ -143,10 +148,12 @@ public class ArticleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             case VIEW_TYPE_CARD:
                 view = LayoutInflater.from(mContext).inflate(R.layout.feed_list_item, parent, false);
                 ArticleItemViewHolder viewHolder = new ArticleItemViewHolder(view);
+                view.setClickable(mItemClickable);
 
                 return viewHolder;
             case VIEW_TYPE_LIST:
                 view = LayoutInflater.from(mContext).inflate(R.layout.list_styled_item, parent, false);
+                view.setClickable(mItemClickable);
                 ListItemViewHolder viewHolder1 = new ListItemViewHolder(view);
 
                 return viewHolder1;
@@ -181,6 +188,7 @@ public class ArticleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             } else {
                 holder1.mThumbImage.setVisibility(View.GONE);
             }
+
         } else if (holder instanceof ListItemViewHolder) {
             ListItemViewHolder holder1 = (ListItemViewHolder) holder;
 
@@ -197,6 +205,7 @@ public class ArticleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             } else {
                 holder1.mThumbImage.setVisibility(View.GONE);
             }
+
         } else if (holder instanceof ProgressViewHolder) {
             ProgressViewHolder holder1 = (ProgressViewHolder) holder;
             if (mIsLoadingMore) {
@@ -396,6 +405,6 @@ public class ArticleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     public interface OnLoadMoreListener {
-        public void onLoadMore();
+        public void onLoadMoreButtonClicked();
     }
 }

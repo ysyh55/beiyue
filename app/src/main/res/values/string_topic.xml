@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (C) 2015 Baidu, Inc. All Rights Reserved.
+  -->
+<resources>
+    <string name="topics_show_default"><![CDATA[
+        [
+        {
+        \"tid\": 9,
+        \"thumb\": \"http://static.cnbetacdn.com/topics/apple.png\",
+        \"title\": \"Apple 苹果\"
+        }, {
+        \"tid\": 52,
+        \"thumb\": \"http://static.cnbetacdn.com/topics/850a52010eb551a.png\",
+        \"title\": \"Google / 谷歌\"
+        }, {
+        \"tid\": 371,
+        \"thumb\": \"http://static.cnbetacdn.com/topics/d807a9ee35b0a33.png\",
+        \"title\": \"Samsung 三星\"
+        }, {
+        \"tid\": 4,
+        \"thumb\": \"http://static.cnbetacdn.com/topics/12-08-24 23-03-07.gif\",
+        \"title\": \"Microsoft 微软\"
+        }, {
+        \"tid\": 444,
+        \"thumb\": \"http://static.cnbetacdn.com/topics/android.gif\",
+        \"title\": \"Google Android\"
+        }, {
+        \"tid\": 274,
+        \"thumb\": \"http://static.cnbetacdn.com/topics/2010-4-9 9-35-15.gif\",
+        \"title\": \"Tencent 腾讯\"
+        }, {
+        \"tid\": 261,
+        \"thumb\": \"http://static.cnbetacdn.com/topics/aada0e439b8da89.png\",
+        \"title\": \"Baidu 百度\"
+        }
+        ]
+    ]]>
+    </string>
+
+</resources>
