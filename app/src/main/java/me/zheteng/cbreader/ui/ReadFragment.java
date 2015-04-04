@@ -265,22 +265,26 @@ public class ReadFragment extends Fragment implements SharedPreferences.OnShared
         String tpl = mActivity.getCommentsTemplate();
         String itemTpl = mActivity.getCommentsItemTemplate();
         StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < list.size(); i++) {
-            NewsComment comment = list.get(i);
-            String content = comment.content.replaceAll("\\$", "\\\\\\$");
-            String name = comment.getUsername().replaceAll("\\$", "\\\\\\$");
+        try {
+            for (int i = 0; i < list.size(); i++) {
+                NewsComment comment = list.get(i);
+                String content = comment.content.replaceAll("\\$", "\\\\\\$");
+                String name = comment.getUsername().replaceAll("\\$", "\\\\\\$");
 
-            String itemHtml = itemTpl.replaceAll("\\$\\{content\\}", content)
-                    .replaceAll("\\$\\{name\\}", name)
-                    .replaceAll("\\$\\{support\\}", comment.support)
-                    .replaceAll("\\$\\{against\\}", comment.against);
-            builder.append(itemHtml);
+                String itemHtml = itemTpl.replaceAll("\\$\\{content\\}", content)
+                        .replaceAll("\\$\\{name\\}", name)
+                        .replaceAll("\\$\\{support\\}", comment.support)
+                        .replaceAll("\\$\\{against\\}", comment.against);
+                builder.append(itemHtml);
+            }
+
+            String result = tpl.replaceAll("\\$\\{comments\\}", builder.toString())
+                    .replaceAll("\\n", " ");
+
+            mWebView.loadUrl("javascript:appendComments('" + result + "')");
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-        String result = tpl.replaceAll("\\$\\{comments\\}", builder.toString())
-                .replaceAll("\\n", " ");
-
-        mWebView.loadUrl("javascript:appendComments('" + result + "')");
     }
 
     private void setShareIntent(){

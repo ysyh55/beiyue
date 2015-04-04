@@ -18,6 +18,7 @@ public class APIUtils {
     private static final char[] SIGN_BYTES = {48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 65, 66, 67, 68, 69, 70};
     public static final String CMT_URL = "http://www.cnbeta.com/cmt";
     public static final String DO_CMT_URL = "http://www.cnbeta.com/comment";
+    public static final String HOST_NAME = "http://www.cnbeta.com";
 
     public static String getTimestampInApi() {
         return Long.valueOf(System.currentTimeMillis() / 1000L).toString();
@@ -227,4 +228,7 @@ public class APIUtils {
         }
     }
 
+    public static String getCaptchaDataUrl(String token) {
+        return "http://www.cnbeta.com/captcha.htm?refresh=1&csrf_token=" + token + "&_=" + System.currentTimeMillis();
+    }
 }

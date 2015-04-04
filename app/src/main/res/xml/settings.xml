@@ -39,6 +39,14 @@
 
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/pref_style">
+        <SwitchPreference
+                android:key="@string/pref_use_web_api_key"
+                android:title="@string/pref_use_web_api"
+                android:summary="@string/pref_use_web_api_summary"
+                android:defaultValue="true"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/pref_advanced">
         <ListPreference
                 android:key="@string/pref_list_style_key"
                 android:title="@string/pref_list_style"
@@ -48,7 +56,6 @@
                 android:entryValues="@array/list_styles_values"
                 android:summary="@string/pref_card_style"/>
     </PreferenceCategory>
-
     <PreferenceCategory
             android:title="@string/pref_other">
         <Preference android:title="@string/pref_about"

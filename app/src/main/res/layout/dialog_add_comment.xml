@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (C) 2015 Baidu, Inc. All Rights Reserved.
+  -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_gravity="center_horizontal"
+              android:padding="16dp"
+              android:minWidth="1000dp">
+    <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/captcha_title"
+            style="@style/Base.TextAppearance.AppCompat.Body1"
+            />
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical">
+        <ImageView
+                android:id="@+id/seccode"
+                android:layout_width="80dp"
+                android:layout_height="38dp"/>
+        <EditText
+                android:id="@+id/captcha"
+                android:hint="@string/input_captcha"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:inputType="textVisiblePassword"/>
+    </LinearLayout>
+    <View android:layout_width="match_parent" android:layout_height="1dp"
+            android:background="@color/light_gray_dark"/>
+
+    <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            >
+        <EditText
+                android:id="@+id/comment_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/write_something"
+                android:gravity="top"
+                android:singleLine="false"
+                android:minHeight="100dp"/>
+    </ScrollView>
+
+    <LinearLayout android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:orientation="horizontal"
+                  android:gravity="right">
+        <Button
+                android:id="@+id/btn_dismiss"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/Widget.AppCompat.Light.ActionButton"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:text="取消"/>
+        <Button
+                android:id="@+id/btn_send"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/Widget.AppCompat.Light.ActionButton"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:textColor="@color/theme_primary"
+                android:text="发送"/>
+    </LinearLayout>
+
+</LinearLayout>

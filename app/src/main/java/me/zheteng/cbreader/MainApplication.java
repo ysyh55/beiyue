@@ -9,6 +9,7 @@ import java.net.CookiePolicy;
 import java.net.CookieStore;
 
 import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.Volley;
 
 import android.app.Application;
@@ -17,6 +18,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 import me.zheteng.cbreader.data.CnBetaDBHelper;
 import me.zheteng.cbreader.utils.PrefUtils;
+import me.zheteng.cbreader.utils.volley.BitmapLruCache;
 import me.zheteng.cbreader.utils.volley.PersistentCookieStore;
 
 /**
@@ -25,6 +27,7 @@ import me.zheteng.cbreader.utils.volley.PersistentCookieStore;
 public class MainApplication extends Application {
 
     public static RequestQueue requestQueue;
+    public static ImageLoader imageLoader;
     public static final int[] DRAWER_HEADER_BACKGROUND = {
             R.drawable.drawer_header_1,
             R.drawable.drawer_header_2,
@@ -44,6 +47,7 @@ public class MainApplication extends Application {
         CookieHandler.setDefault(manager);
 
         requestQueue = Volley.newRequestQueue(this);
+        imageLoader = new ImageLoader(requestQueue, new BitmapLruCache());
 
         if (!PrefUtils.isTopicsTableDone(this)) {
             new FillTopicTableTask().execute();

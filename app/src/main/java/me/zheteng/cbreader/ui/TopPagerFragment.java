@@ -63,10 +63,10 @@ public class TopPagerFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         mActivity = ((MainActivity) getActivity());
         mActivity.setTitle(R.string.top_title);
-        mActivity.showToolbar();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             mActivity.getToolbar().setElevation(UIUtils.dpToPixels(mActivity, 0));
         }
+        mActivity.showToolbar();
         initDatas();
     }
 

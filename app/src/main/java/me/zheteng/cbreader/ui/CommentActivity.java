@@ -17,14 +17,19 @@ import com.github.ksoichiro.android.observablescrollview.ScrollState;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.preference.PreferenceManager;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,8 +38,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 import me.zheteng.cbreader.MainApplication;
 import me.zheteng.cbreader.R;
+import me.zheteng.cbreader.model.CmntDetail;
+import me.zheteng.cbreader.model.CmntItem;
 import me.zheteng.cbreader.model.NewsComment;
-import me.zheteng.cbreader.model.OrderedCommentsList;
+import me.zheteng.cbreader.model.WebCmnt;
 import me.zheteng.cbreader.ui.widget.MaterialProgressBar;
 import me.zheteng.cbreader.utils.APIUtils;
 import me.zheteng.cbreader.utils.PrefUtils;
@@ -47,17 +54,23 @@ import me.zheteng.cbreader.utils.volley.StringRequest;
 /**
  * 查看评论
  */
-public class CommentActivity extends SwipeBackActionBarActivity implements ObservableScrollViewCallbacks {
+public class CommentActivity extends SwipeBackActionBarActivity implements ObservableScrollViewCallbacks,
+        CmntListAdapter.OnCommentClickListener {
     public static final String ARTICLE_SID_KEY = "sid";
     public static final String ARTICLE_COUNTD_KEY = "count";
+    private static final long REFRESH_DATA_DELAY = 500;
 
     private int mSid;
 
     private ObservableRecyclerView mRecyclerView;
     private int mToolbarHeight;
-    private CommentListAdapter mAdapter;
+    private CommentListAdapter mAdapter; // json接口的Adapter
+    private CmntListAdapter mCmntAdapter; // web接口的Adapter 两个Adapter选其一
     private LinearLayoutManager mLayoutManager;
     private TextView mNoDataHint;
+
+    private Handler mHandler = new Handler();
+    private WebCmnt mWebCmnt;
 
     int mPage = 1;
 
@@ -75,6 +88,9 @@ public class CommentActivity extends SwipeBackActionBarActivity implements Obser
     private boolean mIsNewerFirst;
     private MaterialProgressBar mProgressbar;
     private String mToken;
+    private String mCaptchaUrl;
+    private SharedPreferences mPref;
+    private boolean mUseWebApi;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,36 +104,74 @@ public class CommentActivity extends SwipeBackActionBarActivity implements Obser
         mIsNewerFirst = PrefUtils.getIsCommentLatestFirst(this);
         mPage = mIsNewerFirst ? mCount / 10 + 1 : 1;
         initViews();
-        requestData();
+        initData();
 
-        MainApplication.requestQueue.add(new StringRequest(APIUtils.getArticleAddressBySid(mSid),
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String body) {
-                        String sn = APIUtils.getSNFromArticleBody(body);
-                        Map<String, String> params = new HashMap<String, String>();
-                        params.put("op", "1," + mSid + "," + sn);
-                        MainApplication.requestQueue.add(new CmtGsonRequest<OrderedCommentsList>(
-                                Request.Method.POST, APIUtils.CMT_URL, OrderedCommentsList.class, APIUtils.ajaxHeaders,
-                                params,
-                                new Response.Listener<OrderedCommentsList>() {
-                                    @Override
-                                    public void onResponse(OrderedCommentsList orderedCommentsList) {
-                                        mToken = orderedCommentsList.token;
-                                        System.out.println(orderedCommentsList);
-                                    }
-                                }, new Response.ErrorListener() {
-                            @Override
-                            public void onErrorResponse(VolleyError volleyError) {
+    }
 
-                            }
-                        }));
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError volleyError) {
+    private void initData() {
+        mProgressbar.setVisibility(View.VISIBLE);
+        mNoDataHint.setVisibility(View.GONE);
+        mPref = PreferenceManager.getDefaultSharedPreferences(this);
+        mUseWebApi = mPref.getBoolean(getString(R.string.pref_use_web_api_key), true);
+        if (mUseWebApi) {
+            MainApplication.requestQueue.add(new StringRequest(APIUtils.getArticleAddressBySid(mSid),
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String body) {
+                            String sn = APIUtils.getSNFromArticleBody(body);
+                            Map<String, String> params = new HashMap<String, String>();
+                            params.put("op", "1," + mSid + "," + sn);
+                            MainApplication.requestQueue.add(new CmtGsonRequest<WebCmnt>(
+                                    Request.Method.POST, APIUtils.CMT_URL, WebCmnt.class, APIUtils.ajaxHeaders,
+                                    params,
+                                    new Response.Listener<WebCmnt>() {
+                                        @Override
+                                        public void onResponse(WebCmnt webCmnt) {
+                                            mProgressbar.setVisibility(View.GONE);
+                                            mWebCmnt = webCmnt;
+                                            setAdapter();
+                                            mToken = webCmnt.token;
+                                            System.out.println(webCmnt);
+                                            if (mWebCmnt.cmntlist.size() == 0) {
+                                                mNoDataHint.setVisibility(View.VISIBLE);
+                                            }
+                                        }
+                                    }, new Response.ErrorListener() {
+                                @Override
+                                public void onErrorResponse(VolleyError volleyError) {
+                                    mProgressbar.setVisibility(View.GONE);
+                                    mNoDataHint.setVisibility(View.VISIBLE);
+                                }
+                            }));
+                        }
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError volleyError) {
+                    mNoDataHint.setVisibility(View.VISIBLE);
+                    mProgressbar.setVisibility(View.GONE);
+                }
+            }));
+        } else {
+            mPage = mIsNewerFirst ? mCount / 10 + 1 : 1;
+            requestData();
+
+        }
+
+    }
+
+    private void setAdapter() {
+        if (mUseWebApi) {
+            mCmntAdapter = new CmntListAdapter(CommentActivity.this, mWebCmnt);
+            mCmntAdapter.setClickListener(this);
+            if (mRecyclerView != null) {
+                mRecyclerView.setAdapter(mCmntAdapter);
+                mProgressbar.setVisibility(View.GONE);
             }
-        }));
+        }
+    }
+
+    public void resetPage() {
+        mPage = mPage = mIsNewerFirst ? mCount / 10 + 1 : 1;
     }
 
     private void requestData() {
@@ -213,7 +267,8 @@ public class CommentActivity extends SwipeBackActionBarActivity implements Obser
             @Override
             public void onClick(View v) {
                 mNoDataHint.setVisibility(View.GONE);
-                requestData();
+                mProgressbar.setVisibility(View.VISIBLE);
+                initData();
             }
         });
 
@@ -224,41 +279,44 @@ public class CommentActivity extends SwipeBackActionBarActivity implements Obser
         mRecyclerView.setScrollViewCallbacks(this);
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
-        mRecyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+        if (!mUseWebApi) {
+            mRecyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+                @Override
+                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                    super.onScrolled(recyclerView, dx, dy);
 
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
+                    visibleItemCount = mRecyclerView.getChildCount();
+                    totalItemCount = mLayoutManager.getItemCount();
+                    firstVisibleItem = mLayoutManager.findFirstVisibleItemPosition();
 
-                visibleItemCount = mRecyclerView.getChildCount();
-                totalItemCount = mLayoutManager.getItemCount();
-                firstVisibleItem = mLayoutManager.findFirstVisibleItemPosition();
+                    if (loading) {
+                        if (totalItemCount > previousTotal) {
+                            loading = false;
+                            previousTotal = totalItemCount;
+                        }
+                    }
+                    if (!loading && (totalItemCount - visibleItemCount)
+                            <= (firstVisibleItem + visibleThreshold)) {
+                        // End has been reached
 
-                if (loading) {
-                    if (totalItemCount > previousTotal) {
-                        loading = false;
-                        previousTotal = totalItemCount;
+                        Log.i("...", "end called");
+
+                        if (!mIsLoadingData) {
+                            loadMoreData();
+                        }
+
+                        loading = true;
                     }
                 }
-                if (!loading && (totalItemCount - visibleItemCount)
-                        <= (firstVisibleItem + visibleThreshold)) {
-                    // End has been reached
+            });
 
-                    Log.i("...", "end called");
+            mAdapter = new CommentListAdapter(this, null);
+            mRecyclerView.setAdapter(mAdapter);
 
-                    if (!mIsLoadingData) {
-                        loadMoreData();
-                    }
+        }
 
-                    loading = true;
-                }
-            }
-        });
         mRecyclerView.setHasFixedSize(false);
-//        mRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL_LIST));
 
-        mAdapter = new CommentListAdapter(this, null);
-        mRecyclerView.setAdapter(mAdapter);
     }
 
     @Override
@@ -266,9 +324,50 @@ public class CommentActivity extends SwipeBackActionBarActivity implements Obser
         switch (item.getItemId()) {
             case android.R.id.home:
                 finish();
+                break;
+            case R.id.action_add_comment:
 
+                showSendCommentDialog();
+
+                break;
+
+            case R.id.action_refresh:
+
+                initData();
+
+                break;
         }
         return true;
+    }
+
+    private void showSendCommentDialog() {
+        showSendCommentDialog(null);
+    }
+
+    private void showSendCommentDialog(String pid) {
+        if (mToken == null) {
+            Toast.makeText(this, R.string.err_no_token, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (pid == null) {
+            pid = "0";
+        }
+
+        PublishCommentFragment fragment = PublishCommentFragment.newInstance(mToken, mSid, pid);
+        fragment.setPublishCommentDialogListener(new PublishCommentFragment.PublishCommentDialogListener() {
+            @Override
+            public void onCommentSuccess(DialogFragment dialog) {
+//                        initData();
+            }
+        });
+        fragment.show(getSupportFragmentManager(), "publish_comment");
+
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_comment, menu);
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -286,8 +385,54 @@ public class CommentActivity extends SwipeBackActionBarActivity implements Obser
 
     }
 
+    @Override
+    public void onCommentClicked(View v, CmntItem comment, CmntDetail detail) {
+        showSendCommentDialog(comment.tid);
+    }
+
+    @Override
+    public void onSupportClicked(View v, final CmntItem comment, final CmntDetail detail) {
+        if (comment.supportAvailable) {
+            doSupport(mSid, comment.tid, new OnDoSupportSuccessListener() {
+                @Override
+                public void onDoSupportSuccess() {
+                    synchronized(this) {
+                        if (comment.supportAvailable) {
+                            detail.score = String.valueOf(Integer.parseInt(detail.score) + 1);
+                            mCmntAdapter.notifyDataSetChanged();
+                            comment.supportAvailable = false;
+                            Toast.makeText(CommentActivity.this,
+                                    R.string.support_success, Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                }
+            });
+        }
+    }
+
+    @Override
+    public void onAgainstClicked(View v, final CmntItem comment, final CmntDetail detail) {
+        if (comment.againstAvailable) {
+            doAganst(mSid, comment.tid, new OnDoAgainstSuccessListener() {
+                @Override
+                public void onDoAgainstSuccess() {
+                    synchronized(this) {
+                        if (comment.againstAvailable) {
+                            detail.reason = String.valueOf(Integer.parseInt(detail.reason) + 1);
+                            mCmntAdapter.notifyDataSetChanged();
+                            comment.againstAvailable = false;
+                            Toast.makeText(CommentActivity.this,
+                                    R.string.against_success, Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+            });
+        }
+    }
+
     public class CommentListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
-    implements View.OnClickListener {
+            implements View.OnClickListener {
 
         private List<NewsComment> mData;
 
@@ -318,6 +463,7 @@ public class CommentActivity extends SwipeBackActionBarActivity implements Obser
             holder1.mOpposeView.setText(String.format(getString(R.string.oppose), comment.against));
             holder1.mSupportView.setTag(position);
             holder1.mOpposeView.setTag(position);
+            holder1.mContainer.setTag(position);
         }
 
         private NewsComment getItem(int position) {
@@ -347,9 +493,7 @@ public class CommentActivity extends SwipeBackActionBarActivity implements Obser
             }
             List<NewsComment> oldCursor = mData;
             this.mData = data;
-            if (data != null) {
-                this.notifyDataSetChanged();
-            }
+            this.notifyDataSetChanged();
             return oldCursor;
         }
 
@@ -399,6 +543,9 @@ public class CommentActivity extends SwipeBackActionBarActivity implements Obser
                             });
                         }
                         break;
+                    case R.id.container:
+                        comment = getItem((Integer) v.getTag());
+                        showSendCommentDialog(comment.tid);
                 }
             }
 
@@ -427,6 +574,7 @@ public class CommentActivity extends SwipeBackActionBarActivity implements Obser
 
                 mSupportView.setOnClickListener(CommentListAdapter.this);
                 mOpposeView.setOnClickListener(CommentListAdapter.this);
+                mContainer.setOnClickListener(CommentListAdapter.this);
             }
 
             // each data item is just a string in this case

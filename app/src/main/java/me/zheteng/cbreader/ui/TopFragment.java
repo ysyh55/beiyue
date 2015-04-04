@@ -134,39 +134,7 @@ public class TopFragment extends BaseListFragment implements ObservableScrollVie
 
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setHasFixedSize(false);
-        mRecyclerView.setScrollViewCallbacks(new MyShowHideToolbarListener(mActivity, mRecyclerView, mTabsContainer) {
-            @Override
-            public void onScrollChanged(int scrollY, boolean b, boolean b2) {
-                super.onScrollChanged(scrollY, b, b2);
-                visibleItemCount = mRecyclerView.getChildCount();
-                totalItemCount = mLayoutManager.getItemCount();
-                firstVisibleItem = mLayoutManager.findFirstVisibleItemPosition();
-
-                if (loading) {
-                    if (totalItemCount > previousTotal) {
-                        loading = false;
-                        previousTotal = totalItemCount;
-                    }
-                }
-                if (!loading && (totalItemCount - visibleItemCount)
-                        <= (firstVisibleItem + visibleThreshold)) {
-                    // End has been reached
-
-                    Log.i("...", "end called");
-
-                    if (!mLoadingData &&
-                            mPref.getBoolean(mActivity.getString(R.string.pref_autoload_when_scroll_key), true)) {
-                        String url = APIUtils
-                                .getArticleListUrl(0, mAdapter.getData().get(mAdapter.getData().size() - 1)
-                                        .sid);
-
-                        loadMoreArticles(url);
-                        loading = true;
-                    }
-
-                }
-            }
-        });
+        mRecyclerView.setScrollViewCallbacks(new MyShowHideToolbarListener(mActivity, mRecyclerView, mTabsContainer));
 
         mAdapter = new ArticleListAdapter(mActivity,
                 null,

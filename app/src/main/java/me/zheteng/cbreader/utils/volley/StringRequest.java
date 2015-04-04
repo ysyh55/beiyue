@@ -20,7 +20,9 @@ package me.zheteng.cbreader.utils.volley;
  */
 
 import java.io.UnsupportedEncodingException;
+import java.util.Map;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -31,6 +33,7 @@ import com.android.volley.toolbox.HttpHeaderParser;
  */
 public class StringRequest extends Request<String> {
     private final Response.Listener<String> mListener;
+    private Map<String, String> mHeaders;
 
     /**
      * Creates a new request with the given method.
@@ -57,6 +60,11 @@ public class StringRequest extends Request<String> {
         this(Method.GET, url, listener, errorListener);
     }
 
+    public StringRequest(String url, Map<String, String> headers, Response.Listener<String> listener, Response.ErrorListener errorListener) {
+        this(Method.GET, url, listener, errorListener);
+        mHeaders = headers;
+    }
+
     @Override
     protected void deliverResponse(String response) {
         mListener.onResponse(response);
@@ -71,5 +79,14 @@ public class StringRequest extends Request<String> {
             parsed = new String(response.data);
         }
         return Response.success(parsed, HttpHeaderParser.parseCacheHeaders(response));
+    }
+
+    @Override
+    public Map<String, String> getHeaders() throws AuthFailureError {
+        if (mHeaders != null) {
+            return mHeaders;
+        }
+        return super.getHeaders();
+
     }
 }
