@@ -3,13 +3,8 @@
   ~ Copyright (C) 2015 Baidu, Inc. All Rights Reserved.
   -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item android:id="@+id/action_view_comments"
-          android:menuCategory="system"
-          android:orderInCategory="102"
-          android:title="@string/action_view_comments"
-          app:showAsAction="withText|ifRoom"/>
+
     <item
-            android:visible="false"
             android:id="@+id/action_share"
             app:showAsAction="never"
             android:icon="@drawable/ic_share_white_24dp"

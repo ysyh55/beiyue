@@ -5,9 +5,6 @@ package me.zheteng.cbreader.ui;
 
 import static me.zheteng.cbreader.data.CnBetaContract.FavoriteEntry;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.google.gson.Gson;
@@ -19,17 +16,15 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.Toast;
 import me.zheteng.cbreader.BuildConfig;
@@ -49,7 +44,7 @@ import me.zheteng.cbreader.utils.volley.GsonRequest;
  */
 public class ReadActivity extends SwipeBackActionBarActivity {
 
-    public static final String ARTICLE_ARTICLES_KEY = "sid";
+    public static final String ARTICLE_ARTICLE_KEY = "article_article_key";
     public static final String ARTICLE_POSITON_KEY = "position";
     public static final String KEY_RESULT_POSITION = "result_position";
     public static final String KEY_RESULT_ARTICELS = "result_articles";
@@ -60,29 +55,25 @@ public class ReadActivity extends SwipeBackActionBarActivity {
 
     private int mToolbarHeight;
 
-    private ArrayList<Article> mArticles;
-    private int mPosition;
+    private Article mArticle;
     private HackyViewPager mViewPager;
     private ReadFragmentPagerAdapter mReadFragmentAdapter;
     private String mHtmlTemplate;
     private String mCommentsTemplate;
     private String mCommentsItemTemplate;
-    private boolean mIsLoadingMoreData;
-    private MenuItem mCommentMenuItem;
 
-    private Intent resultIntent = new Intent();
     /**
      * 刚进来时的第一个sid
      */
     private int mCurrentSid;
-    private ReadFragment mCurrentFragment;
-    private int mCurrentPosition;
+    private ReadFragment mReadFragment;
+    private CommentFragment mCommentFragment;
     private MenuItem mShareMenuItem;
     private ShareActionProvider mShareActionProvider;
     private boolean mIsFromTopComment;
     private MenuItem mImageToggleMenuItem;
-    private SharedPreferences mPref;
 
+    private SharedPreferences mPref;
     private OnBackPressedListener mOnBackPressedListener;
 
     @Override
@@ -90,20 +81,17 @@ public class ReadActivity extends SwipeBackActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_read);
 
-        mArticles = getIntent().getParcelableArrayListExtra(ARTICLE_ARTICLES_KEY);
-        mPosition = getIntent().getIntExtra(ARTICLE_POSITON_KEY, 0);
-        mCurrentPosition = mPosition;
+        mArticle = getIntent().getParcelableExtra(ARTICLE_ARTICLE_KEY);
         int sid = getIntent().getIntExtra(TOP_COMMENT_SID_KEY, -1);
         mIsFromTopComment = getIntent().getBooleanExtra(FROM_TOP_COMMENT_KEY, false);
-        if (mArticles == null) {
+        if (mArticle == null) {
             //从热门评论过来
             mCurrentSid = sid;
-            mArticles = new ArrayList<Article>();
             Article article = new Article();
             article.sid = sid;
-            mArticles.add(article);
+            mArticle = article;
         } else {
-            mCurrentSid = mArticles.get(mPosition).sid;
+            mCurrentSid = mArticle.sid;
         }
         initView();
         mPref = PreferenceManager.getDefaultSharedPreferences(this);
@@ -117,6 +105,10 @@ public class ReadActivity extends SwipeBackActionBarActivity {
                 return;
             }
         }
+        if (mViewPager.getCurrentItem() == 1) {
+            mViewPager.setCurrentItem(0);
+            return;
+        }
         super.onBackPressed();
     }
 
@@ -124,7 +116,6 @@ public class ReadActivity extends SwipeBackActionBarActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_read, menu);
-        mCommentMenuItem = menu.findItem(R.id.action_view_comments);
         mShareMenuItem = menu.findItem(R.id.action_share);
         mImageToggleMenuItem = menu.findItem(R.id.action_toggle_image);
 
@@ -132,6 +123,7 @@ public class ReadActivity extends SwipeBackActionBarActivity {
         if (mShareActionProvider == null) {
             mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(mShareMenuItem);
         }
+
         // Fetch and store ShareActionProvider
         return true;
     }
@@ -184,29 +176,21 @@ public class ReadActivity extends SwipeBackActionBarActivity {
         mViewPager.setPageMargin((int) UIUtils.dpToPixels(this, getResources().getDimension(R.dimen.viewpager_gap)));
         mViewPager.setPageMarginDrawable(R.drawable.viewpager_gap_drawable);
         mViewPager.setAdapter(mReadFragmentAdapter);
-        mViewPager.setCurrentItem(mPosition);
+        mViewPager.setCurrentItem(0);
         mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-//                Log.d(TAG, "拉动Pager" + positionOffsetPixels);
+                //                Log.d(TAG, "拉动Pager" + positionOffsetPixels);
+
             }
 
             @Override
             public void onPageSelected(int position) {
                 showToolbar();
-                mCurrentPosition = position;
-                mCurrentSid = mArticles.get(position).sid;
-                mCurrentFragment = mReadFragmentAdapter.getRegisteredFragment(position);
-                if (position == mReadFragmentAdapter.getCount() - 1
-                        && !mIsLoadingMoreData
-                        && !getIntent().getBooleanExtra(DISABLE_LOAD_MORE_KEY, false)) {
-                    loadMoreData();
-                }
             }
 
             @Override
             public void onPageScrollStateChanged(int state) {
-                Log.d(TAG, "拉动Pager State" + state);
             }
         });
         if (mIsFromTopComment) {
@@ -214,12 +198,21 @@ public class ReadActivity extends SwipeBackActionBarActivity {
         }
     }
 
-    public ReadFragment getCurrentFragment() {
-        if (mCurrentFragment == null) {
-            mCurrentFragment = mReadFragmentAdapter.getRegisteredFragment(mPosition);
-            return mCurrentFragment;
+    public ReadFragment getReadFragment() {
+        if (mReadFragment == null) {
+            mReadFragment = (ReadFragment) mReadFragmentAdapter.getItem(0);
+            return mReadFragment;
         } else {
-            return mCurrentFragment;
+            return mReadFragment;
+        }
+    }
+
+    public CommentFragment getCommentFragment() {
+        if (mCommentFragment == null) {
+            mCommentFragment = (CommentFragment) mReadFragmentAdapter.getItem(1);
+            return mCommentFragment;
+        } else {
+            return mCommentFragment;
         }
     }
 
@@ -236,26 +229,21 @@ public class ReadActivity extends SwipeBackActionBarActivity {
                 return true;
             }
             case R.id.action_share:
-                setShareIntent(getCurrentFragment().getNewsContent());
+                if (getReadFragment().getNewsContent() == null) {
+                    Toast.makeText(this, R.string.share_fail, Toast.LENGTH_SHORT).show();
+                    return true;
+                }
+                setShareIntent(getReadFragment().getNewsContent());
                 return true;
             case R.id.action_favorite:
                 if (mIsFromTopComment) {
                     getArticleInfoAndAddFavorite();
                 } else {
-                    addFavorite(this, getCurrentFragment().getNewsContent(), mArticles.get(mCurrentPosition));
+                    addFavorite(this, getReadFragment().getNewsContent(), mArticle);
                 }
                 return true;
             case R.id.action_view_comments: {
-                if (mReadFragmentAdapter.getRegisteredFragment(mCurrentPosition).getNewsContent() == null) {
-                    return true;
-                }
-                Intent intent = new Intent(this, CommentActivity.class);
-                intent.putExtra(CommentActivity.ARTICLE_SID_KEY, mCurrentSid);
-                intent.putExtra(CommentActivity.ARTICLE_COUNTD_KEY,
-                        mReadFragmentAdapter.getRegisteredFragment(mCurrentPosition)
-                                .getNewsContent()
-                                .comments);
-                startActivity(intent);
+                mViewPager.setCurrentItem(1);
                 return true;
             }
             case R.id.action_font_big:
@@ -282,8 +270,8 @@ public class ReadActivity extends SwipeBackActionBarActivity {
                 NewsContent.class, null, new Response.Listener<NewsContent>() {
             @Override
             public void onResponse(NewsContent newsContent) {
-                mArticles.get(mCurrentPosition).readFromNewsContent(newsContent);
-                addFavorite(ReadActivity.this, newsContent, mArticles.get(mCurrentPosition));
+                mArticle.readFromNewsContent(newsContent);
+                addFavorite(ReadActivity.this, newsContent, mArticle);
 
             }
         }, new Response.ErrorListener() {
@@ -293,7 +281,7 @@ public class ReadActivity extends SwipeBackActionBarActivity {
                 Toast.makeText(ReadActivity.this, "拉取信息错误,请检查网络", Toast.LENGTH_SHORT).show();
             }
         }));
-        mArticles.get(mCurrentPosition).readFromNewsContent(getCurrentFragment().getNewsContent());
+        mArticle.readFromNewsContent(getReadFragment().getNewsContent());
 
     }
 
@@ -326,46 +314,11 @@ public class ReadActivity extends SwipeBackActionBarActivity {
         return mHtmlTemplate;
     }
 
-    
+
 
     @Override
     public void finish() {
-        resultIntent.putParcelableArrayListExtra(KEY_RESULT_ARTICELS, mArticles);
-        resultIntent.putExtra(KEY_RESULT_POSITION, mPosition);
-
-        setResult(RESULT_OK, resultIntent);
         super.finish();
-    }
-
-
-    private void loadMoreData() {
-        mIsLoadingMoreData = true;
-        String url = APIUtils.getArticleListUrl(0, mCurrentSid);
-
-        MainApplication.requestQueue.add(new GsonRequest<Article[]>(url, Article[].class, null,
-                new Response.Listener<Article[]>() {
-                    @Override
-                    public void onResponse(Article[] s) {
-                        List<Article> articles = Utils.getListFromArray(s);
-                        appendData(articles);
-                        mIsLoadingMoreData = false;
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError volleyError) {
-                mIsLoadingMoreData = false;
-                Toast.makeText(ReadActivity.this, "加载错误", Toast.LENGTH_SHORT).show();
-            }
-        }));
-    }
-
-    public void appendData(List<Article> articles) {
-        mArticles.addAll(articles);
-        mReadFragmentAdapter.notifyDataSetChanged();
-    }
-
-    public MenuItem getCommentMenuItem() {
-        return mCommentMenuItem;
     }
 
     public OnBackPressedListener getmOnBackPressedListener() {
@@ -390,49 +343,39 @@ public class ReadActivity extends SwipeBackActionBarActivity {
         return mCommentsItemTemplate;
     }
 
-    public class ReadFragmentPagerAdapter extends FragmentStatePagerAdapter {
-        SparseArray<ReadFragment> registeredFragments = new SparseArray<ReadFragment>();
+    public class ReadFragmentPagerAdapter extends FragmentPagerAdapter {
 
         public ReadFragmentPagerAdapter(FragmentManager fm) {
             super(fm);
         }
 
         @Override
-        public ReadFragment getItem(int i) {
-            return ReadFragment.newInstance(mArticles.get(i));
+        public int getCount() {
+            return 2;
         }
 
         @Override
-        public ReadFragment instantiateItem(ViewGroup container, int position) {
-            ReadFragment fragment = (ReadFragment) super.instantiateItem(container, position);
-            registeredFragments.put(position, fragment);
+        public Fragment getItem(int position) {
+            Fragment fragment;
+            if (position == 0) {
+                fragment = ReadFragment.newInstance(mArticle);
+                mReadFragment = (ReadFragment)fragment;
+            } else {
+                fragment = CommentFragment.newInstance(mArticle);
+                mCommentFragment = (CommentFragment)fragment;
+            }
             return fragment;
         }
 
         @Override
-        public int getCount() {
-            return mArticles.size();
-        }
-
-        @Override
-        public void destroyItem(ViewGroup container, int position, Object object) {
-            registeredFragments.remove(position);
-            super.destroyItem(container, position, object);
-        }
-
-        public ReadFragment getRegisteredFragment(int position) {
-            return registeredFragments.get(position);
-        }
-
-        @Override
         public CharSequence getPageTitle(int position) {
-            return "查看文章" + mArticles.get(position);
+            return position == 0 ? "查看文章" : "评论";
         }
 
     }
 
     public interface OnBackPressedListener {
-        public boolean doBack();
+        boolean doBack();
     }
 
 

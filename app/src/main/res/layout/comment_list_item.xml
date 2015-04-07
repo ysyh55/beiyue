@@ -54,8 +54,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/feedlist_item_description_margin"
-                android:ellipsize="end"
-                android:maxLines="4"
                 />
         <LinearLayout
                 android:orientation="horizontal"

@@ -50,7 +50,7 @@
     <string name="pref_autoload_image_in_list">列表图片</string>
     <string name="pref_autoload_image_in_list_key">pref_autoload_image_in_list</string>
     <string name="pref_autoload_image_in_webview_key">pref_autoload_image_in_webview</string>
-    <string name="toggle_image">无图模式</string>
+    <string name="toggle_image">无图模式(非Wifi)</string>
     <string name="pref_autoload_image_in_webview_summary">2G/3G/4G下是否自动加载正文图片</string>
     <string name="pref_autoload_image_in_list_summary">是否展示列表页缩略图</string>
     <string name="about_version">最求美好</string>
@@ -97,4 +97,5 @@
     <string name="pref_use_web_api">使用网页接口</string>
     <string name="pref_use_web_api_summary">评论页使用网站所使用的接口, 可以实现盖楼, 如果评论一直失效或者崩溃, 请关闭此选项</string>
     <string name="action_refresh">刷新</string>
+    <string name="share_fail">数据获取失败,无法分享</string>
 </resources>

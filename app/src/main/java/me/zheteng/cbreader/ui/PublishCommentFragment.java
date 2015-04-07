@@ -45,7 +45,7 @@ public class PublishCommentFragment extends DialogFragment {
     ImageView mSeccodeView;
     Button mSend;
     Button mDismiss;
-    CommentActivity mActivity;
+    ReadActivity mActivity;
     String mToken;
     String mCaptchaUrl;
     EditText mCaptcha;
@@ -106,7 +106,7 @@ public class PublishCommentFragment extends DialogFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mActivity = (CommentActivity) getActivity();
+        mActivity = (ReadActivity) getActivity();
 
         initViews();
         refreshCaptcha();

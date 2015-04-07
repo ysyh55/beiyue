@@ -40,6 +40,8 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -122,7 +124,7 @@ public class ReadFragment extends Fragment implements SharedPreferences.OnShared
         Bundle args = getArguments();
         mSid = args.getInt(ARTICLE_SID_KEY, 0);
 
-        setHasOptionsMenu(false);
+        setHasOptionsMenu(true);
 
         dataLoadedReciever = new DataLoadedReciever();
     }
@@ -202,6 +204,24 @@ public class ReadFragment extends Fragment implements SharedPreferences.OnShared
             }
         });
 
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_fragment_read, menu);
+        mCommentsMenuItem = menu.findItem(R.id.action_view_comments);
+        replaceCount();
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_view_comments:
+
+                return false;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     public void requestData() {
@@ -434,7 +454,6 @@ public class ReadFragment extends Fragment implements SharedPreferences.OnShared
     }
 
     public void replaceCount() {
-        mCommentsMenuItem = mActivity.getCommentMenuItem();
         if (mCommentsMenuItem != null && mNewsContent != null) {
             mCommentsMenuItem.setTitle(mActivity.getString(R.string.action_view_comments) + " (" + mNewsContent.comments + ")");
         }
@@ -444,11 +463,12 @@ public class ReadFragment extends Fragment implements SharedPreferences.OnShared
 
         @JavascriptInterface
         public void showComments() {
-            Intent intent = new Intent(mActivity, CommentActivity.class);
-            intent.putExtra(CommentActivity.ARTICLE_SID_KEY, mSid);
-            intent.putExtra(CommentActivity.ARTICLE_COUNTD_KEY,
-                    mNewsContent.comments);
-            startActivity(intent);
+            mActivity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mActivity.getFragmentViewPager().setCurrentItem(1);
+                }
+            });
         }
 
         @JavascriptInterface

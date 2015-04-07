@@ -115,12 +115,12 @@ public class ArticleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                             } else {
 
                                 Intent intent = new Intent(mContext, ReadActivity.class);
-                                intent.putParcelableArrayListExtra(ReadActivity.ARTICLE_ARTICLES_KEY,
-                                        (ArrayList<? extends android.os.Parcelable>) mData);
+                                intent.putExtra(ReadActivity.ARTICLE_ARTICLE_KEY,
+                                        mData.get(position));
                                 intent.putExtra(ReadActivity.ARTICLE_POSITON_KEY, mData.indexOf(getItem(position)));
                                 intent.putExtra(ReadActivity.DISABLE_LOAD_MORE_KEY, mLoadOnlyOne);
 
-                                mContext.startActivityForResult(intent, NewsListFragment.CURRENT_STATE_REQUEST);
+                                mContext.startActivity(intent);
                             }
                         }
                     }

@@ -9,6 +9,7 @@ import java.util.Map;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -20,6 +21,7 @@ import android.widget.TextView;
 import me.zheteng.cbreader.R;
 import me.zheteng.cbreader.model.CmntDetail;
 import me.zheteng.cbreader.model.Cmntdict;
+import me.zheteng.cbreader.utils.UIUtils;
 
 /**
  * 盖楼View
@@ -65,7 +67,9 @@ public class FloorLayout extends LinearLayout {
         if (mCmntParents != null) {
             for (Cmntdict mCmntParent : mCmntParents) {
                 View view = mFactory.buildSubFloor(mCmntParent, this);
-                addView(view);
+                if (view != null) {
+                    addView(view);
+                }
             }
         }
 
@@ -84,10 +88,9 @@ public class FloorLayout extends LinearLayout {
             int margin = Math.min((count - i - 1), 4) * mDensity;
             layout.leftMargin = margin;
             layout.rightMargin = margin;
-            if (i == count - 1) {
-                layout.topMargin = 0;
-            } else {
-                layout.topMargin = Math.min((count - i), 4) * mDensity;
+            layout.topMargin = 0;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                view.setElevation(UIUtils.dpToPixels(mContext, 5));
             }
             view.setLayoutParams(layout);
         }
@@ -110,6 +113,10 @@ public class FloorLayout extends LinearLayout {
     private class ViewFactory {
         public View buildSubFloor(Cmntdict dict, ViewGroup group) {
             CmntDetail detail = mCmntStore.get(dict.tid);
+
+            if (detail == null) {
+                return null;
+            }
 
             LayoutInflater inflater =
                     (LayoutInflater) group.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);

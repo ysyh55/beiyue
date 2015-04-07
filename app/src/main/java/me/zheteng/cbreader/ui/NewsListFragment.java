@@ -3,14 +3,10 @@
  */
 package me.zheteng.cbreader.ui;
 
-import java.util.List;
-
 import com.github.ksoichiro.android.observablescrollview.ObservableRecyclerView;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
@@ -23,7 +19,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import me.zheteng.cbreader.R;
-import me.zheteng.cbreader.model.Article;
 import me.zheteng.cbreader.utils.APIUtils;
 import me.zheteng.cbreader.utils.UIUtils;
 
@@ -239,18 +234,6 @@ public class NewsListFragment extends BaseListFragment implements ObservableScro
     public void onUpOrCancelMotionEvent(ScrollState scrollState) {
 
     }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == CURRENT_STATE_REQUEST) {
-            if (resultCode == Activity.RESULT_OK) {
-                List<Article> list = data.getParcelableArrayListExtra(ReadActivity.KEY_RESULT_ARTICELS);
-                int position = data.getIntExtra(ReadActivity.KEY_RESULT_POSITION, 0);
-                mAdapter.swapData(list);
-            }
-        }
-    }
-
 
 
     @Override

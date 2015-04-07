@@ -9,6 +9,7 @@ import me.imid.swipebacklayout.lib.SwipeBackLayout;
 import me.imid.swipebacklayout.lib.Utils;
 import me.imid.swipebacklayout.lib.app.SwipeBackActivityBase;
 import me.imid.swipebacklayout.lib.app.SwipeBackActivityHelper;
+import me.zheteng.cbreader.utils.UIUtils;
 
 public class SwipeBackActionBarActivity extends BaseActivity implements SwipeBackActivityBase {
     private SwipeBackActivityHelper mHelper;
@@ -18,6 +19,7 @@ public class SwipeBackActionBarActivity extends BaseActivity implements SwipeBac
         super.onCreate(savedInstanceState);
         mHelper = new SwipeBackActivityHelper(this);
         mHelper.onActivityCreate();
+        mHelper.getSwipeBackLayout().setEdgeSize((int) UIUtils.dpToPixels(this, 10));
     }
 
     @Override
@@ -49,4 +51,6 @@ public class SwipeBackActionBarActivity extends BaseActivity implements SwipeBac
         Utils.convertActivityToTranslucent(this);
         getSwipeBackLayout().scrollToFinishActivity();
     }
+
+
 }

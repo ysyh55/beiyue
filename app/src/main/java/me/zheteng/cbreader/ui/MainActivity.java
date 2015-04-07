@@ -6,6 +6,8 @@ package me.zheteng.cbreader.ui;
 import java.util.ArrayList;
 import java.util.Random;
 
+import com.umeng.update.UmengUpdateAgent;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -105,6 +107,8 @@ public class MainActivity extends BaseActivity implements Palette.PaletteAsyncLi
                 TAG_NEWS_ARTICES).commit();
 
         mHandler = new Handler();
+
+        UmengUpdateAgent.update(this);
     }
 
     private int getActionBarSize() {

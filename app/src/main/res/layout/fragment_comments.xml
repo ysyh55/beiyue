@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (C) 2015 Baidu, Inc. All Rights Reserved.
+  -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent">
+    <com.github.ksoichiro.android.observablescrollview.ObservableRecyclerView
+            android:id="@+id/comment_list"
+            android:scrollbars="vertical"
+            android:layout_marginTop="?attr/actionBarSize"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+    <include layout="@layout/no_data_hint" />
+    <include layout="@layout/loading_progress" />
+</FrameLayout>

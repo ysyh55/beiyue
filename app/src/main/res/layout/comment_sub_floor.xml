@@ -2,11 +2,13 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools"
              android:layout_width="match_parent"
              android:layout_height="wrap_content"
-             android:padding="@dimen/comment_sub_floor_padding">
+             android:padding="@dimen/comment_sub_floor_padding"
+             android:background="@color/sub_floor_bg">
     <RelativeLayout
             android:id="@+id/show_sub_floor_content"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            >
 
         <TextView
                 android:id="@+id/sub_floor_unit"
@@ -29,7 +31,8 @@
                 android:id="@+id/sub_floor_username"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                style="@style/Base.TextAppearance.AppCompat.Caption"
+                style="@style/Base.TextAppearance.AppCompat.Body2"
+                android:textStyle="bold"
                 android:textSize="@dimen/sub_floor_cotent_text_size"
                 tools:text="匿名用户"
                 android:singleLine="true"
@@ -39,12 +42,11 @@
         <TextView
                 android:id="@+id/sub_floor_content"
                 tools:text="叼炸天有没有"
-                style="@style/Base.TextAppearance.AppCompat.Caption"
+                style="@style/Base.TextAppearance.AppCompat.Body1"
                 android:textSize="@dimen/sub_floor_cotent_text_size"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/sub_floor_username"/>
-
 
     </RelativeLayout>
 

@@ -25,4 +25,5 @@
     <color name="navdrawer_icon_tint">#888</color>
     <color name="navdrawer_icon_tint_selected">@color/theme_primary</color>
     <color name="list_description_color">#303030</color>
+    <color name="sub_floor_bg">#32c6c6c6</color>
 </resources>
