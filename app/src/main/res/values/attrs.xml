@@ -12,4 +12,22 @@
         <attr name="borderDrawable" format="reference" />
         <attr name="desaturateOnPress" format="boolean" />
     </declare-styleable>
+
+
+    <attr name="my_popup_theme" format="reference"/>
+    <attr name="window_bg_color" format="color"/>
+    <attr name="main_text_color" format="color"/>
+    <attr name="sub_text_color" format="color"/>
+    <attr name="color_primary" format="color"/>
+    <attr name="color_primary_dark" format="color"/>
+    <attr name="nav_bg_color" format="color"/>
+    <attr name="nav_item_text_color" format="color"/>
+    <attr name="nav_item_text_color_selected" format="color"/>
+    <attr name="nav_item_separator_color" format="color"/>
+    <attr name="nav_item_bg" format="color"/>
+    <attr name="list_item_bg" format="color"/>
+    <attr name="list_item_title_color" format="color"/>
+    <attr name="list_item_description_color" format="color"/>
+    <attr name="list_item_time_color" format="color"/>
+    <attr name="status_bar_color" format="color"/>
 </resources>

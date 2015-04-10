@@ -34,6 +34,7 @@ public class PrefUtils {
     private static final String KEY_VOLLEY_COOKIE = "key_volley_cookie";
     public static final String DEFAULT_STRING = "";
     public static final String KEY_TOPIC_SUBSCRIPTION = "key_topic_subscription";
+    private static final String KEY_IS_NIGHT = "key_is_night";
 
     /**
      * 保存首页缓存
@@ -81,7 +82,7 @@ public class PrefUtils {
     public static int getFontSize(Context context) {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
 
-        return sp.getInt(KEY_FONT_SIZE, 16);
+        return sp.getInt(KEY_FONT_SIZE, 18);
     }
 
     public static void setFontSize(Context context, int fontSize) {
@@ -145,5 +146,18 @@ public class PrefUtils {
         String json = gson.toJson(topics.toArray(), Topic[].class);
         editor.putString(KEY_TOPIC_SUBSCRIPTION, json);
         editor.apply();
+    }
+
+    public static boolean isNightMode(Context context) {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+
+        return sp.getBoolean(KEY_IS_NIGHT, false);
+    }
+
+    public static void toggleNightMode(Context context) {
+        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
+        editor.putBoolean(KEY_IS_NIGHT, !isNightMode(context));
+
+        editor.commit();
     }
 }

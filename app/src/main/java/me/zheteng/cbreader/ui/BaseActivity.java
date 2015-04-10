@@ -3,15 +3,22 @@
  */
 package me.zheteng.cbreader.ui;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
 import com.umeng.analytics.MobclickAgent;
 
+import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.WindowManager;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import me.zheteng.cbreader.BuildConfig;
+import me.zheteng.cbreader.MainApplication;
+import me.zheteng.cbreader.R;
+import me.zheteng.cbreader.utils.PrefUtils;
 import me.zheteng.cbreader.utils.UIUtils;
 
 /**
@@ -25,7 +32,21 @@ public class BaseActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        boolean isNight = PrefUtils.isNightMode(this);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            int color = isNight ? getResources().getColor(R.color.night_theme_primary_dark) :
+                    getResources().getColor(R.color.theme_primary_dark);
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            getWindow().setStatusBarColor(color);
+        }
 
+        int theme = isNight ? R.style.AppThemeDark : R.style.AppTheme;
+        int windowBg = isNight ? getResources().getColor(R.color.night_window_bg) :
+                getResources().getColor(R.color.background_material_light);
+
+        getWindow().setBackgroundDrawable(new ColorDrawable(windowBg));
+        setTheme(theme);
     }
 
     @Override
@@ -74,7 +95,26 @@ public class BaseActivity extends ActionBarActivity {
         }
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (MainApplication.requestQueue != null) {
+            MainApplication.requestQueue.cancelAll(new RequestQueue.RequestFilter() {
+                @Override
+                public boolean apply(Request<?> request) {
+                    return true;
+                }
+            });
+        }
+    }
+
     public Toolbar getToolbar() {
         return mToolbar;
+    }
+
+    @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
     }
 }

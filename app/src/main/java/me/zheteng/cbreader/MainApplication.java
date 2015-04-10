@@ -40,6 +40,7 @@ public class MainApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
         // CookieStore is just an interface, you can implement it and do things like
         // save the cookies to disk or what ever.
         CookieStore cookieStore = new PersistentCookieStore(this);

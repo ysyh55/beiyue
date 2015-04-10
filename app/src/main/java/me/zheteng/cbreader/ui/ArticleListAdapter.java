@@ -8,9 +8,9 @@ import java.util.List;
 
 import com.squareup.picasso.Picasso;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.GestureDetector;
@@ -18,6 +18,8 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 import me.zheteng.cbreader.R;
@@ -30,6 +32,7 @@ public class ArticleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private static final int VIEW_TYPE_PROG = 2;
     private boolean mIsLoadingMore;
     private boolean mItemClickable;
+    private int lastPosition = -1;
 
     public void setOnLoadMoreListener(OnLoadMoreListener mLoadMoreListener) {
         this.mLoadMoreListener = mLoadMoreListener;
@@ -53,7 +56,7 @@ public class ArticleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private List<Article> mData;
 
     private RecyclerView mRecyclerView;
-    private Activity mContext;
+    private ActionBarActivity mContext;
     private boolean mIsShowThumb = true;
     public boolean mLoadOnlyOne; //传入这个参数可以让read页不加载更多
     private OnItemDismissListener mOnItemDismissListener;
@@ -76,7 +79,7 @@ public class ArticleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
     }
 
-    public ArticleListAdapter(Activity context, List<Article> data, RecyclerView view,
+    public ArticleListAdapter(ActionBarActivity context, List<Article> data, RecyclerView view,
                               boolean showImage, final boolean dismissable) {
         mContext = context;
 
@@ -113,7 +116,6 @@ public class ArticleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                                     mLoadMoreListener.onLoadMoreButtonClicked();
                                 }
                             } else {
-
                                 Intent intent = new Intent(mContext, ReadActivity.class);
                                 intent.putExtra(ReadActivity.ARTICLE_ARTICLE_KEY,
                                         mData.get(position));
@@ -166,7 +168,6 @@ public class ArticleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             default:
                 throw new UnsupportedOperationException("没有这个ViewType");
         }
-
     }
 
     @Override
@@ -206,6 +207,7 @@ public class ArticleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 holder1.mThumbImage.setVisibility(View.GONE);
             }
 
+
         } else if (holder instanceof ProgressViewHolder) {
             ProgressViewHolder holder1 = (ProgressViewHolder) holder;
             if (mIsLoadingMore) {
@@ -213,6 +215,34 @@ public class ArticleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             } else {
                 holder1.mLoadMore.setVisibility(View.VISIBLE);
             }
+        }
+    }
+
+    @Override
+    public void onViewRecycled(RecyclerView.ViewHolder holder) {
+        super.onViewRecycled(holder);
+        if (holder instanceof ListItemViewHolder) {
+            Animation animation = ((ListItemViewHolder) holder).mContainer.getAnimation();
+            if (animation != null) {
+                animation.cancel();
+            }
+        } else if (holder instanceof ArticleItemViewHolder) {
+            Animation animation = ((ArticleItemViewHolder) holder).mContainer.getAnimation();
+            if (animation != null) {
+                animation.cancel();
+            }
+        }
+    }
+
+    /**
+     * Here is the key method to apply the animation
+     */
+    private void setAnimation(View viewToAnimate, int position) {
+        // If the bound view wasn't previously displayed on screen, it's animated
+        if (position > lastPosition) {
+            Animation animation = AnimationUtils.loadAnimation(mContext, R.anim.abc_slide_in_bottom);
+            viewToAnimate.startAnimation(animation);
+            lastPosition = position;
         }
     }
 

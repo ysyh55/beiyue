@@ -11,6 +11,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.app.Activity;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -23,7 +24,24 @@ import android.webkit.URLUtil;
  * 其他工具函数放这里
  */
 public class Utils {
+
+    public static void changeToTheme(Activity activity, int theme) {
+        activity.getApplication().setTheme(theme);
+        //        Intent mStartActivity = new Intent(activity, MainActivity.class);
+        //        int mPendingIntentId = 123456;
+        //        PendingIntent mPendingIntent = PendingIntent.getActivity(activity, mPendingIntentId,
+        // mStartActivity, PendingIntent.FLAG_CANCEL_CURRENT);
+        //        AlarmManager mgr = (AlarmManager)activity.getSystemService(Context.ALARM_SERVICE);
+        //        mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, mPendingIntent);
+        //        System.exit(0);
+        activity.recreate();
+    }
+
+
     public static <T> List<T> getListFromArray(T[] array) {
+        if (array == null) {
+            return new ArrayList<>();
+        }
         List<T> list = new ArrayList<>(array.length);
         for (T item : array) {
             list.add(item);

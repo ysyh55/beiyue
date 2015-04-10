@@ -13,7 +13,8 @@
         android:layout_marginBottom="@dimen/feed_list_item_margin_bottom"
         card_view:cardCornerRadius="4dp"
         android:clickable="false"
-        android:foreground="?attr/selectableItemBackground">
+        android:foreground="?attr/selectableItemBackground"
+        card_view:cardBackgroundColor="?attr/list_item_bg">
     <LinearLayout
             android:id="@+id/container"
             android:orientation="vertical"
@@ -24,6 +25,7 @@
                 android:id="@+id/title"
                 tools:text="中关村商家 “定金绑架” 顾客"
                 style="@style/Base.TextAppearance.AppCompat.Headline"
+                android:textSize="@dimen/feed_list_item_card_title_size"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
         <LinearLayout
@@ -39,12 +41,13 @@
                     tools:visibility="visible"
                     android:layout_width="@dimen/thumb_image_size"
                     android:layout_height="@dimen/thumb_image_size"
-                    android:background="@android:color/white"
+                    android:background="?attr/window_bg_color"
+                    android:transitionName="news_thumb"
                     android:id="@+id/thumb_image"/>
             <TextView
                     android:id="@+id/description"
                     style="@style/Base.TextAppearance.AppCompat.Caption"
-                    android:textColor="@color/list_description_color"
+                    android:textColor="?attr/list_item_description_color"
                     tools:text="曾经被称为中国硅谷的中关村，在电商的冲击下生意日渐冷清，但消费者与中关村电脑商户的官司却并没有因此减少。在生意萧条库存积压的情况下，商家利用定金绑架的方式，将库存滞销电脑卖给消费者，从而引发买卖纠纷。遗憾的是，在海淀法院审理的此类案件中，消费者的胜诉率为零。"
                     android:layout_width="0dp"
                     android:layout_weight="1"
@@ -61,6 +64,7 @@
             <TextView
                     android:id="@+id/time"
                     style="@style/Base.TextAppearance.AppCompat.Caption"
+                    android:textColor="?attr/list_item_time_color"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     tools:text="43分钟前"/>
@@ -70,6 +74,7 @@
                     android:layout_marginRight="@dimen/feed_list_item_margin_right"
                     android:drawableLeft="@drawable/ic_comment_grey600_16dp"
                     style="@style/Base.TextAppearance.AppCompat.Caption"
+                    android:textColor="?attr/list_item_time_color"
                     android:id="@+id/comment_count"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

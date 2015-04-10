@@ -6,14 +6,14 @@
     <dimen name="feed_list_item_margin_right">8dp</dimen>
     <dimen name="feed_list_item_margin_top">4dp</dimen>
     <dimen name="feed_list_item_margin_bottom">4dp</dimen>
-    <dimen name="feed_list_item_padding">12dp</dimen>
-    <dimen name="feedlist_item_description_margin">16dp</dimen>
+    <dimen name="feed_list_item_padding">8dp</dimen>
+    <dimen name="feedlist_item_description_margin">8dp</dimen>
     <dimen name="swipe_refresh_progress_bar_start_margin">-30dp</dimen>
     <dimen name="swipe_refresh_progress_bar_end_margin">15dp</dimen>
     <dimen name="flexible_space_image_height">240dp</dimen>
     <dimen name="intersection_height">16dp</dimen>
     <dimen name="space_support_oppose">16dp</dimen>
-    <dimen name="comment_su_op_margin_up">16dp</dimen>
+    <dimen name="comment_su_op_margin_up">8dp</dimen>
     <dimen name="space_feed_list_time_comment_count">16dp</dimen>
     <dimen name="materialprogressbar_size">48dp</dimen>
     <dimen name="list_loading_progress_size">48dp</dimen>
@@ -34,6 +34,8 @@
     <dimen name="comment_sub_floor_padding">10dp</dimen>
     <dimen name="sub_floor_cotent_text_size">16sp</dimen>
     <dimen name="comment_username_font_size">16sp</dimen>
+    <dimen name="feed_list_item_card_title_size">20sp</dimen>
+    <dimen name="feed_list_item_padding_top">6dp</dimen>
 
 
 </resources>

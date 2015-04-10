@@ -3,6 +3,5 @@
   ~ Copyright (C) 2015 Baidu, Inc. All Rights Reserved.
   -->
 <transitionSet xmlns:android="http://schemas.android.com/apk/res/android">
-    <explode android:duration="250" >
-    </explode>  
+    <fade android:duration="500" android:fadingMode="fade_in"/>
 </transitionSet>

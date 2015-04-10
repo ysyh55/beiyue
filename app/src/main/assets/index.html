@@ -7,9 +7,13 @@
         }
         body {
         margin: 0;
-        margin-top: 50px;
+        margin-top: 15px;
         margin-bottom: 50px;
         padding: 12px;
+        }
+        body.dark {
+        background: #212121;
+        color: #a6a6a6;
         }
         a{
         word-wrap: break-word;
@@ -18,13 +22,18 @@
         h1 {
         font-size: 1.3em;
         font-weight: 500;
-        margin-top: 50px;
-        mari
+        margin-top: 40px;
         }
         p {
         color: #242424;
         font-size: 1em;
-        line-height: 1.375em;
+        line-height: 1.5;
+        }
+        .dark p{
+        color: #909090;
+        }
+        .dark a{
+        color: #169EBE;
         }
         img {
         width: 100%!important;
@@ -47,18 +56,25 @@
         font-size: 0.88em;
         background: #F5F5F5;
         padding: 10px; }
+        .dark #intro{
+        background: #121212;
+        }
         #intro p {
         font-size: 0.95em;
         margin: 0;
         }
         #source{
         margin-bottom: 1em;
-        color: rgb(42, 41, 41);
+        color: #444444;
         text-decoration: none;
         }
         #source a{
         color: #444444;
         text-decoration: none;
+        }
+        .dark #source,
+        .dark #source a{
+        color:#9b9b9b;
         }
         #viewComment {
         padding:10px 25px;margin-top:16px;background: #ddd;border: none;outline:none;
@@ -106,7 +122,7 @@
         }
     </style>
 </head>
-<body>
+<body class="${darkClass}">
 
 <h1>
     ${title}

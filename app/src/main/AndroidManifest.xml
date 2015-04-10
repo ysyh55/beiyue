@@ -15,11 +15,11 @@
             android:icon="@mipmap/ic_cbreader_launcher"
             tools:replace="android:icon"
             android:label="@string/app_name"
-            android:theme="@style/AppThemeWindowIsTranslucent"
+            android:theme="@style/AppTheme"
             android:hardwareAccelerated="true">
         <activity
-                android:theme="@style/AppTheme.NavDrawer"
                 android:name=".ui.MainActivity"
+                android:launchMode="singleTask"
                 android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -42,6 +42,7 @@
 
         <activity
                 android:name=".ui.SettingsActivity"
+                android:launchMode="singleTask"
                 android:label="@string/settings">
         </activity>
         <activity
@@ -50,6 +51,7 @@
         </activity>
         <activity
                 android:name=".ui.AboutActivity"
+                android:launchMode="singleTask"
                 android:label="@string/about">
             <intent-filter>
                 <action android:name="me.zheteng.cbreader.ui.AboutActivity"/>

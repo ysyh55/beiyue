@@ -98,4 +98,5 @@
     <string name="pref_use_web_api_summary">评论页使用网站所使用的接口, 可以实现盖楼, 如果评论一直失效或者崩溃, 请关闭此选项</string>
     <string name="action_refresh">刷新</string>
     <string name="share_fail">数据获取失败,无法分享</string>
+    <string name="navdrawer_item_night">切换主题</string>
 </resources>

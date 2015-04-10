@@ -5,6 +5,7 @@ package me.zheteng.cbreader.ui;
 
 import com.astuetz.PagerSlidingTabStrip;
 
+import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -18,6 +19,7 @@ import android.view.ViewGroup;
 import android.view.ViewPropertyAnimator;
 import android.view.animation.DecelerateInterpolator;
 import me.zheteng.cbreader.R;
+import me.zheteng.cbreader.utils.PrefUtils;
 import me.zheteng.cbreader.utils.UIUtils;
 
 /**
@@ -74,12 +76,21 @@ public class TopPagerFragment extends Fragment {
         mAdapter = new TopPagerAdapter(getChildFragmentManager());
         mViewPager.setAdapter(mAdapter);
         mViewPager.setOffscreenPageLimit(3);
-        mViewPager.setPageMargin((int) UIUtils.dpToPixels(mActivity, getResources().getDimension(R.dimen.viewpager_gap)));
-        mViewPager.setPageMarginDrawable(R.drawable.viewpager_gap_drawable);
+        mViewPager.setPageMargin(
+                (int) UIUtils.dpToPixels(mActivity, getResources().getDimension(R.dimen.viewpager_gap)));
+        boolean isNight = PrefUtils.isNightMode(mActivity);
+        int d = isNight ? R.drawable.viewpager_gap_drawable_dark :
+                R.drawable.viewpager_gap_drawable;
+        mViewPager.setPageMarginDrawable(d);
 
 
         mTabs.setViewPager(mViewPager);
-        mTabs.setBackgroundColor(getResources().getColor(R.color.theme_primary));
+        TypedArray ta = mActivity.obtainStyledAttributes(new int[] {
+                R.attr.color_primary
+        });
+        int colorPrimary = ta.getColor(0, R.color.theme_primary);
+        ta.recycle();
+        mTabs.setBackgroundColor(colorPrimary);
         mTabs.setUnderlineHeight(0);
         mTabs.setTextColor(Color.WHITE);
         mTabs.setDividerColor(Color.TRANSPARENT);

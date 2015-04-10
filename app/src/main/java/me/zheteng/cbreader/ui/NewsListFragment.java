@@ -3,6 +3,8 @@
  */
 package me.zheteng.cbreader.ui;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
 import com.github.ksoichiro.android.observablescrollview.ObservableRecyclerView;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
@@ -18,6 +20,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import me.zheteng.cbreader.MainApplication;
 import me.zheteng.cbreader.R;
 import me.zheteng.cbreader.utils.APIUtils;
 import me.zheteng.cbreader.utils.UIUtils;
@@ -88,6 +91,19 @@ public class NewsListFragment extends BaseListFragment implements ObservableScro
             refreshData(APIUtils.getArticleListsUrl());
         }
 
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (MainApplication.requestQueue != null) {
+            MainApplication.requestQueue.cancelAll(new RequestQueue.RequestFilter() {
+                @Override
+                public boolean apply(Request<?> request) {
+                    return true;
+                }
+            });
+        }
     }
 
     @Override

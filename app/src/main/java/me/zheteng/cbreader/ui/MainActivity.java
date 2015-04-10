@@ -9,6 +9,8 @@ import java.util.Random;
 import com.umeng.update.UmengUpdateAgent;
 
 import android.content.Intent;
+import android.content.res.TypedArray;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -29,6 +31,7 @@ import me.zheteng.cbreader.R;
 import me.zheteng.cbreader.ui.widget.ScrimInsetsScrollView;
 import me.zheteng.cbreader.utils.PrefUtils;
 import me.zheteng.cbreader.utils.UIUtils;
+import me.zheteng.cbreader.utils.Utils;
 
 public class MainActivity extends BaseActivity implements Palette.PaletteAsyncListener {
     public static final String TAG_NEWS_ARTICES = "news_artices";
@@ -41,9 +44,10 @@ public class MainActivity extends BaseActivity implements Palette.PaletteAsyncLi
     protected static final int NAVDRAWER_ITEM_RECOMMEND_COMMENT = 1;
     protected static final int NAVDRAWER_ITEM_TOP = 2;
     protected static final int NAVDRAWER_ITEM_TOPIC = 3;
-    protected static final int NAVDRAWER_ITEM_SETTINGS = 4;
-    protected static final int NAVDRAWER_ITEM_ABOUT = 5;
-    protected static final int NAVDRAWER_ITEM_FAVORITE = 6;
+    protected static final int NAVDRAWER_ITEM_NIGHT = 4;
+    protected static final int NAVDRAWER_ITEM_SETTINGS = 5;
+    protected static final int NAVDRAWER_ITEM_ABOUT = 6;
+    protected static final int NAVDRAWER_ITEM_FAVORITE = 7;
     protected static final int NAVDRAWER_ITEM_INVALID = -1;
     protected static final int NAVDRAWER_ITEM_SEPARATOR = -2;
     protected static final int NAVDRAWER_ITEM_SEPARATOR_SPECIAL = -3;
@@ -54,6 +58,7 @@ public class MainActivity extends BaseActivity implements Palette.PaletteAsyncLi
             R.string.navdrawer_item_recommend_comment,
             R.string.navdrawer_item_top,
             R.string.navdrawer_item_topic,
+            R.string.navdrawer_item_night,
             R.string.navdrawer_item_settings,
             R.string.navdrawer_item_about,
             R.string.favorite
@@ -63,6 +68,7 @@ public class MainActivity extends BaseActivity implements Palette.PaletteAsyncLi
             R.drawable.ic_whatshot_grey600_24dp,  // Explore
             R.drawable.ic_equalizer_grey600_24dp, // Map
             R.drawable.ic_comment_grey600_24dp, // Social
+            R.drawable.ic_brightness_3_grey600_24dp, // Night
             R.drawable.ic_settings_grey600_24dp, // Video Library
             R.drawable.ic_person_grey600_24dp, // Video Library
             R.drawable.ic_person_grey600_24dp, // Video Library
@@ -86,6 +92,7 @@ public class MainActivity extends BaseActivity implements Palette.PaletteAsyncLi
     private boolean mDoubleBackToExitPressedOnce;
     private int mDrawerHeaderBg;
     private Handler mHandler;
+    private View mNightDrawerItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,6 +102,10 @@ public class MainActivity extends BaseActivity implements Palette.PaletteAsyncLi
         Random random = new Random();
         mDrawerHeaderBg = MainApplication.DRAWER_HEADER_BACKGROUND[random.nextInt(MainApplication
                 .DRAWER_HEADER_BACKGROUND.length)];
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setStatusBarColor(getResources().getColor(android.R.color.transparent));
+        }
 //
 //        Drawable drawable = getResources().getDrawable(mDrawerHeaderBg);
 //        if (drawable instanceof BitmapDrawable) {
@@ -105,7 +116,6 @@ public class MainActivity extends BaseActivity implements Palette.PaletteAsyncLi
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                 NewsListFragment.newInstance(mActionBarSize),
                 TAG_NEWS_ARTICES).commit();
-
         mHandler = new Handler();
 
         UmengUpdateAgent.update(this);
@@ -119,8 +129,6 @@ public class MainActivity extends BaseActivity implements Palette.PaletteAsyncLi
         mToolbar = (Toolbar) findViewById(R.id.actionbar_toolbar);
         setSupportActionBar(mToolbar);
 
-        //        mActionBarSize = getActionBarSize();
-
         setTitle(null);
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -128,8 +136,12 @@ public class MainActivity extends BaseActivity implements Palette.PaletteAsyncLi
     }
 
     private void setupNavDrawer() {
-        mDrawerLayout.setStatusBarBackgroundColor(
-                getResources().getColor(R.color.theme_primary_dark));
+        TypedArray ta = obtainStyledAttributes(new int[] {
+                R.attr.color_primary_dark
+        });
+        int colorPrimaryDark = ta.getColor(0, R.color.theme_primary_dark);
+        ta.recycle();
+        mDrawerLayout.setStatusBarBackgroundColor(colorPrimaryDark);
 
         ScrimInsetsScrollView navDrawer = (ScrimInsetsScrollView)
                 mDrawerLayout.findViewById(R.id.navdrawer);
@@ -188,6 +200,7 @@ public class MainActivity extends BaseActivity implements Palette.PaletteAsyncLi
         mNavDrawerItems.add(NAVDRAWER_ITEM_SEPARATOR);
         mNavDrawerItems.add(NAVDRAWER_ITEM_SETTINGS);
         mNavDrawerItems.add(NAVDRAWER_ITEM_ABOUT);
+        mNavDrawerItems.add(NAVDRAWER_ITEM_NIGHT);
 
         createNavDrawerItems();
     }
@@ -249,24 +262,33 @@ public class MainActivity extends BaseActivity implements Palette.PaletteAsyncLi
             }
         });
 
+        if (itemId == NAVDRAWER_ITEM_NIGHT) {
+            mNightDrawerItem = view;
+        }
         return view;
     }
 
     private void onNavDrawerItemClicked(final int itemId) {
         // launch the target Activity after a short delay, to allow the close animation to play
-        mHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                goToNavDrawerItem(itemId);
-            }
-        }, NAVDRAWER_LAUNCH_DELAY);
-        if (itemId != NAVDRAWER_ITEM_ABOUT && itemId != NAVDRAWER_ITEM_SETTINGS) {
+        if (itemId != NAVDRAWER_ITEM_ABOUT && itemId != NAVDRAWER_ITEM_SETTINGS && itemId != NAVDRAWER_ITEM_NIGHT) {
             mDrawerLayout.closeDrawer(Gravity.START);
             setSelectedNavDrawerItem(itemId);
-            // fade out the main content
-            final View mainContent = findViewById(R.id.fragment_container);
+            mHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    goToNavDrawerItem(itemId);
+                }
+            }, NAVDRAWER_LAUNCH_DELAY);
+        } else {
+            goToNavDrawerItem(itemId);
         }
 
+    }
+
+    @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(0, 0);
     }
 
     private void formatNavDrawerItem(View view, int itemId, boolean selected) {
@@ -278,19 +300,30 @@ public class MainActivity extends BaseActivity implements Palette.PaletteAsyncLi
         ImageView iconView = (ImageView) view.findViewById(R.id.icon);
         TextView titleView = (TextView) view.findViewById(R.id.title);
 
+        boolean isNight = PrefUtils.isNightMode(this);
         if (selected) {
-            view.setBackgroundResource(R.drawable.selected_navdrawer_item_background);
+            int drawable = isNight ? R.drawable.selected_navdrawer_item_background_dark :
+                    R.drawable.selected_navdrawer_item_background;
+            view.setBackgroundResource(drawable);
         } else {
             view.setBackgroundResource(R.drawable.screen_background_light_transparent);
         }
 
+        int[] attrs = new int[] {
+                R.attr.nav_item_text_color,
+                R.attr.nav_item_text_color_selected
+        };
+        TypedArray ta = obtainStyledAttributes(attrs);
+        int color = ta.getColor(0, R.color.navdrawer_text_color);
+        int colorSelected = ta.getColor(1, R.color.navdrawer_text_color_selected);
+
+        ta.recycle();
         // configure its appearance according to whether or not it's selected
         titleView.setTextColor(selected ?
-                getResources().getColor(R.color.navdrawer_text_color_selected) :
-                getResources().getColor(R.color.navdrawer_text_color));
+                colorSelected :
+                color);
         iconView.setColorFilter(selected ?
-                getResources().getColor(R.color.navdrawer_icon_tint_selected) :
-                getResources().getColor(R.color.navdrawer_icon_tint));
+                colorSelected : color);
     }
 
     private void setSelectedNavDrawerItem(int itemId) {
@@ -400,6 +433,11 @@ public class MainActivity extends BaseActivity implements Palette.PaletteAsyncLi
                 }
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                         fragment, TAG_TOPIC).commit();
+                break;
+            case NAVDRAWER_ITEM_NIGHT:
+                int theme = PrefUtils.isNightMode(this) ? R.style.AppTheme : R.style.AppThemeDark;
+                PrefUtils.toggleNightMode(this);
+                Utils.changeToTheme(this, theme);
                 break;
             case NAVDRAWER_ITEM_SETTINGS:
                 intent = new Intent(this, SettingsActivity.class);

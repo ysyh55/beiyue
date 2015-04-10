@@ -9,7 +9,6 @@ import java.util.Map;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -21,7 +20,7 @@ import android.widget.TextView;
 import me.zheteng.cbreader.R;
 import me.zheteng.cbreader.model.CmntDetail;
 import me.zheteng.cbreader.model.Cmntdict;
-import me.zheteng.cbreader.utils.UIUtils;
+import me.zheteng.cbreader.utils.PrefUtils;
 
 /**
  * 盖楼View
@@ -33,6 +32,7 @@ public class FloorLayout extends LinearLayout {
 
     private Map<String, CmntDetail> mCmntStore;
     private List<Cmntdict> mCmntParents;
+    private boolean mIsNight;
     private int mFloor = 0;
 
     private ViewFactory mFactory;
@@ -49,6 +49,7 @@ public class FloorLayout extends LinearLayout {
     public FloorLayout(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
 
+        mIsNight = PrefUtils.isNightMode(context);
         mContext = context;
         mFactory = new ViewFactory();
         this.setOrientation(LinearLayout.VERTICAL);
@@ -74,7 +75,8 @@ public class FloorLayout extends LinearLayout {
         }
 
         layoutChildren();
-        mBoundDrawable = mContext.getResources().getDrawable(R.drawable.sub_floor_bound);
+        mBoundDrawable = !mIsNight ? mContext.getResources().getDrawable(R.drawable.sub_floor_bound) :
+                mContext.getResources().getDrawable(R.drawable.sub_floor_bound_dark);
     }
 
     private void layoutChildren() {
@@ -85,13 +87,11 @@ public class FloorLayout extends LinearLayout {
             LayoutParams layout = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
             layout.gravity = Gravity.TOP | Gravity.CENTER_HORIZONTAL;
 
-            int margin = Math.min((count - i - 1), 4) * mDensity;
+            int margin = Math.min((count - i), 4) * mDensity;
             layout.leftMargin = margin;
             layout.rightMargin = margin;
-            layout.topMargin = 0;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                view.setElevation(UIUtils.dpToPixels(mContext, 5));
-            }
+            layout.topMargin = mDensity;
+
             view.setLayoutParams(layout);
         }
     }

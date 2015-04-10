@@ -19,7 +19,7 @@ public class SwipeBackActionBarActivity extends BaseActivity implements SwipeBac
         super.onCreate(savedInstanceState);
         mHelper = new SwipeBackActivityHelper(this);
         mHelper.onActivityCreate();
-        mHelper.getSwipeBackLayout().setEdgeSize((int) UIUtils.dpToPixels(this, 10));
+        mHelper.getSwipeBackLayout().setEdgeSize((int) UIUtils.dpToPixels(this, 32));
     }
 
     @Override
@@ -51,6 +51,4 @@ public class SwipeBackActionBarActivity extends BaseActivity implements SwipeBac
         Utils.convertActivityToTranslucent(this);
         getSwipeBackLayout().scrollToFinishActivity();
     }
-
-
 }

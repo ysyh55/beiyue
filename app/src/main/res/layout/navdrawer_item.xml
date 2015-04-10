@@ -1,14 +1,15 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools"
               android:orientation="horizontal"
               android:background="?android:selectableItemBackground"
+              android:clickable="true"
               android:gravity="start|center_vertical"
-
               android:paddingRight="@dimen/keyline_1"
               android:layout_width="match_parent"
               android:layout_height="48dp">
 
     <ImageView
             android:id="@+id/icon"
+            tools:src="@mipmap/ic_cbreader_launcher"
             android:layout_height="24dp"
             android:layout_width="24dp"
             android:layout_marginLeft="@dimen/keyline_1"
@@ -21,6 +22,7 @@
             android:layout_gravity="start|center_vertical"
             android:gravity="start|center_vertical"
             android:fontFamily="@string/font_fontFamily_medium"
+            android:textColor="?attr/nav_item_text_color"
             android:textSize="14sp"
             android:text="@string/placeholder_lorem_ipsum"/>
 

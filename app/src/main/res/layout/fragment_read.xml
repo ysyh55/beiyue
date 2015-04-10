@@ -11,6 +11,12 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             />
+    <ImageView
+            tools:src="@mipmap/ic_cbreader_launcher"
+            android:transitionName="news_thumb"
+            android:id="@+id/news_thumb"
+            android:layout_width="64dp"
+            android:layout_height="64dp"/>
     <include layout="@layout/no_data_hint" />
     <include layout="@layout/loading_progress" />
 

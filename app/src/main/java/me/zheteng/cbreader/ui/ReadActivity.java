@@ -101,7 +101,7 @@ public class ReadActivity extends SwipeBackActionBarActivity {
     @Override
     public void onBackPressed() {
         if (mOnBackPressedListener != null) {
-            if (mOnBackPressedListener.doBack()){
+            if (mOnBackPressedListener.doBack()) {
                 return;
             }
         }
@@ -174,7 +174,10 @@ public class ReadActivity extends SwipeBackActionBarActivity {
                         getSupportFragmentManager());
         mViewPager.setOffscreenPageLimit(2);
         mViewPager.setPageMargin((int) UIUtils.dpToPixels(this, getResources().getDimension(R.dimen.viewpager_gap)));
-        mViewPager.setPageMarginDrawable(R.drawable.viewpager_gap_drawable);
+        boolean isNight = PrefUtils.isNightMode(this);
+        int d = isNight ? R.drawable.viewpager_gap_drawable_dark :
+                R.drawable.viewpager_gap_drawable;
+        mViewPager.setPageMarginDrawable(d);
         mViewPager.setAdapter(mReadFragmentAdapter);
         mViewPager.setCurrentItem(0);
         mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {

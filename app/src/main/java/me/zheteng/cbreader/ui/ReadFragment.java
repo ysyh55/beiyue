@@ -27,8 +27,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -47,10 +49,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
+import android.webkit.CookieManager;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -160,8 +164,15 @@ public class ReadFragment extends Fragment implements SharedPreferences.OnShared
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mActivity = ((ReadActivity) getActivity());
+
         mToolbarHeight = getToolbar().getHeight();
         mPref = PreferenceManager.getDefaultSharedPreferences(mActivity);
+        TypedArray ta = mActivity.obtainStyledAttributes(new int[] {
+                R.attr.nav_bg_color
+        });
+        int color = ta.getColor(0, R.color.night_nav_item_bg);
+        ta.recycle();
+        mWebView.setBackgroundColor(color);
         mWebView.setScrollViewCallbacks(new ShowHideToolbarListener(mActivity, mWebView));
 
         mAdapter = new PhotoViewPagerAdapter();
@@ -347,11 +358,25 @@ public class ReadFragment extends Fragment implements SharedPreferences.OnShared
             mWebView.getSettings().setMediaPlaybackRequiresUserGesture(true);
         }
 
+        CookieManager.getInstance().setAcceptCookie(true);
         mWebView.getSettings().setAllowFileAccess(true);
         mWebView.getSettings().setPluginState(WebSettings.PluginState.ON);
+        mWebView.getSettings().setUserAgentString(
+                "Mozilla/5.0 (Linux; Android 4.2.1; en-us; Nexus 5 Build/JOP40D) AppleWebKit/535.19 (KHTML, like "
+                        + "Gecko) Chrome/18.0.1025.166 Mobile Safari/535.19");
         mWebView.getSettings().setJavaScriptEnabled(true);
         mWebView.setWebChromeClient(new WebChromeClient() {
-
+        });
+        mWebView.setWebViewClient(new WebViewClient() {
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                if (url != null && (url.startsWith("http://") || url.startsWith("https://"))) {
+                    view.getContext().startActivity(
+                            new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                    return true;
+                } else {
+                    return false;
+                }
+            }
         });
         mWebView.addJavascriptInterface(new MyJsInterface(), "cbreader");
 
@@ -402,10 +427,12 @@ public class ReadFragment extends Fragment implements SharedPreferences.OnShared
             String intro = mNewsContent.hometext.replaceAll("\\$", "\\\\\\$");
             String pubTime = mNewsContent.time;
             String comments = String.valueOf(mNewsContent.comments);
+            String darkClass = PrefUtils.isNightMode(mActivity) ? "dark" : "";
 
             String html = getHtmlTemplate();
             html = html.replaceAll("\\$\\{title\\}", title)
                     .replaceAll("\\$\\{time\\}", pubTime)
+                    .replaceAll("\\$\\{darkClass\\}", darkClass)
                     .replaceAll("\\$\\{source\\}", source)
                     .replaceAll("\\$\\{intro\\}", intro)
                     .replaceAll("\\$\\{content\\}", body)
@@ -420,7 +447,10 @@ public class ReadFragment extends Fragment implements SharedPreferences.OnShared
                 }
             }
 
-            mWebView.loadData(html, "text/html; charset=UTF-8", null);
+            mWebView.loadDataWithBaseURL("http://www.baidu.com/index.html", html, "text / html; charset = UTF - 8 ",
+                    "utf-8",
+                    null);
+            //            mWebView.loadData(html, "text / html; charset = UTF - 8 ", null);
 
         }
     }
