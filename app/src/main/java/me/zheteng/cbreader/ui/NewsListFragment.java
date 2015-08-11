@@ -8,9 +8,12 @@ import com.android.volley.RequestQueue;
 import com.github.ksoichiro.android.observablescrollview.ObservableRecyclerView;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.formats.NativeContentAd;
 
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -20,6 +23,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import me.zheteng.cbreader.MainApplication;
 import me.zheteng.cbreader.R;
 import me.zheteng.cbreader.utils.APIUtils;
@@ -41,6 +45,9 @@ public class NewsListFragment extends BaseListFragment implements ObservableScro
 
     private int mToolbarHeight;
     private SharedPreferences mPref;
+    private NativeContentAd mAd;
+    private AdView mAdView;
+    private TextView mCloseAdButton;
 
     public static NewsListFragment newInstance(int toolbarHeight) {
         NewsListFragment fragment = new NewsListFragment();
@@ -74,9 +81,6 @@ public class NewsListFragment extends BaseListFragment implements ObservableScro
         mActivity = (MainActivity) getActivity();
         mToolbar = mActivity.getToolbar();
         mToolbar.getBackground().setAlpha(255);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            mToolbar.setElevation(UIUtils.dpToPixels(mActivity, 10));
-        }
         mActivity.showToolbar();
         mToolbarHeight = mToolbar.getHeight();
         mActivity.setTitle(R.string.app_name);
@@ -91,6 +95,33 @@ public class NewsListFragment extends BaseListFragment implements ObservableScro
             refreshData(APIUtils.getArticleListsUrl());
         }
 
+        if (mPref.getBoolean(getString(R.string.pref_show_ad_in_home_key), false)) {
+            loadGoogleAd();
+        }
+
+    }
+
+    private void loadGoogleAd() {
+
+        mCloseAdButton = (TextView) mActivity.findViewById(R.id.ad_close);
+        mAdView = (AdView) mActivity.findViewById(R.id.ad_view);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.setAdListener(new AdListener() {
+            @Override
+            public void onAdLoaded() {
+                super.onAdLoaded();
+                mAdView.setVisibility(View.VISIBLE);
+                mCloseAdButton.setVisibility(View.VISIBLE);
+            }
+        });
+        mAdView.loadAd(adRequest);
+        mCloseAdButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mAdView.setVisibility(View.GONE);
+                mCloseAdButton.setVisibility(View.GONE);
+            }
+        });
     }
 
     @Override
@@ -262,6 +293,23 @@ public class NewsListFragment extends BaseListFragment implements ObservableScro
         if (key.equals(mActivity.getString(R.string.pref_autoload_image_in_list_key))) {
             boolean showThumb = sharedPreferences.getBoolean(key, true);
             mAdapter.setIsShowThumb(showThumb);
+        } else if (key.equals(mActivity.getString(R.string.pref_show_ad_in_home_key))) {
+            boolean showAd = sharedPreferences.getBoolean(key, false);
+            if (showAd) {
+                if (mAdView == null) {
+                    loadGoogleAd();
+                } else {
+                    mAdView.setVisibility(View.VISIBLE);
+                    mCloseAdButton.setVisibility(View.VISIBLE);
+                }
+            } else {
+                if (mAdView != null) {
+                    mAdView.setVisibility(View.GONE);
+                }
+                if (mCloseAdButton != null) {
+                    mCloseAdButton.setVisibility(View.GONE);
+                }
+            }
         }
     }
 }

@@ -22,7 +22,9 @@ public class NewsComment {
 
     public String getReadableTime() {
         if (readableTime == null) {
-            readableTime = TimeUtils.getElapsedTime(TimeUtils.fmt.parseDateTime(created_time).getMillis());
+            readableTime = TimeUtils.getEllapseTime(TimeUtils.fmt.parseDateTime(created_time).getMillis());
+        } else {
+            readableTime = created_time;
         }
         return readableTime;
     }

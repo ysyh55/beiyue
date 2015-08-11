@@ -1,12 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.Toolbar
-        android:id="@+id/actionbar_toolbar"
-        style="@style/Widget.AppCompat.Toolbar"
-        android:background="?attr/color_primary"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        app:popupTheme="?attr/my_popup_theme"
-        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        android:elevation="@dimen/toolbar_elevation"
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"/>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:layout_height="wrap_content"
+              android:layout_width="match_parent"
+              android:orientation="vertical">
+    <View android:id="@+id/status_placeholder"
+          android:layout_width="match_parent"
+          android:layout_height="@dimen/default_statusbar_height"
+          android:background="@color/theme_primary"/>
+    <android.support.v7.widget.Toolbar
+            android:id="@+id/actionbar_toolbar"
+            style="@style/Widget.AppCompat.Toolbar"
+            android:background="?attr/color_primary"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:popupTheme="?attr/my_popup_theme"
+            app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            android:elevation="@dimen/toolbar_elevation"
+            />
+
+</LinearLayout>

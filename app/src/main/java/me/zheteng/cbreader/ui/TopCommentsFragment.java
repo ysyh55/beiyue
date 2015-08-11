@@ -11,7 +11,6 @@ import com.github.ksoichiro.android.observablescrollview.ObservableRecyclerView;
 import com.google.gson.Gson;
 
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -30,7 +29,6 @@ import me.zheteng.cbreader.model.TopComment;
 import me.zheteng.cbreader.ui.widget.MaterialProgressBar;
 import me.zheteng.cbreader.utils.APIUtils;
 import me.zheteng.cbreader.utils.PrefUtils;
-import me.zheteng.cbreader.utils.UIUtils;
 import me.zheteng.cbreader.utils.Utils;
 import me.zheteng.cbreader.utils.volley.GsonRequest;
 
@@ -69,9 +67,6 @@ public class TopCommentsFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         mActivity = (MainActivity) getActivity();
         mToolbar = mActivity.getToolbar();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            mActivity.getToolbar().setElevation(UIUtils.dpToPixels(mActivity, 10));
-        }
         mToolbar.getBackground().setAlpha(255);
         mActivity.showToolbar();
         mToolbarHeight = mToolbar.getHeight();

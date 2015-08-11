@@ -29,8 +29,7 @@
         <com.astuetz.PagerSlidingTabStrip
                 android:id="@+id/tabs"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/top_pager_tabs_height"
-                android:elevation="10dp"/>
+                android:layout_height="@dimen/top_pager_tabs_height"/>
 
 
     </FrameLayout>

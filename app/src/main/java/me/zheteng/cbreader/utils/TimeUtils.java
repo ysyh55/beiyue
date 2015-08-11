@@ -26,7 +26,7 @@ public class TimeUtils {
             .appendSeconds().appendSuffix("秒前|")
             .printZeroNever()
             .toFormatter();
-    public static String getElapsedTime(long ago) {
+    public static String getEllapseTime(long ago) {
 
         DateTime thenTime = new DateTime(ago);
         DateTime now = new DateTime();

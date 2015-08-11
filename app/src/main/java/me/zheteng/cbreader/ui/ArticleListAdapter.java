@@ -178,7 +178,7 @@ public class ArticleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             Article article = getItem(position);
             holder1.mTitleView.setText(article.title);
             holder1.mDescriptionView.setText(article.summary.replaceAll("&nbsp;", " "));
-            holder1.mTimeView.setText(article.getReadableTime());
+            holder1.mTimeView.setText(article.getReadableTime(mContext));
             holder1.mCommentCountView.setText("" + article.comments);
             if (mIsShowThumb && !TextUtils.isEmpty(article.thumb)) {
                 holder1.mThumbImage.setVisibility(View.VISIBLE);
@@ -195,7 +195,7 @@ public class ArticleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
             Article article = getItem(position);
             holder1.mTitleView.setText(article.title);
-            holder1.mTimeView.setText(article.getReadableTime());
+            holder1.mTimeView.setText(article.getReadableTime(mContext));
             holder1.mCommentCountView.setText("" + article.comments + "条评论");
             if (mIsShowThumb && !TextUtils.isEmpty(article.thumb)) {
                 holder1.mThumbImage.setVisibility(View.VISIBLE);

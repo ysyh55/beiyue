@@ -7,10 +7,10 @@
     <color name="light_gray_dark">#DBDBDB</color>
     <color name="text_readed">#616161</color>
     <color name="theme_accent_1">#00b0ff</color>
-    <color name="theme_accent_2">#e91e63</color>
-    <color name="theme_primary">#3f51b5</color>
+    <color name="theme_accent_2">#009688</color>
+    <color name="theme_primary">#3685D7</color>
     <color name="theme_primary_transparent">#003f51b5</color>
-    <color name="theme_primary_dark">#303f9f</color>
+    <color name="theme_primary_dark">#286CB2</color>
     <color name="theme_primary_light">#7986cb</color>
 
     <color name="refresh_progress_1">@color/theme_accent_2</color>
@@ -23,7 +23,7 @@
     <color name="navdrawer_text_color_selected">@color/theme_primary</color>
     <color name="navdrawer_icon_tint">#888</color>
     <color name="navdrawer_icon_tint_selected">@color/theme_primary</color>
-    <color name="list_description_color">#303030</color>
+    <color name="list_description_color">#939393</color>
     <color name="sub_floor_bg">#fffefdea</color>
     <color name="night_sub_floor_bg">#ff34383a</color>
     <color name="night_main_bg_color">#ff424242</color>

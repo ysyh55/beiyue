@@ -30,12 +30,13 @@
     <dimen name="download_photo_size">48dp</dimen>
     <dimen name="vertical_swipe_threshold">48dp</dimen>
     <dimen name="top_pager_tabs_height">48dp</dimen>
-    <dimen name="toolbar_elevation">10dp</dimen>
+    <dimen name="toolbar_elevation">0dp</dimen>
     <dimen name="comment_sub_floor_padding">10dp</dimen>
     <dimen name="sub_floor_cotent_text_size">16sp</dimen>
     <dimen name="comment_username_font_size">16sp</dimen>
-    <dimen name="feed_list_item_card_title_size">20sp</dimen>
+    <dimen name="feed_list_item_card_title_size">16sp</dimen>
     <dimen name="feed_list_item_padding_top">6dp</dimen>
+    <dimen name="default_statusbar_height">0dp</dimen>
 
 
 </resources>

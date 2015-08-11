@@ -170,7 +170,7 @@ public class ReadFragment extends Fragment implements SharedPreferences.OnShared
         TypedArray ta = mActivity.obtainStyledAttributes(new int[] {
                 R.attr.nav_bg_color
         });
-        int color = ta.getColor(0, R.color.night_nav_item_bg);
+        int color = ta.getColor(0, getResources().getColor(R.color.night_nav_item_bg));
         ta.recycle();
         mWebView.setBackgroundColor(color);
         mWebView.setScrollViewCallbacks(new ShowHideToolbarListener(mActivity, mWebView));

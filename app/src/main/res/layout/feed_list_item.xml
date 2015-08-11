@@ -11,7 +11,7 @@
         android:layout_marginRight="@dimen/feed_list_item_margin_right"
         android:layout_marginTop="@dimen/feed_list_item_margin_top"
         android:layout_marginBottom="@dimen/feed_list_item_margin_bottom"
-        card_view:cardCornerRadius="4dp"
+        card_view:cardCornerRadius="2dp"
         android:clickable="false"
         android:foreground="?attr/selectableItemBackground"
         card_view:cardBackgroundColor="?attr/list_item_bg">
@@ -46,7 +46,7 @@
                     android:id="@+id/thumb_image"/>
             <TextView
                     android:id="@+id/description"
-                    style="@style/Base.TextAppearance.AppCompat.Caption"
+                    style="@style/Base.TextAppearance.AppCompat.Body2"
                     android:textColor="?attr/list_item_description_color"
                     tools:text="曾经被称为中国硅谷的中关村，在电商的冲击下生意日渐冷清，但消费者与中关村电脑商户的官司却并没有因此减少。在生意萧条库存积压的情况下，商家利用定金绑架的方式，将库存滞销电脑卖给消费者，从而引发买卖纠纷。遗憾的是，在海淀法院审理的此类案件中，消费者的胜诉率为零。"
                     android:layout_width="0dp"

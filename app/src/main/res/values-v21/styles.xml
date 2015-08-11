@@ -3,64 +3,20 @@
   ~ Copyright (C) 2015 Baidu, Inc. All Rights Reserved.
   -->
 <resources>
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="android:colorPrimary">@color/theme_primary</item>
-        <item name="android:colorPrimaryDark">@color/theme_primary_dark</item>
+    <style name="AppTheme" parent="AppThemeBase">
         <!-- 允许使用transitions -->
         <item name="android:windowContentTransitions">true</item>
-        <item name="android:windowIsTranslucent">true</item>
-
-        <item name="android:windowExitTransition">@transition/explode</item>
-
-
-        <item name="my_popup_theme">@style/ThemeOverlay.AppCompat.Light</item>
-        <item name="window_bg_color">@android:color/background_light</item>
-        <item name="android:textColor">@color/abc_primary_text_material_light</item>
-        <item name="android:textColorPrimary">@color/abc_primary_text_material_light</item>
-        <item name="android:textColorSecondary">@color/abc_secondary_text_material_light</item>
-        <item name="android:windowBackground">@color/background_material_light</item>
-        <item name="status_bar_color">@color/theme_primary_dark</item>
-        <item name="main_text_color">@color/abc_primary_text_material_light</item>
-        <item name="sub_text_color">@color/abc_secondary_text_material_light</item>
-        <item name="color_primary">@color/theme_primary</item>
-        <item name="color_primary_dark">@color/theme_primary_dark</item>
-        <item name="nav_bg_color">@color/nav_bg_color</item>
-        <item name="nav_item_bg">@color/nav_item_bg</item>
-        <item name="nav_item_separator_color">@color/nav_item_separator_color</item>
-        <item name="nav_item_text_color">@color/nav_item_text_color</item>
-        <item name="nav_item_text_color_selected">@color/nav_item_text_color_selected</item>
-        <item name="list_item_bg">@color/cardview_light_background</item>
-        <item name="list_item_title_color">@color/abc_primary_text_material_light</item>
-        <item name="list_item_description_color">@color/list_description_color</item>
-        <item name="list_item_time_color">@color/abc_secondary_text_material_light</item>
+        <item name="android:statusBarColor">@color/theme_primary_transparent</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <!--<item name="android:windowExitTransition">@transition/fade_in</item>-->
+        <!--<item name="android:windowEnterTransition">@transition/explode</item>-->
     </style>
 
     <!-- Base application theme. -->
-    <style name="AppThemeDark" parent="AppTheme">
-        <item name="my_popup_theme">@style/ThemeOverlay.AppCompat</item>
-        <item name="window_bg_color">@color/night_window_bg</item>
-        <item name="android:textColor">@color/night_main_text_color</item>
-        <item name="android:textColorPrimary">@color/night_main_text_color</item>
-        <item name="android:textColorSecondary">@color/night_sub_text_color</item>
-        <item name="android:alertDialogTheme">@style/Theme.AppCompat.Dialog</item>
-        <item name="android:colorPrimary">@color/night_theme_primary</item>
-        <item name="android:colorPrimaryDark">@color/night_theme_primary_dark</item>
-        <item name="android:windowBackground">@color/night_window_bg</item>
-        <item name="status_bar_color">@color/night_theme_primary_dark</item>
-        <item name="main_text_color">@color/night_main_text_color</item>
-        <item name="sub_text_color">@color/night_sub_text_color</item>
-        <item name="color_primary">@color/night_theme_primary</item>
-        <item name="color_primary_dark">@color/night_theme_primary_dark</item>
-        <item name="nav_bg_color">@color/night_nav_bg_color</item>
-        <item name="nav_item_bg">@color/night_nav_item_bg</item>
-        <item name="nav_item_separator_color">@color/night_nav_item_separator_color</item>
-        <item name="nav_item_text_color">@color/night_nav_item_text_color</item>
-        <item name="nav_item_text_color_selected">@color/night_nav_item_text_color_selected</item>
-        <item name="list_item_bg">@color/night_list_item_bg</item>
-        <item name="list_item_title_color">@color/night_list_item_title_color</item>
-        <item name="list_item_description_color">@color/night_list_item_description_color</item>
-        <item name="list_item_time_color">@color/night_list_item_time_color</item>
-
+    <style name="AppThemeDark" parent="AppThemeDarkBase">
+        <!-- 允许使用transitions -->
+        <item name="android:windowContentTransitions">true</item>
+        <item name="android:windowExitTransition">@transition/explode</item>
 
     </style>
 

@@ -7,7 +7,6 @@ import com.astuetz.PagerSlidingTabStrip;
 
 import android.content.res.TypedArray;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -65,9 +64,6 @@ public class TopPagerFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         mActivity = ((MainActivity) getActivity());
         mActivity.setTitle(R.string.top_title);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            mActivity.getToolbar().setElevation(UIUtils.dpToPixels(mActivity, 0));
-        }
         mActivity.showToolbar();
         initDatas();
     }
@@ -88,7 +84,7 @@ public class TopPagerFragment extends Fragment {
         TypedArray ta = mActivity.obtainStyledAttributes(new int[] {
                 R.attr.color_primary
         });
-        int colorPrimary = ta.getColor(0, R.color.theme_primary);
+        int colorPrimary = ta.getColor(0, mActivity.getResources().getColor(R.color.theme_primary));
         ta.recycle();
         mTabs.setBackgroundColor(colorPrimary);
         mTabs.setUnderlineHeight(0);

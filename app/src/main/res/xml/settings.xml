@@ -47,6 +47,11 @@
                 android:defaultValue="@string/pref_card_style_value"
                 android:entryValues="@array/list_styles_values"
                 android:summary="@string/pref_card_style"/>
+        <SwitchPreference
+                android:key="@string/pref_use_elapse_time_key"
+                android:title="@string/pref_use_elapse_time"
+                android:summary="@string/pref_use_elapse_time_summary"
+                android:defaultValue="true"/>
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/pref_advanced">
@@ -58,6 +63,14 @@
     </PreferenceCategory>
     <PreferenceCategory
             android:title="@string/pref_other">
+        <SwitchPreference android:key="@string/pref_show_ad_in_home_key"
+                          android:title="@string/pref_show_ad_in_home"
+                          android:summary="@string/pref_show_ad_in_home_summary"
+                          android:defaultValue="false"/>
+        <SwitchPreference android:key="@string/pref_show_ad_in_settings_key"
+                          android:title="@string/pref_show_ad_in_settings"
+                          android:summary="@string/pref_show_ad_in_settings_summary"
+                          android:defaultValue="true"/>
         <Preference android:title="@string/pref_about"
                  >
             <intent

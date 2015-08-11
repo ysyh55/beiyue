@@ -10,6 +10,7 @@
             android:id="@+id/webview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginTop="@dimen/default_statusbar_height"
             />
     <ImageView
             tools:src="@mipmap/ic_cbreader_launcher"

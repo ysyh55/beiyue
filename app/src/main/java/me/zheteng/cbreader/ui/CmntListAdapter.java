@@ -52,7 +52,7 @@ public class CmntListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         CmntDetail cmntDetail = mWebCmnt.cmntstore.get(comment.tid);
         holder1.mNameView.setText(cmntDetail.name);
         holder1.mContentView.setText(cmntDetail.comment);
-        holder1.mTimeView.setText(cmntDetail.getReadableTime());
+        holder1.mTimeView.setText(cmntDetail.getReadableTime(mContext));
         holder1.mSupportView.setText(String.format(mContext.getString(R.string.support), cmntDetail.score));
         holder1.mOpposeView.setText(String.format(mContext.getString(R.string.oppose), cmntDetail.reason));
         holder1.mSubFloor.setData(parents, mWebCmnt.cmntstore);

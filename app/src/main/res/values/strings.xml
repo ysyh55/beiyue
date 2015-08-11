@@ -1,6 +1,6 @@
 <resources>
-    <string name="app_name">CNBETA Now</string>
-
+    <string name="banner_ad_unit_id_settings">ca-app-pub-9739423982134028/2074183996</string>
+    <string name="banner_ad_unit_id_home">ca-app-pub-9739423982134028/6225181990</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">设置</string>
     <string name="refresh">更新</string>
@@ -99,4 +99,13 @@
     <string name="action_refresh">刷新</string>
     <string name="share_fail">数据获取失败,无法分享</string>
     <string name="navdrawer_item_night">切换主题</string>
+    <string name="pref_use_elapse_time_key">pref_use_elapse_time</string>
+    <string name="pref_use_elapse_time">使用\"xx前\"</string>
+    <string name="pref_use_elapse_time_summary">时间显示成\"xx前\",如: 3小时前, 刷新列表后生效</string>
+    <string name="pref_show_ad_in_settings_key">pref_show_ad_in_settings</string>
+    <string name="pref_show_ad_in_settings">在设置页显示广告</string>
+    <string name="pref_show_ad_in_settings_summary">设置页里放个小广告， 你可以随时关闭这个广告哦，不过作者很希望您能保留这个广告，写码不易，且行且珍惜 :)</string>
+    <string name="pref_show_ad_in_home_key">pref_show_ad_in_home</string>
+    <string name="pref_show_ad_in_home">首页广告</string>
+    <string name="pref_show_ad_in_home_summary">如果你觉得广告不影响你的心情或着使用的话，可以打开首页广告支持作者</string>
 </resources>

@@ -1,7 +1,10 @@
 <resources>
 
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="AppThemeBase" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowIsTranslucent">true</item>
+
+        <item name="colorPrimary">@color/theme_primary</item>
+        <item name="colorPrimaryDark">@color/theme_primary_dark</item>
 
         <item name="my_popup_theme">@style/ThemeOverlay.AppCompat.Light</item>
         <item name="window_bg_color">@android:color/background_light</item>
@@ -23,10 +26,12 @@
         <item name="list_item_title_color">@color/abc_primary_text_material_light</item>
         <item name="list_item_description_color">@color/list_description_color</item>
         <item name="list_item_time_color">@color/abc_secondary_text_material_light</item>
+        <item name="colorAccent">@color/theme_accent_2</item>
     </style>
+    <style name="AppTheme" parent="AppThemeBase"></style>
 
     <!-- Base application theme. -->
-    <style name="AppThemeDark" parent="AppTheme">
+    <style name="AppThemeDarkBase" parent="AppThemeBase">
         <item name="my_popup_theme">@style/ThemeOverlay.AppCompat</item>
         <item name="window_bg_color">@color/night_window_bg</item>
         <item name="android:textColor">@color/night_main_text_color</item>
@@ -49,8 +54,12 @@
         <item name="list_item_description_color">@color/night_list_item_description_color</item>
         <item name="list_item_time_color">@color/night_list_item_time_color</item>
 
-
+        <item name="colorPrimary">@color/theme_primary</item>
+        <item name="colorPrimaryDark">@color/theme_primary_dark</item>
+        <item name="colorAccent">#FF5722</item>
     </style>
+
+    <style name="AppThemeDark" parent="AppThemeDarkBase"></style>
 
 
     <style name="FeedListItemHeadlineReaded"
@@ -68,5 +77,7 @@
         <item name="android:textColor">#ffffffff</item>
     </style>
 
+    <style name="AppTheme.NavigationItem.TextAppear"
+           parent="android:style/TextAppearance.Holo.Widget.ActionBar.Menu"/>
 
 </resources>

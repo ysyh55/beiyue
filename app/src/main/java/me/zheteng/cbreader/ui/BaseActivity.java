@@ -12,6 +12,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
@@ -29,16 +30,18 @@ public class BaseActivity extends ActionBarActivity {
     protected Toolbar mToolbar;
     private boolean mIsToolbarShow = true;
 
+    boolean isNight = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        boolean isNight = PrefUtils.isNightMode(this);
+        isNight = PrefUtils.isNightMode(this);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            int color = isNight ? getResources().getColor(R.color.night_theme_primary_dark) :
-                    getResources().getColor(R.color.theme_primary_dark);
+            int color = isNight ? getResources().getColor(R.color.night_theme_primary) :
+                    getResources().getColor(R.color.theme_primary);
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             getWindow().setStatusBarColor(color);
+
         }
 
         int theme = isNight ? R.style.AppThemeDark : R.style.AppTheme;
@@ -52,9 +55,20 @@ public class BaseActivity extends ActionBarActivity {
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
+
+        View statusBar = findViewById(R.id.status_placeholder);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            if (getToolbar() != null) {
-                getToolbar().setElevation(UIUtils.dpToPixels(this, 10));
+            if (statusBar != null) {
+                statusBar.getLayoutParams().height = UIUtils.getStatusBarHeight(this);
+                if (this instanceof MainActivity) {
+                    statusBar.setVisibility(View.GONE);
+                } else if (isNight) {
+                    statusBar.setBackgroundColor(getResources().getColor(R.color.night_theme_primary_dark));
+                }
+            }
+        } else {
+            if (statusBar != null) {
+                statusBar.setVisibility(View.GONE);
             }
         }
     }

@@ -5,7 +5,7 @@
 <FrameLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        xmlns:ads="http://schemas.android.com/apk/res-auto" android:layout_height="match_parent">
     <View
             android:id="@+id/list_background"
             android:layout_width="match_parent"
@@ -25,5 +25,30 @@
                 android:clipToPadding="false"
                 />
     </android.support.v4.widget.SwipeRefreshLayout>
+
+
+    <FrameLayout android:layout_width="match_parent"
+                 android:layout_height="wrap_content"
+                 android:layout_gravity="bottom|center">
+        <com.google.android.gms.ads.AdView
+                android:id="@+id/ad_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|center"
+                ads:adSize="BANNER"
+                ads:adUnitId="@string/banner_ad_unit_id_home">
+        </com.google.android.gms.ads.AdView>
+        <TextView android:id="@+id/ad_close"
+                  android:visibility="gone"
+                  android:layout_width="24dp"
+                  android:layout_height="24dp"
+                  android:text="X"
+                  android:gravity="center"
+                  android:layout_marginRight="8dp"
+                  android:background="@android:color/darker_gray"
+                  android:layout_gravity="right|center_vertical"
+                  android:textColor="@android:color/holo_red_light"/>
+    </FrameLayout>
+
 
 </FrameLayout>

@@ -7,13 +7,14 @@ import android.content.ContentResolver;
 import android.net.Uri;
 import android.provider.BaseColumns;
 import android.text.format.Time;
+import me.zheteng.cbreader.BuildConfig;
 
 /**
  * 数据约定
  */
 public class CnBetaContract {
 
-    public static final String CONTENT_AUTHORITY = "me.zheteng.cbreader";
+    public static final String CONTENT_AUTHORITY = BuildConfig.APPLICATION_ID;
 
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
 

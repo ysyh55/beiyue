@@ -3,14 +3,31 @@
   ~ Copyright (C) 2015 junyuecao@gmail.com All Rights Reserved.
   -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:ads="http://schemas.android.com/apk/res-auto"
              android:layout_width="match_parent"
              android:layout_height="match_parent">
-    <FrameLayout
-            android:id="@+id/container"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="?attr/actionBarSize">
+    <LinearLayout android:layout_width="match_parent"
+                  android:layout_height="match_parent"
+                  android:orientation="vertical">
 
-    </FrameLayout>
-    <include layout="@layout/toolbar_normal" />
+        <FrameLayout
+                android:id="@+id/container"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:layout_marginTop="?attr/actionBarSize"
+                android:paddingTop="@dimen/default_statusbar_height">
+
+        </FrameLayout>
+        <com.google.android.gms.ads.AdView
+                android:visibility="gone"
+                android:id="@+id/adView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                ads:adSize="BANNER"
+                ads:adUnitId="@string/banner_ad_unit_id_settings">
+        </com.google.android.gms.ads.AdView>
+    </LinearLayout>
+
+    <include layout="@layout/toolbar_normal"/>
 </FrameLayout>

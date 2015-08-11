@@ -16,7 +16,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -35,7 +34,6 @@ import android.view.ViewGroup;
 import me.zheteng.actionabletoastbar.ActionableToastBar;
 import me.zheteng.cbreader.R;
 import me.zheteng.cbreader.model.Article;
-import me.zheteng.cbreader.utils.UIUtils;
 
 /**
  * 收藏界面
@@ -171,9 +169,6 @@ public class FavoriteFragment extends Fragment implements LoaderManager.LoaderCa
         mActivity = (MainActivity) getActivity();
         mPref = PreferenceManager.getDefaultSharedPreferences(mActivity);
         mActivity.showToolbar();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            mActivity.getToolbar().setElevation(UIUtils.dpToPixels(mActivity, 10));
-        }
         mActivity.getToolbar().getBackground().setAlpha(255);
         mActivity.getToolbar().setTitle(R.string.favorite);
         setupRecyclerView();

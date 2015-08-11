@@ -6,6 +6,7 @@ package me.zheteng.cbreader.ui;
 import java.util.ArrayList;
 import java.util.Random;
 
+import com.google.android.gms.ads.formats.NativeContentAd;
 import com.umeng.update.UmengUpdateAgent;
 
 import android.content.Intent;
@@ -93,6 +94,7 @@ public class MainActivity extends BaseActivity implements Palette.PaletteAsyncLi
     private int mDrawerHeaderBg;
     private Handler mHandler;
     private View mNightDrawerItem;
+    private NativeContentAd mAd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,11 +139,11 @@ public class MainActivity extends BaseActivity implements Palette.PaletteAsyncLi
 
     private void setupNavDrawer() {
         TypedArray ta = obtainStyledAttributes(new int[] {
-                R.attr.color_primary_dark
+                R.attr.color_primary
         });
-        int colorPrimaryDark = ta.getColor(0, R.color.theme_primary_dark);
+        int colorPrimary = ta.getColor(0, getResources().getColor(R.color.theme_primary));
         ta.recycle();
-        mDrawerLayout.setStatusBarBackgroundColor(colorPrimaryDark);
+        mDrawerLayout.setStatusBarBackgroundColor(colorPrimary);
 
         ScrimInsetsScrollView navDrawer = (ScrimInsetsScrollView)
                 mDrawerLayout.findViewById(R.id.navdrawer);
@@ -314,8 +316,8 @@ public class MainActivity extends BaseActivity implements Palette.PaletteAsyncLi
                 R.attr.nav_item_text_color_selected
         };
         TypedArray ta = obtainStyledAttributes(attrs);
-        int color = ta.getColor(0, R.color.navdrawer_text_color);
-        int colorSelected = ta.getColor(1, R.color.navdrawer_text_color_selected);
+        int color = ta.getColor(0, getResources().getColor(R.color.navdrawer_text_color));
+        int colorSelected = ta.getColor(1, getResources().getColor(R.color.navdrawer_text_color_selected));
 
         ta.recycle();
         // configure its appearance according to whether or not it's selected
@@ -362,7 +364,7 @@ public class MainActivity extends BaseActivity implements Palette.PaletteAsyncLi
 
             @Override
             public void run() {
-                mDoubleBackToExitPressedOnce =false;
+                mDoubleBackToExitPressedOnce = false;
             }
         }, 2000);
     }

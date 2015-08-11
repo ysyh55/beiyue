@@ -3,6 +3,8 @@
  */
 package me.zheteng.cbreader.model;
 
+import android.content.Context;
+import me.zheteng.cbreader.utils.PrefUtils;
 import me.zheteng.cbreader.utils.TimeUtils;
 
 /**
@@ -22,9 +24,13 @@ public class CmntDetail {
     public String icon;
     public String readableTime;
 
-    public String getReadableTime() {
+    public String getReadableTime(Context context) {
         if (readableTime == null) {
-            readableTime = TimeUtils.getElapsedTime(TimeUtils.fmt.parseDateTime(date).getMillis());
+            if (PrefUtils.isShowTimeElapse(context)) {
+                readableTime = TimeUtils.getEllapseTime(TimeUtils.fmt.parseDateTime(date).getMillis());
+            } else {
+                readableTime = date;
+            }
         }
         return readableTime;
     }

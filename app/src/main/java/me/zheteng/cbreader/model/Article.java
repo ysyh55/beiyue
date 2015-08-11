@@ -5,8 +5,10 @@ package me.zheteng.cbreader.model;
 
 import org.jsoup.Jsoup;
 
+import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
+import me.zheteng.cbreader.utils.PrefUtils;
 import me.zheteng.cbreader.utils.TimeUtils;
 
 /**
@@ -45,9 +47,13 @@ public class Article implements Parcelable {
 
     }
 
-    public String getReadableTime() {
+    public String getReadableTime(Context context) {
         if (readableTime == null) {
-            readableTime = TimeUtils.getElapsedTime(TimeUtils.fmt.parseDateTime(pubtime).getMillis());
+            if (PrefUtils.isShowTimeElapse(context)) {
+                readableTime = TimeUtils.getEllapseTime(TimeUtils.fmt.parseDateTime(pubtime).getMillis());
+            } else {
+                readableTime = pubtime;
+            }
         }
         return readableTime;
     }

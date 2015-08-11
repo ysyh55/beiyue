@@ -74,7 +74,7 @@ public class Utils {
 
     public static File getSaveImageDir() {
         String path = Environment.getExternalStorageDirectory().toString();
-        File file = new File(path + "/CNBETANow/saved/");
+        File file = new File(path + "CNBETANow/saved/");
         file.mkdirs();
         return file;
     }

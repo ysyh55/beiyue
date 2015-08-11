@@ -160,4 +160,10 @@ public class PrefUtils {
 
         editor.commit();
     }
+
+    public static boolean isShowTimeElapse(Context context) {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+
+        return sp.getBoolean(context.getString(R.string.pref_use_elapse_time_key), true);
+    }
 }

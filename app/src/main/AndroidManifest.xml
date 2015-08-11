@@ -59,9 +59,14 @@
             </intent-filter>
         </activity>
 
+        <!--Include the AdActivity configChanges and theme. -->
+        <activity android:name="com.google.android.gms.ads.AdActivity"
+                  android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
+                  android:theme="@android:style/Theme.Translucent"/>
+
         <provider
                 android:name=".data.CnBetaProvider"
-                android:authorities="me.zheteng.cbreader"
+                android:authorities="${applicationId}"
                 android:exported="false"
                 android:syncable="true"/>
 
@@ -76,6 +81,10 @@
 
         <meta-data android:value="5513c2cffd98c5336c0001fd" android:name="UMENG_APPKEY"></meta-data>
         <meta-data android:value="${channel}" android:name="UMENG_CHANNEL"/>
+
+        <!--This meta-data tag is required to use Google Play Services.-->
+        <meta-data android:name="com.google.android.gms.version"
+                   android:value="@integer/google_play_services_version"/>
     </application>
 
 </manifest>
