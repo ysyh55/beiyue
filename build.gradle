@@ -16,6 +16,10 @@ allprojects {
     repositories {
         jcenter()
     }
+    ext {
+        COMPILESDKVERSION = 22
+        BUILDTOOLSVERSION = "22.0.1"
+    }
 }
 
 apply plugin: 'idea'
