@@ -447,11 +447,13 @@ public class ReadFragment extends Fragment implements SharedPreferences.OnShared
                 }
             }
 
-            mWebView.loadDataWithBaseURL("http://www.baidu.com/index.html", html, "text / html; charset = UTF - 8 ",
-                    "utf-8",
-                    null);
-            //            mWebView.loadData(html, "text / html; charset = UTF - 8 ", null);
-
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                mWebView.loadDataWithBaseURL("http://www.baidu.com/index.html", html, "text/html; charset=UTF-8",
+                        "utf-8",
+                        null);
+            } else {
+                mWebView.loadData(html, "text/html;charset=UTF-8", "utf-8");
+            }
         }
     }
 
