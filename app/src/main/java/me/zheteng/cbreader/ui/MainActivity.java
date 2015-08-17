@@ -10,6 +10,7 @@ import com.google.android.gms.ads.formats.NativeContentAd;
 import com.umeng.update.UmengUpdateAgent;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.os.Build;
 import android.os.Bundle;
@@ -358,7 +359,8 @@ public class MainActivity extends BaseActivity implements Palette.PaletteAsyncLi
         }
 
         this.mDoubleBackToExitPressedOnce = true;
-        Toast.makeText(this, R.string.press_again, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, getString(R.string.press_again) + " " + getString(R.string.app_name), Toast.LENGTH_SHORT)
+                .show();
 
         new Handler().postDelayed(new Runnable() {
 
@@ -367,6 +369,12 @@ public class MainActivity extends BaseActivity implements Palette.PaletteAsyncLi
                 mDoubleBackToExitPressedOnce = false;
             }
         }, 2000);
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        setRequestedOrientation(newConfig.orientation);
     }
 
     @Override

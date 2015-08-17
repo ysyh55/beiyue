@@ -77,9 +77,14 @@
         color:#9b9b9b;
         }
         #viewComment {
-        padding:10px 25px;margin-top:16px;background: #ddd;border: none;outline:none;
+        padding:10px 55px;
+        margin-top:16px;
+        font-size: 16px;
+        color: white;
+        background: #67BCF9;
+        border: none;
+        outline:none;
         user-select:none;
-        width: 100%;
         }
         #viewComment:active {
         background:#e6e6e6;
@@ -143,7 +148,7 @@ ${content}
 
 
 <div id="footer" style="text-align:center;border-top:1px solid #ddd;padding-top:8px;">
-    ${good} 次推荐 | ${comments} 次打分 | 事件分: ${score}
+    ${comments} 次打分
 </div>
 <div id="commentsContainer">
 
@@ -178,6 +183,10 @@ ${content}
 
     function setFontSize(size) {
         document.body.style.fontSize = "" + size + "px";
+    }
+
+    function playFullScreen (type, data) {
+        window.cbreader.playFullScreen(type, data);
     }
 </script>
 </body>

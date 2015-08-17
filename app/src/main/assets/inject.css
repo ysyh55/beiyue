@@ -1,0 +1,22 @@
+.fixed_pinner,
+.main_container .content .js_sohu_app_banner,
+.main_container .content .video_info,
+.main_container .content .series,
+.main_container .content .share_section,
+.main_container .content .video_info,
+.main_container .content .advertise,
+.main_container .content .comment,
+.main_container .content #player_recommend,
+.main_container .content .recommend,
+.main_container .content .load_more,
+.main_container .user_favor,
+footer,
+header,
+.menu_rec {
+display:none;
+}
+.main_container,
+.main_container .content ,
+.main_container .content .player_scope {
+height: 100%;
+}

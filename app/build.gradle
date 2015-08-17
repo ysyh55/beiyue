@@ -21,8 +21,8 @@ android {
         applicationId "me.zheteng.cbreader"
         minSdkVersion 14
         targetSdkVersion 21
-        versionCode 19
-        versionName "1.2.3.2"
+        versionCode 20
+        versionName "1.2.4.0"
     }
     buildTypes {
         debug {

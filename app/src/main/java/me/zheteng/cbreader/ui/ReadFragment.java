@@ -14,6 +14,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.github.ksoichiro.android.observablescrollview.ObservableWebView;
@@ -52,6 +55,7 @@ import android.view.animation.Animation;
 import android.webkit.CookieManager;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -70,6 +74,7 @@ import me.zheteng.cbreader.utils.APIUtils;
 import me.zheteng.cbreader.utils.PrefUtils;
 import me.zheteng.cbreader.utils.Utils;
 import me.zheteng.cbreader.utils.volley.GsonRequest;
+import me.zheteng.cbreader.utils.volley.StringRequest;
 import uk.co.senab.photoview.PhotoView;
 import uk.co.senab.photoview.PhotoViewAttacher;
 
@@ -80,6 +85,7 @@ public class ReadFragment extends Fragment implements SharedPreferences.OnShared
     public static final String ACTION_DATA_LOADED = "me.zheteng.cbreader.ReadActivity.DATA_LOADED";
 
     public static final String ARTICLE_SID_KEY = "sid";
+    public static final String ARTICLE_COMMENTS_KEY = "comments";
     private static final String TAG = "ReadActivity";
 
     private int mSid;
@@ -111,12 +117,14 @@ public class ReadFragment extends Fragment implements SharedPreferences.OnShared
     private ViewGroup mPhotoViewContainer;
     private boolean mIsPhotoViewShow;
     private String mCommentsHtml;
+    private int mCommentsCount;
 
     public static ReadFragment newInstance(Article article) {
         ReadFragment fragment = new ReadFragment();
 
         Bundle bundle = new Bundle();
         bundle.putInt(ARTICLE_SID_KEY, article.sid);
+        bundle.putInt(ARTICLE_COMMENTS_KEY, article.comments);
 
         fragment.setArguments(bundle);
         return fragment;
@@ -127,6 +135,7 @@ public class ReadFragment extends Fragment implements SharedPreferences.OnShared
         super.onCreate(savedInstanceState);
         Bundle args = getArguments();
         mSid = args.getInt(ARTICLE_SID_KEY, 0);
+        mCommentsCount = args.getInt(ARTICLE_COMMENTS_KEY, 0);
 
         setHasOptionsMenu(true);
 
@@ -150,12 +159,6 @@ public class ReadFragment extends Fragment implements SharedPreferences.OnShared
         super.setUserVisibleHint(isVisibleToUser);
 
         if (isVisibleToUser) {
-            if (!mHasLoaded) {
-                requestData();
-            } else {
-                replaceCount();
-                //setShareIntent();
-            }
 
         }
     }
@@ -215,6 +218,12 @@ public class ReadFragment extends Fragment implements SharedPreferences.OnShared
             }
         });
 
+        if (!mHasLoaded) {
+            requestData();
+        } else {
+            replaceCount();
+            //setShareIntent();
+        }
     }
 
     @Override
@@ -236,31 +245,74 @@ public class ReadFragment extends Fragment implements SharedPreferences.OnShared
     }
 
     public void requestData() {
-        MainApplication.requestQueue.add(new GsonRequest<NewsContent>(APIUtils.getNewsContentUrl(mSid),
-                NewsContent.class, null, new Response.Listener<NewsContent>() {
-            @Override
-            public void onResponse(NewsContent newsContent) {
-
-                mNewsContent = newsContent;
-                //                setShareIntent();
-                mActivity.getShareMenuItem().setVisible(true);
-                mActivity.sendBroadcast(new Intent(ACTION_DATA_LOADED + mSid));
-                mProgressBar.setVisibility(View.GONE);
-                requestComments(1);
-                renderContent();
-                replaceCount();
-                mHasLoaded = true;
-            }
-        }, new Response.ErrorListener() {
-
-            @Override
-            public void onErrorResponse(VolleyError volleyError) {
-                if (mNoDatHint != null) {
-                    mNoDatHint.setVisibility(View.VISIBLE);
+        if (!mPref.getBoolean(getString(R.string.pref_use_web_data_key), true)) {
+            // 这部分是通过API接口获取数据的，因为API获取不到很多视频，所以改成取网页拉数据
+            MainApplication.requestQueue.add(new GsonRequest<>(APIUtils.getNewsContentUrl(mSid),
+                    NewsContent.class, null, new Response.Listener<NewsContent>() {
+                @Override
+                public void onResponse(NewsContent newsContent) {
+                    mNewsContent = newsContent;
+                    //                setShareIntent();
+                    mActivity.getShareMenuItem().setVisible(true);
+                    mActivity.sendBroadcast(new Intent(ACTION_DATA_LOADED + mSid));
+                    mProgressBar.setVisibility(View.GONE);
+                    requestComments(1);
+                    renderContent();
+                    replaceCount();
+                    mHasLoaded = true;
                 }
-                mProgressBar.setVisibility(View.GONE);
-            }
-        }));
+            }, new Response.ErrorListener() {
+
+                @Override
+                public void onErrorResponse(VolleyError volleyError) {
+                    if (mNoDatHint != null) {
+                        mNoDatHint.setVisibility(View.VISIBLE);
+                    }
+                    mProgressBar.setVisibility(View.GONE);
+                }
+            }));
+        } else {
+            MainApplication.requestQueue.add(new StringRequest("http://www.cnbeta.com/articles/" + mSid + ".htm",
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String html) {
+                            mNewsContent = parseDocument(html);
+                            mActivity.getShareMenuItem().setVisible(true);
+                            mActivity.sendBroadcast(new Intent(ACTION_DATA_LOADED + mSid));
+                            mProgressBar.setVisibility(View.GONE);
+                            requestComments(1);
+                            renderContent();
+                            replaceCount();
+                            mHasLoaded = true;
+                        }
+                    }, new Response.ErrorListener() {
+
+                @Override
+                public void onErrorResponse(VolleyError volleyError) {
+                    if (mNoDatHint != null) {
+                        mNoDatHint.setVisibility(View.VISIBLE);
+                    }
+                    mProgressBar.setVisibility(View.GONE);
+                }
+            }));
+        }
+
+    }
+
+    private NewsContent parseDocument(String document) {
+        Document newsDocument = Jsoup.parse(document);
+
+        NewsContent newsContent = new NewsContent();
+
+        newsContent.title = newsDocument.select("#news_title").text();
+        newsContent.source = newsDocument.select(".where a").html();
+        newsContent.bodytext = newsDocument.select(".content").html();
+        newsContent.hometext = newsDocument.select(".introduction p").html();
+        newsContent.time = newsDocument.select(".date").text();
+        newsContent.comments = mCommentsCount;
+        //        newsContent.good = newsDocument.select("#good_num").text();
+
+        return newsContent;
     }
 
     public void requestComments(int page) {
@@ -377,6 +429,21 @@ public class ReadFragment extends Fragment implements SharedPreferences.OnShared
                     return false;
                 }
             }
+
+            @Override
+            public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
+                // hack 搜狐视频
+                if (url.contains("http://tv.sohu.com/upload/touch/css/albumPlayerPage.min")) {
+                    try {
+                        WebResourceResponse resourceResponse =
+                                new WebResourceResponse("text/css", "utf-8", mActivity.getAssets().open("inject.css"));
+                        return resourceResponse;
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                return super.shouldInterceptRequest(view, url);
+            }
         });
         mWebView.addJavascriptInterface(new MyJsInterface(), "cbreader");
 
@@ -429,6 +496,11 @@ public class ReadFragment extends Fragment implements SharedPreferences.OnShared
             String comments = String.valueOf(mNewsContent.comments);
             String darkClass = PrefUtils.isNightMode(mActivity) ? "dark" : "";
 
+            body = body.replaceAll(VideoRegExps.TUDOU, VideoPlaceHolders.TUDOU)
+                    .replaceAll(VideoRegExps.YOUKU_JS, VideoPlaceHolders.YOUKU)
+                    .replaceAll(VideoRegExps.YOUKU_EMBED, VideoPlaceHolders.YOUKU)
+                    .replaceAll(VideoRegExps.SOHU, VideoPlaceHolders.SOHU);
+
             String html = getHtmlTemplate();
             html = html.replaceAll("\\$\\{title\\}", title)
                     .replaceAll("\\$\\{time\\}", pubTime)
@@ -436,10 +508,10 @@ public class ReadFragment extends Fragment implements SharedPreferences.OnShared
                     .replaceAll("\\$\\{source\\}", source)
                     .replaceAll("\\$\\{intro\\}", intro)
                     .replaceAll("\\$\\{content\\}", body)
-                    .replaceAll("\\$\\{good\\}", mNewsContent.good)
+                            //                    .replaceAll("\\$\\{good\\}", mNewsContent.good)
                     .replaceAll("\\$\\{comments\\}", comments)
-                    .replaceAll("\\$\\{font\\}", String.valueOf(PrefUtils.getFontSize(mActivity)))
-                    .replaceAll("\\$\\{score\\}", mNewsContent.score);
+                    .replaceAll("\\$\\{font\\}", String.valueOf(PrefUtils.getFontSize(mActivity)));
+            //                    .replaceAll("\\$\\{score\\}", mNewsContent.score);
 
             if (!Utils.isConnectedWifi(mActivity)) {
                 if (!mPref.getBoolean(mActivity.getString(R.string.pref_autoload_image_in_webview_key), true)) {
@@ -523,6 +595,11 @@ public class ReadFragment extends Fragment implements SharedPreferences.OnShared
                     showSlide(Integer.parseInt(index));
                 }
             });
+        }
+
+        @JavascriptInterface
+        public void playFullScreen(String type, String data) {
+            FullscreenVideoActivity.startNewInstance(mActivity, type, data);
         }
     }
 
@@ -669,5 +746,42 @@ public class ReadFragment extends Fragment implements SharedPreferences.OnShared
         public void destroyItem(ViewGroup container, int position, Object object) {
             container.removeView((View) object);
         }
+    }
+
+    public class VideoRegExps {
+        public static final String TUDOU = "(?s)<embed[^>]*src=\"http://www.tudou.com/v/([a-zA-Z0-9_\\-]*)/[^>]*/?>";
+        public static final String YOUKU_JS =
+                "(?s)<div\\s+id=\"youkuplayer\"\\s+.*vid:\\s*'([a-zA-Z0-9_=]*)'.*</script>";
+        public static final String YOUKU_EMBED =
+                "(?s)<embed.*http://player.youku.com/player.php/sid/([a-zA-Z0-9_=]*)[^>]*/?>";
+        public static final String SOHU = "<embed[^>]*src=\"http://share\\.vrs\\.sohu\\.com/my/v\\.swf&amp;"
+                + "topBar=1&amp;id=(\\d+)[^>]*/?>";
+    }
+
+    public class VideoPlaceHolders {
+        public static final String TUDOU = "<div style=\"position:relative;\"> <iframe \n"
+                + "src=\"http://www.tudou.com/programs/view/html5embed"
+                + ".action?code=$1&autoPlay=false&playType=AUTO\" "
+                + "width=\"100%\" "
+                + "height=\"524px\" "
+                + "frameborder=\"0\" "
+                + "scrolling=\"no\" "
+                + "></iframe>"
+                + "<div style=\"width: 100%;height: 100%;position: absolute;left: 0;top: 0;\" class=\"full\"  "
+                + "onclick=\"playFullScreen('tudou', '$1')\"></div>"
+                + "</div>";
+
+        public static final String YOUKU = "<div style=\"position:relative;\"> "
+                + "<iframe height=498 width=510 src=\"http://player.youku"
+                + ".com/embed/$1\" frameborder=0 allowfullscreen></iframe> "
+                + "<div style=\"width: 100%;height: 100%;position: absolute;left: 0;top: 0;\" class=\"full\"  "
+                + "onclick=\"playFullScreen('youku', '$1')\"></div>"
+                + "</div>";
+        public static final String SOHU = "<div style=\"position:relative;\"> "
+                + "<iframe src=\"http://m.tv.sohu.com/v$1.shtml\" class=\"open_video_button\" "
+                + "frameborder=0 allowfullscreen></iframe>"
+                + "<div style=\"width: 100%;height: 100%;position: absolute;left: 0;top: 0;\" class=\"full\" "
+                + "onclick=\"playFullScreen('sohu', '$1')\"></div>"
+                + "</div>";
     }
 }

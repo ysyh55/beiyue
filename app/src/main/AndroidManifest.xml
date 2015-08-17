@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools"
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools"
           package="me.zheteng.cbreader">
 
     <uses-permission android:name="android.permission.INTERNET"/>
@@ -12,38 +13,37 @@
     <application
             android:name=".MainApplication"
             android:allowBackup="true"
+            android:hardwareAccelerated="true"
             android:icon="@mipmap/ic_cbreader_launcher"
-            tools:replace="android:icon"
             android:label="@string/app_name"
             android:theme="@style/AppTheme"
-            android:hardwareAccelerated="true">
+            tools:replace="android:icon">
         <activity
                 android:name=".ui.MainActivity"
-                android:launchMode="singleTask"
-                android:label="@string/app_name">
+                android:label="@string/app_name"
+                android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
+                android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-
         <activity
                 android:name=".ui.ReadActivity"
                 android:label="@string/app_name"
+                android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
                 android:parentActivityName=".ui.MainActivity">
         </activity>
-
         <activity
                 android:name=".ui.CommentActivity"
                 android:label="@string/app_name"
                 android:parentActivityName=".ui.ReadActivity">
         </activity>
-
         <activity
                 android:name=".ui.SettingsActivity"
-                android:launchMode="singleTask"
-                android:label="@string/settings">
+                android:label="@string/settings"
+                android:launchMode="singleTask">
         </activity>
         <activity
                 android:name=".ui.AllTopicsActivity"
@@ -51,18 +51,27 @@
         </activity>
         <activity
                 android:name=".ui.AboutActivity"
-                android:launchMode="singleTask"
-                android:label="@string/about">
+                android:label="@string/about"
+                android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="me.zheteng.cbreader.ui.AboutActivity"/>
+
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
 
-        <!--Include the AdActivity configChanges and theme. -->
-        <activity android:name="com.google.android.gms.ads.AdActivity"
-                  android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
-                  android:theme="@android:style/Theme.Translucent"/>
+        <activity
+                android:name=".ui.FullscreenVideoActivity"
+                android:label="@string/title_activity_fullscreen_video"
+                android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen"
+                android:screenOrientation="landscape">
+        </activity>
+
+        <!-- Include the AdActivity configChanges and theme. -->
+        <activity
+                android:name="com.google.android.gms.ads.AdActivity"
+                android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
+                android:theme="@android:style/Theme.Translucent"/>
 
         <provider
                 android:name=".data.CnBetaProvider"
@@ -72,19 +81,25 @@
 
         <service
                 android:name="com.umeng.update.net.DownloadingService"
-                android:process=":DownloadingService" >
+                android:process=":DownloadingService">
         </service>
+
         <activity
                 android:name="com.umeng.update.UpdateDialogActivity"
-                android:theme="@android:style/Theme.Translucent.NoTitleBar" >
+                android:theme="@android:style/Theme.Translucent.NoTitleBar">
         </activity>
 
-        <meta-data android:value="5513c2cffd98c5336c0001fd" android:name="UMENG_APPKEY"></meta-data>
-        <meta-data android:value="${channel}" android:name="UMENG_CHANNEL"/>
+        <meta-data
+                android:name="UMENG_APPKEY"
+                android:value="5513c2cffd98c5336c0001fd"/>
+        <meta-data
+                android:name="UMENG_CHANNEL"
+                android:value="${channel}"/>
 
-        <!--This meta-data tag is required to use Google Play Services.-->
-        <meta-data android:name="com.google.android.gms.version"
-                   android:value="@integer/google_play_services_version"/>
+        <!-- This meta-data tag is required to use Google Play Services. -->
+        <meta-data
+                android:name="com.google.android.gms.version"
+                android:value="@integer/google_play_services_version"/>
     </application>
 
 </manifest>

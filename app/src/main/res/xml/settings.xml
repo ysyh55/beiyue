@@ -51,10 +51,15 @@
                 android:key="@string/pref_use_elapse_time_key"
                 android:title="@string/pref_use_elapse_time"
                 android:summary="@string/pref_use_elapse_time_summary"
-                android:defaultValue="true"/>
+                android:defaultValue="false"/>
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/pref_advanced">
+        <SwitchPreference
+                android:key="@string/pref_use_web_data_key"
+                android:title="@string/pref_use_web_data"
+                android:summary="@string/pref_use_web_data_summary"
+                android:defaultValue="true"/>
         <SwitchPreference
                 android:key="@string/pref_use_web_api_key"
                 android:title="@string/pref_use_web_api"

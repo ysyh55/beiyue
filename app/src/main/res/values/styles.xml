@@ -80,4 +80,11 @@
     <style name="AppTheme.NavigationItem.TextAppear"
            parent="android:style/TextAppearance.Holo.Widget.ActionBar.Menu"/>
 
+    <style name="Theme.AppCompat.Light.NoActionBar.FullScreen" parent="@style/Theme.AppCompat.Light">
+        <item name="android:windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+
 </resources>
