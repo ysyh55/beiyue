@@ -40,7 +40,7 @@
     <string name="empty_data">暂无数据</string>
     <string name="empty_comment">没有评论(应该是被cnBeta清空了)</string>
     <string name="no_comment">暂时还没有评论</string>
-    <string name="share">分享</string>
+    <string name="share">分享到其他…</string>
     <string name="press_again">再按一次退出</string>
     <string name="top_comments_fragment_title">热门评论</string>
     <string name="publish_sub">发表于</string>

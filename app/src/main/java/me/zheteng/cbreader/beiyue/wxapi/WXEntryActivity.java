@@ -1,16 +1,15 @@
 package me.zheteng.cbreader.beiyue.wxapi;
 
-import android.app.Activity;
-import android.os.Bundle;
-import android.widget.Toast;
+import static me.zheteng.cbreader.MainApplication.sIwxapi;
 
 import com.tencent.mm.sdk.modelbase.BaseReq;
 import com.tencent.mm.sdk.modelbase.BaseResp;
 import com.tencent.mm.sdk.openapi.IWXAPIEventHandler;
 
+import android.app.Activity;
+import android.os.Bundle;
+import android.widget.Toast;
 import me.zheteng.cbreader.R;
-
-import static me.zheteng.cbreader.MainApplication.sIwxapi;
 
 /**
  * Created by jonah.cao on 8/18/15.
@@ -21,6 +20,7 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler {
         super.onCreate(savedInstanceState);
 
         sIwxapi.handleIntent(getIntent(), this);
+        setVisible(false);
     }
 
     @Override
