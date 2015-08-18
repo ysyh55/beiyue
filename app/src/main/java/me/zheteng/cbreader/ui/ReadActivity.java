@@ -8,10 +8,20 @@ import static me.zheteng.cbreader.data.CnBetaContract.FavoriteEntry;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.google.gson.Gson;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
+import com.tencent.mm.sdk.modelmsg.SendMessageToWX;
+import com.tencent.mm.sdk.modelmsg.WXMediaMessage;
+import com.tencent.mm.sdk.modelmsg.WXWebpageObject;
+import com.tencent.mm.sdk.openapi.IWXAPI;
+import com.tencent.mm.sdk.openapi.WXAPIFactory;
 
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -52,6 +62,7 @@ public class ReadActivity extends SwipeBackActionBarActivity {
     public static final String TOP_COMMENT_SID_KEY = "top_comment_sid";
     public static final String FROM_TOP_COMMENT_KEY = "from_top_comment_key"; //TopComment是热门评论页
     public static final String DISABLE_LOAD_MORE_KEY = "from_top_key"; // Top是指排行榜
+    private static final String WXAPI_ID = "wx84b62e7e153ab9ca";
 
     private int mToolbarHeight;
 
@@ -75,6 +86,7 @@ public class ReadActivity extends SwipeBackActionBarActivity {
 
     private SharedPreferences mPref;
     private OnBackPressedListener mOnBackPressedListener;
+    private IWXAPI mIwxapi;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,6 +108,8 @@ public class ReadActivity extends SwipeBackActionBarActivity {
         initView();
         mPref = PreferenceManager.getDefaultSharedPreferences(this);
 
+        mIwxapi = WXAPIFactory.createWXAPI(this, WXAPI_ID);
+        mIwxapi.registerApp(WXAPI_ID);
     }
 
     @Override
@@ -118,6 +132,10 @@ public class ReadActivity extends SwipeBackActionBarActivity {
         getMenuInflater().inflate(R.menu.menu_read, menu);
         mShareMenuItem = menu.findItem(R.id.action_share);
         mImageToggleMenuItem = menu.findItem(R.id.action_toggle_image);
+
+        if (mIwxapi.isWXAppInstalled()) {
+            menu.findItem(R.id.action_share_moments).setVisible(true);
+        }
 
         // Get its ShareActionProvider
         if (mShareActionProvider == null) {
@@ -225,6 +243,48 @@ public class ReadActivity extends SwipeBackActionBarActivity {
 
         //noinspection SimplifiableIfStatement
         switch (id) {
+            case R.id.action_share_moments: {
+                WXWebpageObject webpageObject = new WXWebpageObject();
+                webpageObject.webpageUrl = "http://www.cnbeta.com/articles/" + mArticle.sid + ".htm";
+
+                final WXMediaMessage msg = new WXMediaMessage(webpageObject);
+                msg.mediaObject = webpageObject;
+                msg.title = mArticle.title + " - 来自贝阅";
+                msg.description = mArticle.summary;
+                Target target = new Target() {
+                    @Override
+                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                        msg.setThumbImage(bitmap);
+                        SendMessageToWX.Req req = new SendMessageToWX.Req();
+                        req.transaction = String.valueOf(System.currentTimeMillis());
+                        req.message = msg;
+                        req.scene = 1;
+
+                        mIwxapi.sendReq(req);
+                    }
+
+                    @Override
+                    public void onBitmapFailed(Drawable errorDrawable) {
+                        msg.setThumbImage(BitmapFactory.decodeResource(getResources(), R.drawable.profile_image));
+
+                        SendMessageToWX.Req req = new SendMessageToWX.Req();
+                        req.transaction = String.valueOf(System.currentTimeMillis());
+                        req.message = msg;
+                        req.scene = 1;
+
+                        mIwxapi.sendReq(req);
+                    }
+
+                    @Override
+                    public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+                    }
+                };
+
+                Picasso.with(this).load(mArticle.thumb).into(target);
+
+                return true;
+            }
             case R.id.action_view_in_browser: {
                 Intent intent = new Intent(Intent.ACTION_VIEW,
                         Uri.parse("http://www.cnbeta.com/articles/" + mCurrentSid + ".htm"));

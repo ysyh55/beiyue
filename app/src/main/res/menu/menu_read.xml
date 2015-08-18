@@ -5,6 +5,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+            android:visible="false"
+            android:id="@+id/action_share_moments"
+            app:showAsAction="always"
+            android:icon="@drawable/ic_icon_res_download_moments"
+            android:title="@string/share_moments"/>
+    <item
             android:id="@+id/action_share"
             app:showAsAction="never"
             android:icon="@drawable/ic_share_white_24dp"
