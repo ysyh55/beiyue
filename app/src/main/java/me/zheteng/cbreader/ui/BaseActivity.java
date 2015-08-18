@@ -3,10 +3,6 @@
  */
 package me.zheteng.cbreader.ui;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.umeng.analytics.MobclickAgent;
-
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -16,6 +12,11 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.umeng.analytics.MobclickAgent;
+
 import me.zheteng.cbreader.BuildConfig;
 import me.zheteng.cbreader.MainApplication;
 import me.zheteng.cbreader.R;

@@ -67,6 +67,10 @@
                 android:screenOrientation="landscape">
         </activity>
 
+        <activity android:name=".beiyue.wxapi.WXEntryActivity"
+            android:label="WeChat"
+            android:exported="true" />
+
         <!-- Include the AdActivity configChanges and theme. -->
         <activity
                 android:name="com.google.android.gms.ads.AdActivity"

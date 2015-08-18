@@ -113,4 +113,9 @@
     <string name="pref_use_web_data">直接抓取页面数据</string>
     <string name="pref_use_web_data_summary">直接从PC版页面抓取内容，可以保证视频内容不丢失，如果新闻阅读页出现问题，请尝试关闭这个选项</string>
     <string name="share_moments">分享到朋友圈</string>
+    <string name="send_to_wechat">发送给微信好友</string>
+    <string name="wx_errcode_success">分享成功</string>
+    <string name="wx_errcode_cancel">取消分享</string>
+    <string name="wx_errcode_deny">验证失败</string>
+    <string name="wx_errcode_unknown">未知错误</string>
 </resources>
