@@ -3,19 +3,6 @@
  */
 package me.zheteng.cbreader.ui;
 
-import static me.zheteng.cbreader.data.CnBetaContract.FavoriteEntry;
-
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.google.gson.Gson;
-import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
-import com.tencent.mm.sdk.modelmsg.SendMessageToWX;
-import com.tencent.mm.sdk.modelmsg.WXMediaMessage;
-import com.tencent.mm.sdk.modelmsg.WXWebpageObject;
-import com.tencent.mm.sdk.openapi.IWXAPI;
-import com.tencent.mm.sdk.openapi.WXAPIFactory;
-
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -37,6 +24,16 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.WebView;
 import android.widget.Toast;
+
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.google.gson.Gson;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
+import com.tencent.mm.sdk.modelmsg.SendMessageToWX;
+import com.tencent.mm.sdk.modelmsg.WXMediaMessage;
+import com.tencent.mm.sdk.modelmsg.WXWebpageObject;
+
 import me.zheteng.cbreader.BuildConfig;
 import me.zheteng.cbreader.MainApplication;
 import me.zheteng.cbreader.R;
@@ -48,6 +45,9 @@ import me.zheteng.cbreader.utils.PrefUtils;
 import me.zheteng.cbreader.utils.UIUtils;
 import me.zheteng.cbreader.utils.Utils;
 import me.zheteng.cbreader.utils.volley.GsonRequest;
+
+import static me.zheteng.cbreader.MainApplication.sIwxapi;
+import static me.zheteng.cbreader.data.CnBetaContract.FavoriteEntry;
 
 /**
  * 阅读页
@@ -62,7 +62,7 @@ public class ReadActivity extends SwipeBackActionBarActivity {
     public static final String TOP_COMMENT_SID_KEY = "top_comment_sid";
     public static final String FROM_TOP_COMMENT_KEY = "from_top_comment_key"; //TopComment是热门评论页
     public static final String DISABLE_LOAD_MORE_KEY = "from_top_key"; // Top是指排行榜
-    private static final String WXAPI_ID = "wx84b62e7e153ab9ca";
+    public static final String TOP_COMMENT_TITLE_KEY = "top_comment_title_key";
 
     private int mToolbarHeight;
 
@@ -86,7 +86,6 @@ public class ReadActivity extends SwipeBackActionBarActivity {
 
     private SharedPreferences mPref;
     private OnBackPressedListener mOnBackPressedListener;
-    private IWXAPI mIwxapi;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,22 +93,24 @@ public class ReadActivity extends SwipeBackActionBarActivity {
         setContentView(R.layout.activity_read);
 
         mArticle = getIntent().getParcelableExtra(ARTICLE_ARTICLE_KEY);
+
         int sid = getIntent().getIntExtra(TOP_COMMENT_SID_KEY, -1);
+        String title = getIntent().getStringExtra(TOP_COMMENT_TITLE_KEY);
         mIsFromTopComment = getIntent().getBooleanExtra(FROM_TOP_COMMENT_KEY, false);
+
         if (mArticle == null) {
             //从热门评论过来
             mCurrentSid = sid;
             Article article = new Article();
             article.sid = sid;
             mArticle = article;
+            mArticle.title = title;
         } else {
             mCurrentSid = mArticle.sid;
         }
         initView();
         mPref = PreferenceManager.getDefaultSharedPreferences(this);
 
-        mIwxapi = WXAPIFactory.createWXAPI(this, WXAPI_ID);
-        mIwxapi.registerApp(WXAPI_ID);
     }
 
     @Override
@@ -133,7 +134,7 @@ public class ReadActivity extends SwipeBackActionBarActivity {
         mShareMenuItem = menu.findItem(R.id.action_share);
         mImageToggleMenuItem = menu.findItem(R.id.action_toggle_image);
 
-        if (mIwxapi.isWXAppInstalled()) {
+        if (sIwxapi.isWXAppInstalled()) {
             menu.findItem(R.id.action_share_moments).setVisible(true);
         }
 
@@ -239,40 +240,28 @@ public class ReadActivity extends SwipeBackActionBarActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
+        final int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
         switch (id) {
-            case R.id.action_share_moments: {
-                WXWebpageObject webpageObject = new WXWebpageObject();
-                webpageObject.webpageUrl = "http://www.cnbeta.com/articles/" + mArticle.sid + ".htm";
-
-                final WXMediaMessage msg = new WXMediaMessage(webpageObject);
-                msg.mediaObject = webpageObject;
-                msg.title = mArticle.title + " - 来自贝阅";
-                msg.description = mArticle.summary;
+            case R.id.action_share_moments:
+            case R.id.action_send_wechat:
+            {
+                int type = 0;// 默认发送给好友
+                if (id == R.id.action_share_moments) {
+                    type = 1;
+                }
+                final int finalType = type;
                 Target target = new Target() {
                     @Override
                     public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                        msg.setThumbImage(bitmap);
-                        SendMessageToWX.Req req = new SendMessageToWX.Req();
-                        req.transaction = String.valueOf(System.currentTimeMillis());
-                        req.message = msg;
-                        req.scene = 1;
-
-                        mIwxapi.sendReq(req);
+                        sendToWechat(finalType, bitmap);
                     }
 
                     @Override
                     public void onBitmapFailed(Drawable errorDrawable) {
-                        msg.setThumbImage(BitmapFactory.decodeResource(getResources(), R.drawable.profile_image));
-
-                        SendMessageToWX.Req req = new SendMessageToWX.Req();
-                        req.transaction = String.valueOf(System.currentTimeMillis());
-                        req.message = msg;
-                        req.scene = 1;
-
-                        mIwxapi.sendReq(req);
+                        sendToWechat(finalType, BitmapFactory.decodeResource(getResources(),
+                                R.drawable.profile_image));
                     }
 
                     @Override
@@ -280,8 +269,12 @@ public class ReadActivity extends SwipeBackActionBarActivity {
 
                     }
                 };
-
-                Picasso.with(this).load(mArticle.thumb).into(target);
+                if (mArticle.thumb == null) {
+                    sendToWechat(finalType, BitmapFactory.decodeResource(getResources(),
+                            R.drawable.profile_image));
+                } else {
+                    Picasso.with(this).load(mArticle.thumb).into(target);
+                }
 
                 return true;
             }
@@ -326,6 +319,24 @@ public class ReadActivity extends SwipeBackActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void sendToWechat(int type, Bitmap thumb) {
+        WXWebpageObject webpageObject = new WXWebpageObject();
+        webpageObject.webpageUrl = "http://m.cnbeta.com/view_" + mArticle.sid + ".htm";
+
+        final WXMediaMessage msg = new WXMediaMessage(webpageObject);
+        msg.mediaObject = webpageObject;
+        msg.title = mArticle.title + " - 来自贝阅";
+        msg.description = mArticle.summary;
+
+        msg.setThumbImage(thumb);
+        SendMessageToWX.Req req = new SendMessageToWX.Req();
+        req.transaction = String.valueOf(System.currentTimeMillis());
+        req.message = msg;
+        req.scene = type;
+
+        sIwxapi.sendReq(req);
     }
 
     private void getArticleInfoAndAddFavorite() {

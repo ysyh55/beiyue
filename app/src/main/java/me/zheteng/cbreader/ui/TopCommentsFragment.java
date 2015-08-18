@@ -3,13 +3,6 @@
  */
 package me.zheteng.cbreader.ui;
 
-import java.util.List;
-
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.github.ksoichiro.android.observablescrollview.ObservableRecyclerView;
-import com.google.gson.Gson;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -23,6 +16,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.github.ksoichiro.android.observablescrollview.ObservableRecyclerView;
+import com.google.gson.Gson;
+
+import java.util.List;
+
 import me.zheteng.cbreader.MainApplication;
 import me.zheteng.cbreader.R;
 import me.zheteng.cbreader.model.TopComment;
@@ -235,6 +236,7 @@ public class TopCommentsFragment extends Fragment {
                 Intent intent = new Intent(mContext, ReadActivity.class);
                 intent.putExtra(ReadActivity.TOP_COMMENT_SID_KEY, Integer.parseInt(mData.get(position).sid));
                 intent.putExtra(ReadActivity.FROM_TOP_COMMENT_KEY, true);
+                intent.putExtra(ReadActivity.TOP_COMMENT_TITLE_KEY, mData.get(position).subject);
 
                 mContext.startActivity(intent);
             }

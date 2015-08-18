@@ -72,3 +72,8 @@ public static final int *;
 -keep class * implements android.os.Parcelable {
   public static final android.os.Parcelable$Creator *;
 }
+
+# WEIXIN
+-keep class com.tencent.mm.sdk.** {
+   *;
+}

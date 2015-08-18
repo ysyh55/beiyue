@@ -3,19 +3,22 @@
  */
 package me.zheteng.cbreader;
 
+import android.app.Application;
+import android.database.sqlite.SQLiteDatabase;
+import android.os.AsyncTask;
+import android.util.Log;
+
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.ImageLoader;
+import com.android.volley.toolbox.Volley;
+import com.tencent.mm.sdk.openapi.IWXAPI;
+import com.tencent.mm.sdk.openapi.WXAPIFactory;
+
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
 import java.net.CookieStore;
 
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.ImageLoader;
-import com.android.volley.toolbox.Volley;
-
-import android.app.Application;
-import android.database.sqlite.SQLiteDatabase;
-import android.os.AsyncTask;
-import android.util.Log;
 import me.zheteng.cbreader.data.CnBetaDBHelper;
 import me.zheteng.cbreader.utils.PrefUtils;
 import me.zheteng.cbreader.utils.volley.BitmapLruCache;
@@ -28,6 +31,8 @@ public class MainApplication extends Application {
 
     public static RequestQueue requestQueue;
     public static ImageLoader imageLoader;
+    private static final String WXAPI_ID = "wx84b62e7e153ab9ca";
+    public static IWXAPI sIwxapi;
     public static final int[] DRAWER_HEADER_BACKGROUND = {
             R.drawable.drawer_header_1,
             R.drawable.drawer_header_2,
@@ -53,6 +58,9 @@ public class MainApplication extends Application {
         if (!PrefUtils.isTopicsTableDone(this)) {
             new FillTopicTableTask().execute();
         }
+
+        sIwxapi = WXAPIFactory.createWXAPI(this, WXAPI_ID);
+        sIwxapi.registerApp(WXAPI_ID);
     }
 
     private class FillTopicTableTask extends AsyncTask<Void, Void, Void> {

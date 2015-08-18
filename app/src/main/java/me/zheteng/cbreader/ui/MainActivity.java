@@ -3,12 +3,6 @@
  */
 package me.zheteng.cbreader.ui;
 
-import java.util.ArrayList;
-import java.util.Random;
-
-import com.google.android.gms.ads.formats.NativeContentAd;
-import com.umeng.update.UmengUpdateAgent;
-
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
@@ -28,6 +22,13 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.gms.ads.formats.NativeContentAd;
+import com.umeng.update.UmengUpdateAgent;
+
+import java.util.ArrayList;
+import java.util.Random;
+
 import me.zheteng.cbreader.MainApplication;
 import me.zheteng.cbreader.R;
 import me.zheteng.cbreader.ui.widget.ScrimInsetsScrollView;
